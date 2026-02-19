@@ -7,11 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --rose:#e8357a; --rose-clair:#f06fa0; --rose-pale:#fde8f1;
-      --cyan:#00b4d8; --blanc:#ffffff; --texte:#1c1c2e;
-      --gris:#6b7280; --gris-clair:#f8f0f5; --radius:10px;
-    }
+    :root{--rose:#e8357a;--rose-clair:#f06fa0;--rose-pale:#fde8f1;--cyan:#00b4d8;--blanc:#ffffff;--texte:#1c1c2e;--gris:#6b7280;--gris-clair:#f8f0f5;--radius:10px}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
     body{font-family:'Nunito',sans-serif;color:var(--texte);background:var(--blanc)}
@@ -73,7 +69,6 @@
     .agenda-item.open .agenda-toggle{transform:rotate(180deg)}
     .agenda-body{display:none;padding:0 1.5rem 1.5rem;border-top:1px solid var(--rose-pale)}
     .agenda-item.open .agenda-body{display:block}
-    .agenda-map{width:100%;height:420px;border-radius:var(--radius);border:none;margin-top:1rem}
     .circuit-lock{background:linear-gradient(135deg,var(--rose-pale),#e0f7fa);border-radius:var(--radius);padding:2rem;text-align:center;margin-top:1rem}
     .circuit-lock .lock-icon{font-size:2.5rem;margin-bottom:.75rem}
     .circuit-lock h4{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;text-transform:uppercase;color:var(--texte);margin-bottom:.4rem}
@@ -84,8 +79,11 @@
     .lock-btn{background:var(--rose);color:var(--blanc);border:none;padding:.6rem 1.5rem;border-radius:var(--radius);font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:background .2s}
     .lock-btn:hover{background:#c9295e}
     .lock-error{color:var(--rose);font-size:.82rem;font-weight:700;margin-top:.6rem;display:none}
-    .circuit-unlocked-badge{display:inline-flex;align-items:center;gap:.4rem;background:#e8f5e9;color:#2e7d32;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .8rem;border-radius:2rem;margin-top:1rem}
-    .lock-logout-btn{background:none;border:none;color:var(--gris);font-size:.78rem;cursor:pointer;text-decoration:underline;margin-left:.75rem}
+    .circuit-unlocked{background:linear-gradient(135deg,#e8f5e9,#e0f7fa);border-radius:var(--radius);padding:1.5rem;margin-top:1rem;text-align:center}
+    .circuit-unlocked-badge{display:inline-flex;align-items:center;gap:.4rem;background:#e8f5e9;color:#2e7d32;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .8rem;border-radius:2rem}
+    .circuit-link{display:inline-flex;align-items:center;gap:.6rem;margin-top:1rem;background:var(--rose);color:var(--blanc);padding:.75rem 2rem;border-radius:var(--radius);font-weight:700;font-size:.95rem;transition:background .2s,transform .15s}
+    .circuit-link:hover{background:#c9295e;transform:translateY(-2px)}
+    .lock-logout-btn{background:none;border:none;color:var(--gris);font-size:.78rem;cursor:pointer;text-decoration:underline;margin-top:.75rem;display:block}
     #galerie{background:var(--gris-clair)}
     .albums-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
     .album-card{background:var(--blanc);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);cursor:pointer;transition:transform .2s,box-shadow .2s}
@@ -343,7 +341,7 @@
           </div>
           <div style="display:flex;gap:.5rem;align-items:center;">
             <span class="badge-dist">🚴 ${s.distance}</span>
-            ${s.iframe ? '🔒' : ''}
+            ${s.lien ? '🔒' : ''}
             <span class="agenda-toggle">▼</span>
           </div>
         </div>
@@ -355,7 +353,7 @@
   }
 
   function renderCircuit(sortie, i) {
-    if (!sortie.iframe) return `<div style="background:var(--gris-clair);border-radius:var(--radius);padding:1.5rem;text-align:center;color:var(--gris);margin-top:1rem;">🗺️ Circuit Openrunner à venir — revenez bientôt !</div>`;
+    if (!sortie.lien) return `<div style="background:var(--gris-clair);border-radius:var(--radius);padding:1.5rem;text-align:center;color:var(--gris);margin-top:1rem;">🗺️ Circuit Openrunner à venir — revenez bientôt !</div>`;
     if (circuitsDeblocked) return circuitUnlocked(sortie);
     return circuitLocked(i);
   }
@@ -374,11 +372,12 @@
   }
 
   function circuitUnlocked(sortie) {
-    return `<div style="margin-top:.75rem;">
+    return `<div class="circuit-unlocked">
       <span class="circuit-unlocked-badge">✅ Accès licencié</span>
+      <br/>
+      <a class="circuit-link" href="${sortie.lien}" target="_blank">🗺️ Voir le circuit sur Openrunner</a>
       <button class="lock-logout-btn" onclick="lockCircuits()">Se déconnecter</button>
-    </div>
-    <iframe class="agenda-map" src="${sortie.iframe}" allowfullscreen loading="lazy" title="Circuit"></iframe>`;
+    </div>`;
   }
 
   function checkPwd(i) {
@@ -404,7 +403,13 @@
   let currentAlbum = [], currentIndex = 0;
 
   function renderGalerie() {
-    document.getElementById('albumsGrid').innerHTML = ECTA_DATA.galerie.map((album, i) => `
+    const grid = document.getElementById('albumsGrid');
+    const albums = ECTA_DATA.galerie.filter(a => a.photos && a.photos.length > 0);
+    if (albums.length === 0) {
+      grid.innerHTML = '<p style="text-align:center;color:var(--gris);grid-column:1/-1;">📸 Les photos arrivent bientôt !</p>';
+      return;
+    }
+    grid.innerHTML = albums.map((album, i) => `
       <div class="album-card" onclick="openAlbum(${i})">
         <div class="album-cover">
           ${album.couverture ? `<img src="${album.couverture}" alt="${album.titre}" onerror="this.outerHTML='📸'"/>` : '📸'}
@@ -416,7 +421,8 @@
   }
 
   function openAlbum(i) {
-    const album = ECTA_DATA.galerie[i];
+    const albums = ECTA_DATA.galerie.filter(a => a.photos && a.photos.length > 0);
+    const album = albums[i];
     currentAlbum = album.photos; currentIndex = 0;
     document.getElementById('lightboxTitle').textContent = album.titre;
     updateLightbox();
