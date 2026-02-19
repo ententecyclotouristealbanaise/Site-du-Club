@@ -17,9 +17,9 @@ const ECTA_DATA = {
   // ----------------------------------------------------------
   actualites: [
     {
-      date: "Dimanche 23 février 2025",
-      titre: "Sortie du dimanche – Circuit des Caps",
-      texte: "Rendez-vous à 9h00 devant le Stade de foot. Parcours de 75 km. Prévoir coupe-vent et ravitaillement.",
+      date: "Dimanche 22 février 2026",
+      titre: "Sortie du dimanche",
+      texte: "Rendez-vous à 9h00 devant le Stade de foot.  2Parcours : 81 et 62 kms",
       tag: "Sortie",
       image: ""
     }
@@ -36,9 +36,9 @@ const ECTA_DATA = {
   // ----------------------------------------------------------
   agenda: [
     {
-      date: "Dim. 23 fév.",
-      titre: "Circuit des Caps – Saint-Brieuc",
-      distance: "75 km",
+      date: "Dim. 22 Fév.",
+      titre: "Circuit D10",
+      distance: "81 Kms",
       lien: "https://www.openrunner.com/route-details/18540034"
       // Remplacez XXXXXXXX par votre vrai numéro de circuit
     }
