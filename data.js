@@ -10,7 +10,7 @@ const ECTA_DATA = {
   // Changez uniquement la valeur entre guillemets
   // Communiquez ce code à vos licenciés chaque saison
   // ----------------------------------------------------------
-  motDePasse: "flora2026",
+  motDePasse: "ecta2025",
 
   // ----------------------------------------------------------
   // ACTUALITÉS DE LA SEMAINE
