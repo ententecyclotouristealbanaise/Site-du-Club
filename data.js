@@ -10,7 +10,7 @@ const ECTA_DATA = {
   // Changez uniquement la valeur entre guillemets
   // Communiquez ce code à vos licenciés chaque saison
   // ----------------------------------------------------------
-  motDePasse: "ecta2025",
+  motDePasse: "flora2026",
 
   // ----------------------------------------------------------
   // ACTUALITÉS DE LA SEMAINE
@@ -43,9 +43,9 @@ const ECTA_DATA = {
   // ----------------------------------------------------------
   agenda: [
     {
-      date: "Dim. 23 fév.",
-      titre: "Circuit des Caps – Saint-Brieuc",
-      distance: "75 km",
+      date: "Dim. 22 fév.",
+      titre: "Sortie du Dimanche",
+      distance: "81 et 62 Kms",
       iframe: "https://www.openrunner.com/route-details/18540034"
       // Remplacez XXXXXXX par votre identifiant de circuit Openrunner
     }
