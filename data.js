@@ -39,7 +39,7 @@ const ECTA_DATA = {
       date: "Dim. 23 fév.",
       titre: "Circuit des Caps – Saint-Brieuc",
       distance: "75 km",
-      lien: "https://www.openrunner.com/route-details/XXXXXXXX"
+      lien: "https://www.openrunner.com/route-details/18540034"
       // Remplacez XXXXXXXX par votre vrai numéro de circuit
     }
   ],
