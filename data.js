@@ -46,7 +46,7 @@ const ECTA_DATA = {
       date: "Dim. 22 fév.",
       titre: "Sortie du Dimanche",
       distance: "81 et 62 Kms",
-      iframe: "https://www.openrunner.com/route-details/18540034"
+      iframe: "<iframe width="100%" height="650" loading="lazy" src="https://www.openrunner.com/embed.html?code=526561397454632f6c743869722f6a6a39356a3153323352336d786e365836466f6b5577535574673972343d3a3a41f6053a0642524e71f2a0248f12b43a&lang=fr&unit=metric" style="border: none;"></iframe>"
       // Remplacez XXXXXXX par votre identifiant de circuit Openrunner
     }
   ],
