@@ -53,10 +53,11 @@ const ECTA_DATA = {
   galerie: [
     {
       titre: "Rando de la Flora 2024",
-      couverture: "",   // ex: "images/flora-2024/photo1.jpg"
+      couverture: "",   // "images/brevet 2026/brevet50_01.jpg"
       photos: [
-        // "images/flora-2024/photo1.jpg",
-        // "images/flora-2024/photo2.jpg"
+        // "images/brevet 2026/brevet50_01.jpg",
+        // "" ,
+        //
       ]
     }
   ]
