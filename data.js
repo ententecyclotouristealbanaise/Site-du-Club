@@ -40,6 +40,8 @@ const ECTA_DATA = {
       titre: "Circuit D10",
       distance: "81 Kms",
       lien: "https://www.openrunner.com/route-details/18540034"
+      distance: "62 kms",
+      lien: "https://www.openrunner.com/route-details/18539834"
       // Remplacez XXXXXXXX par votre vrai numéro de circuit
     }
   ],
