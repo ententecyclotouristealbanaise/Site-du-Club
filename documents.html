@@ -66,8 +66,9 @@
     .tour-divider{height:2px;max-width:900px;margin:0 auto 1.25rem;background:linear-gradient(90deg,var(--rose-pale),var(--rose),var(--rose-pale));border-radius:2px;opacity:.8}
 
     .pdf-container{
-      width:min(94vw,1400px);
-      height:clamp(560px,78vh,980px);
+      width:560px;
+      height:320px;
+      max-width:92vw;
       margin:2rem 0;
       position:relative;
       border:1px solid var(--gris-clair);
@@ -79,7 +80,7 @@
     .pdf-container iframe{border:0;position:absolute;top:0;left:0;width:100%;height:100%}
 
     @media(max-width:900px){
-      .pdf-container{height:72vh;min-height:460px}
+      .pdf-container{width:92vw;height:240px}
     }
 
     /* Lecteur PDF OneDrive */
@@ -100,7 +101,7 @@
 
 <nav>
   <div class="nav-brand">
-    <img class="nav-logo-img" src="/Site-du-Club/images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
+    <img class="nav-logo-img" src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
     <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban - Côtes-d'Armor</small></div>
   </div>
   <div class="nav-center">
