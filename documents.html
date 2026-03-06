@@ -28,31 +28,26 @@
     img{max-width:100%;display:block;object-fit:cover}
     /* (les autres règles CSS peuvent être copiées si nécessaire, ici on se contente de la base) */
 
-    /* ── NAV (identique à index mais nous gérerons l'active en dur) */
-    nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232,53,122,.96);display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:60px;box-shadow:0 3px 16px rgba(232,53,122,.35);gap:.75rem;backdrop-filter:saturate(1.1) blur(5px);border-bottom:1px solid rgba(255,255,255,.22)}
+    /* ── NAV ── */
+    nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232,53,122,.96);display:flex;align-items:center;justify-content:flex-start;padding:0 2rem;height:68px;box-shadow:0 3px 16px rgba(232,53,122,.35);backdrop-filter:saturate(1.1) blur(5px);border-bottom:1px solid rgba(255,255,255,.22);transition:box-shadow .2s}
     .nav-brand{display:flex;align-items:center;gap:.75rem;min-width:0;overflow:hidden}
-    /* rectangular logo like on index (no rounding) */
-    .nav-logo-img{height:48px;width:124px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
-    .nav-title{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:var(--blanc);letter-spacing:.02em;line-height:1.05;min-width:0;white-space:normal}
-    .nav-title small{display:block;font-size:.73rem;font-weight:600;letter-spacing:.03em;opacity:.95;margin-left:0;text-transform:none}
-    .nav-center{display:flex;align-items:center;justify-content:center;gap:.7rem;flex:1}
-    #clock{font-family:'Barlow Condensed',sans-serif;font-size:.73rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.85)}
-    #btn-refresh{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.5);color:white;padding:4px 13px;border-radius:2rem;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.73rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:background .2s}
-    #btn-refresh:hover{background:rgba(255,255,255,.38)}
-    .nav-links{display:flex;gap:1rem;list-style:none;margin-left:auto}
-    .nav-links a{color:var(--blanc);font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .45rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:border-color .2s,background .2s}
+    .nav-logo-img{height:50px;width:130px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
+    .nav-title{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:800;color:var(--blanc);letter-spacing:.02em;line-height:1.2;min-width:0}
+    .nav-title small{display:block;font-size:.65rem;font-weight:400;letter-spacing:.1em;opacity:.85}
+    .nav-center{display:flex;align-items:center;justify-content:center;flex:1;min-width:0;pointer-events:none}
+    #clock{font-family:'Barlow Condensed',sans-serif;font-size:.74rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--blanc);white-space:nowrap;opacity:.95}
+    .nav-links{display:flex;gap:1.25rem;list-style:none;margin-left:auto}
+    .nav-links a{color:var(--blanc);font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.32rem .5rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:border-color .2s,background .2s}
     .nav-links a:hover,.nav-links a.active{border-color:var(--blanc);background:rgba(255,255,255,.12)}
-    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer}
+    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;margin-left:auto}
     .burger span{display:block;width:26px;height:3px;background:var(--blanc);border-radius:2px}
-    .mobile-menu{display:none;position:fixed;top:60px;left:0;width:100%;z-index:999;background:var(--rose);padding:1rem 1.5rem 1.25rem;flex-direction:column;gap:1rem}
+    .mobile-menu{display:none;position:fixed;top:68px;left:0;width:100%;z-index:999;background:var(--rose);padding:1rem 2rem 1.5rem;flex-direction:column;gap:1rem}
     .mobile-menu.open{display:flex}
-    .mobile-menu a{color:var(--blanc);font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
-    @media(max-width:1200px){
-      nav{padding:0 .9rem}
+    .mobile-menu a{color:var(--blanc);font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+    @media(max-width:768px){
       .nav-links{display:none}
+      .nav-center{display:none}
       .burger{display:flex}
-      .nav-title small{display:none}
-      #clock{display:none}
     }
 
     /* Encadré de présentation World Tour */
@@ -110,10 +105,10 @@
 <nav>
   <div class="nav-brand">
     <img class="nav-logo-img" src="images/logo_ECTA.png" alt="Logo ECTA Saint-Alban" />
-    <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban - Côtes-d'Armor</small></div>
+    <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban · Côtes-d'Armor</small></div>
   </div>
   <div class="nav-center">
-    <div id="clock"></div>
+    <span id="clock"></span>
   </div>
   <ul class="nav-links">
     <li><a href="index.html">Accueil</a></li>
