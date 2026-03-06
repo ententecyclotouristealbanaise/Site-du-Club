@@ -195,8 +195,8 @@
     .info-item p{font-size:.9rem;color:var(--gris);line-height:1.6}
     .info-item strong{display:block;color:var(--texte);font-size:.95rem}
     /* Carte OSM */
-    .map-container{width:min(100%,420px);border-radius:var(--radius);overflow:hidden;margin-top:1.5rem;box-shadow:0 2px 16px rgba(0,0,0,.1)}
-    .map-container iframe{width:100%;height:170px;border:none;display:block}
+    .map-container{border-radius:var(--radius);overflow:hidden;margin-top:1.5rem;box-shadow:0 2px 16px rgba(0,0,0,.1)}
+    .map-container iframe{width:100%;height:220px;border:none;display:block}
     .contact-form{background:var(--gris-clair);border-radius:var(--radius);padding:2rem}
     .contact-form h3{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;text-transform:uppercase;margin-bottom:1.25rem}
     .form-group{margin-bottom:1rem}
@@ -243,8 +243,6 @@
       .nav-center{display:none}
       .burger{display:flex}
       .contact-grid{grid-template-columns:1fr}
-      .map-container{width:100%}
-      .map-container iframe{height:150px}
       .footer-inner{grid-template-columns:1fr}
       .form-row{grid-template-columns:1fr}
     }
@@ -291,8 +289,8 @@ const ECTA_DATA = {
       titre: "Circuit D62",
       locked: true,
       parcours: [
-        { distance: "88 Kms", lien: "https://www.openrunner.com/route-details/23224349" },
-        { distance: "78 Kms", lien: "https://www.openrunner.com/route-details/23224493" }
+        { distance: "88 Kms", lien: "" },
+        { distance: "78 Kms", lien: "" }
       ]
     }
   ],
@@ -362,7 +360,7 @@ const ECTA_DATA = {
 <!-- NAV -->
 <nav>
   <div class="nav-brand">
-    <img class="nav-logo-img" src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
+    <img class="nav-logo-img" src="images/logo_ECTA.png" alt="Logo ECTA Saint-Alban" />
     <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban · Côtes-d'Armor</small></div>
   </div>
   <div class="nav-center"><span id="clock"></span></div>
@@ -581,7 +579,7 @@ const ECTA_DATA = {
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
-      <img src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA" class="footer-logo">
+      <img src="images/logo_ECTA.png" alt="Logo ECTA" class="footer-logo">
       <h4>ECTA Saint-Alban</h4>
       <p>Entente Cyclotouriste Albanaise — club de cyclotourisme fondé en 1985 à Saint-Alban, Côtes-d'Armor.</p>
     </div>
