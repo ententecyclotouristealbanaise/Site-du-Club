@@ -27,7 +27,7 @@
       align-items:center;
       justify-content:center;
       padding:1.2rem;
-      padding-top:88px;
+      padding-top:96px;
     }
     .topbar{
       position:fixed;
@@ -36,7 +36,7 @@
       width:100%;
       z-index:1000;
       background:rgba(232,53,122,.96);
-      height:54px;
+      height:60px;
       box-shadow:0 3px 16px rgba(232,53,122,.35);
       display:flex;
       align-items:center;
@@ -55,7 +55,7 @@
     .nav-links a.link-news{color:#b3f0ff}
     .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;margin-left:.6rem}
     .burger span{display:block;width:24px;height:3px;background:var(--blanc);border-radius:2px}
-    .mobile-menu{display:none;position:fixed;top:54px;left:0;width:100%;z-index:999;background:var(--rose);padding:.9rem 1rem 1.1rem;flex-direction:column;gap:.75rem;box-shadow:0 8px 18px rgba(0,0,0,.18)}
+    .mobile-menu{display:none;position:fixed;top:60px;left:0;width:100%;z-index:999;background:var(--rose);padding:.9rem 1rem 1.1rem;flex-direction:column;gap:.75rem;box-shadow:0 8px 18px rgba(0,0,0,.18)}
     .mobile-menu.open{display:flex}
     .mobile-menu a{color:var(--blanc);font-size:.88rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
     @media (max-width: 1024px){
@@ -163,6 +163,10 @@
     .btn-flottant:hover{transform:translateY(-3px);background:#c9295e}
     #btnRetourLeft{left:1.25rem}
     #btnRetourRight{right:1.25rem}
+    @media(max-width:640px){
+      #btnRetourLeft{left:.8rem;bottom:1.2rem}
+      #btnRetourRight{right:.8rem;bottom:1.2rem}
+    }
   </style>
 </head>
 <body>
@@ -183,7 +187,7 @@
         <li><a class="link-news" href="news.html">📰 Actu vélo</a></li>
         <li><a href="Flora 2026.html" class="active">Flora 2026</a></li>
       </ul>
-      <div class="burger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></div>
+      <div class="burger" onclick="toggleMenu()" aria-label="Ouvrir le menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
     </div>
   </div>
   <div class="mobile-menu" id="mobileMenu">
@@ -194,7 +198,7 @@
     <a href="index.html#galerie" onclick="closeMenu()">Galerie</a>
     <a href="index.html#contact" onclick="closeMenu()">Contact</a>
     <a href="documents.html" onclick="closeMenu()">WT2026</a>
-    <a href="news.html" onclick="closeMenu()">Actu vélo</a>
+    <a href="news.html" onclick="closeMenu()" style="color:#b3f0ff">📰 Actu vélo</a>
     <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
   </div>
   <main class="panel">
@@ -220,6 +224,29 @@
   <script>
     function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
     function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('mobileMenu');
+      const burger = document.querySelector('.burger');
+      if (!menu || !burger) return;
+      if (!menu.contains(e.target) && !burger.contains(e.target)) {
+        closeMenu();
+      }
+    });
+
+    const burgerBtn = document.querySelector('.burger');
+    if (burgerBtn) {
+      burgerBtn.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleMenu();
+        }
+      });
+    }
+
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeMenu();
+    });
   </script>
 </body>
 </html>

@@ -29,7 +29,7 @@
     /* (les autres règles CSS peuvent être copiées si nécessaire, ici on se contente de la base) */
 
     /* ── NAV (identique à index mais nous gérerons l'active en dur) */
-    nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232,53,122,.96);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:54px;box-shadow:0 3px 16px rgba(232,53,122,.35);gap:.75rem;backdrop-filter:saturate(1.1) blur(5px);border-bottom:1px solid rgba(255,255,255,.22)}
+    nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232,53,122,.96);display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:60px;box-shadow:0 3px 16px rgba(232,53,122,.35);gap:.75rem;backdrop-filter:saturate(1.1) blur(5px);border-bottom:1px solid rgba(255,255,255,.22)}
     .nav-brand{display:flex;align-items:center;gap:.75rem;min-width:0;overflow:hidden}
     /* rectangular logo like on index (no rounding) */
     .nav-logo-img{height:48px;width:124px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
@@ -44,7 +44,7 @@
     .nav-links a:hover,.nav-links a.active{border-color:var(--blanc);background:rgba(255,255,255,.12)}
     .burger{display:none;flex-direction:column;gap:5px;cursor:pointer}
     .burger span{display:block;width:26px;height:3px;background:var(--blanc);border-radius:2px}
-    .mobile-menu{display:none;position:fixed;top:54px;left:0;width:100%;z-index:999;background:var(--rose);padding:1rem 1.5rem 1.25rem;flex-direction:column;gap:1rem}
+    .mobile-menu{display:none;position:fixed;top:60px;left:0;width:100%;z-index:999;background:var(--rose);padding:1rem 1.5rem 1.25rem;flex-direction:column;gap:1rem}
     .mobile-menu.open{display:flex}
     .mobile-menu a{color:var(--blanc);font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
     @media(max-width:1200px){
@@ -64,8 +64,10 @@
     .tour-card p{margin-top:.35rem;color:var(--gris);font-size:.96rem;line-height:1.5}
     .tour-divider{height:2px;max-width:900px;margin:0 auto 1.25rem;background:linear-gradient(90deg,var(--rose-pale),var(--rose),var(--rose-pale));border-radius:2px;opacity:.8}
 
+    .docs-container{width:min(100%,1400px);margin:0 auto;padding:2rem 1rem}
+
     .pdf-container{
-      width:min(94vw,1400px);
+      width:100%;
       height:clamp(560px,78vh,980px);
       margin:2rem 0;
       position:relative;
@@ -79,7 +81,8 @@
 
     @media(max-width:900px){
       .pdf-container{height:72vh;min-height:460px}
-    }
+      .docs-container{padding:1rem .75rem}
+      .pdf-container{height:68vh;min-height:380px;margin:1.1rem 0}
 
     /* Lecteur PDF OneDrive */
     #pdfControls{display:none}
@@ -92,7 +95,14 @@
 
     /* BOUTON FLOTTANT VERS LE HAUT (optionnel) */
     #btnToTop{position:fixed;bottom:2rem;right:5.5rem;z-index:900;background:var(--cyan);color:var(--blanc);border:none;width:52px;height:52px;border-radius:50%;font-size:1.5rem;cursor:pointer;box-shadow:0 4px 16px rgba(0,180,216,.4);transition:transform .2s,opacity .2s;display:none;align-items:center;justify-content:center}
+    #btnToTop.visible{display:flex}
     #btnToTop:hover{transform:translateY(-3px)}
+
+    @media(max-width:640px){
+      #btnRetourLeft{left:.8rem;bottom:1.2rem}
+      #btnRetourRight{right:.8rem;bottom:1.2rem}
+      #btnToTop{right:4.2rem;bottom:1.2rem;width:46px;height:46px}
+    }
   </style>
 </head>
 <body>
@@ -116,7 +126,7 @@
     <li><a href="news.html" style="color:#b3f0ff">📰 Actu vélo</a></li>
     <li><a href="Flora 2026.html">Flora 2026</a></li>
   </ul>
-  <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+  <div class="burger" onclick="toggleMenu()" aria-label="Ouvrir le menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
   <a href="index.html#accueil" onclick="closeMenu()">Accueil</a>
@@ -125,14 +135,14 @@
   <a href="index.html#agenda" onclick="closeMenu()">Agenda</a>
   <a href="index.html#galerie" onclick="closeMenu()">Galerie</a>
   <a href="index.html#contact" onclick="closeMenu()">Contact</a>
-  <a href="documents.html">WT2026</a>
-  <a href="news.html" style="color:#b3f0ff">📰 Actu vélo</a>
-  <a href="Flora 2026.html">Flora 2026</a>
+  <a href="documents.html" onclick="closeMenu()">WT2026</a>
+  <a href="news.html" onclick="closeMenu()" style="color:#b3f0ff">📰 Actu vélo</a>
+  <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
 </div>
 
 <!-- SECTION PRINCIPALE -->
-<section id="documents" style="padding-top:80px;display:flex;flex-direction:column;align-items:center;">
-  <div class="container" style="max-width:100%;margin:0 auto;padding:2rem;">
+<section id="documents" style="padding-top:92px;display:flex;flex-direction:column;align-items:center;">
+  <div class="docs-container">
     <div class="tour-card">
       <div class="section-header">
         <div class="section-label">🌍 World Tour 2026</div>
@@ -157,6 +167,29 @@
   // Scripts pour le menu mobile
   function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
   function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobileMenu');
+    const burger = document.querySelector('.burger');
+    if (!menu || !burger) return;
+    if (!menu.contains(e.target) && !burger.contains(e.target)) {
+      closeMenu();
+    }
+  });
+
+  const burgerBtn = document.querySelector('.burger');
+  if (burgerBtn) {
+    burgerBtn.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleMenu();
+      }
+    });
+  }
+
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeMenu();
+  });
 
   // Horloge temps réel (comme sur news)
   (function tick() {

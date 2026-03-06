@@ -21,13 +21,13 @@
 
     /* ── TOPBAR ── */
     .topbar{
-      background:rgba(232,53,122,.96);height:54px;padding:0 1.5rem;
+      background:rgba(232,53,122,.96);height:60px;padding:0 1.25rem;
       display:flex;align-items:center;justify-content:space-between;gap:.75rem;
       box-shadow:0 3px 16px rgba(232,53,122,.35);
       position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.22);backdrop-filter:saturate(1.1) blur(5px);
     }
     .tb-left{display:flex;align-items:center;gap:.9rem}
-    .tb-logo{height:48px;width:124px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
+    .tb-logo{height:46px;width:132px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
     .btn-retour{
       display:inline-flex;align-items:center;gap:5px;
       background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.5);
@@ -37,7 +37,7 @@
       text-decoration:none;
     }
     .btn-retour:hover{background:rgba(255,255,255,.38)}
-    .tb-brand{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:white;letter-spacing:.02em;line-height:1.05}
+    .tb-brand{font-family:'Barlow Condensed',sans-serif;font-size:1.02rem;font-weight:800;color:white;letter-spacing:.02em;line-height:1.05}
     .tb-brand small{display:block;font-size:.73rem;font-weight:600;opacity:.95;margin-left:0;letter-spacing:.03em}
     .tb-right{display:flex;align-items:center;gap:.7rem;flex-shrink:0;margin-left:auto}
     /* centre colonne pour date/refresh */
@@ -48,6 +48,11 @@
     .topbar .nav-links{display:flex;gap:1rem;list-style:none;margin-left:1.5rem}
     .topbar .nav-links a{color:white;font-size:.75rem;font-weight:700;text-transform:uppercase;padding:.3rem .45rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:border-color .2s,background .2s}
     .topbar .nav-links a:hover,.topbar .nav-links a.active{border-color:white;background:rgba(255,255,255,.12)}
+    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;margin-left:.5rem}
+    .burger span{display:block;width:24px;height:3px;background:white;border-radius:2px}
+    .mobile-menu{display:none;position:fixed;top:60px;left:0;width:100%;z-index:999;background:var(--rose);padding:1rem 1.2rem 1.25rem;flex-direction:column;gap:.9rem;box-shadow:0 8px 18px rgba(0,0,0,.2)}
+    .mobile-menu.open{display:flex}
+    .mobile-menu a{color:white;font-size:.95rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
     #btn-refresh{
       display:flex;align-items:center;gap:5px;
       background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.5);
@@ -111,9 +116,13 @@
     .tv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.9rem}
     .tv-card{border:1px solid var(--gris-clair);border-radius:10px;background:#fff;padding:.8rem .9rem;display:flex;flex-direction:column;gap:.35rem;transition:transform .18s,box-shadow .18s,border-color .18s}
     .tv-card:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(232,53,122,.1);border-color:var(--rose-clair)}
+    .tv-card.next{border-color:rgba(232,53,122,.4);box-shadow:0 8px 20px rgba(232,53,122,.16)}
     .tv-card h3{font-family:'Barlow Condensed',sans-serif;font-size:.98rem;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--texte)}
     .tv-line{font-size:.8rem;color:var(--gris)}
     .tv-line b{color:var(--texte)}
+    .tv-meta{display:flex;align-items:center;justify-content:space-between;gap:.55rem;flex-wrap:wrap}
+    .tv-pill{font-family:'Barlow Condensed',sans-serif;font-size:.63rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;background:var(--rose-pale);color:#b31256;border-radius:999px;padding:2px 8px}
+    .tv-pill.next{background:#dcfce7;color:#166534}
     .tv-link{margin-top:.2rem;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--rose)}
 
     /* ── MAIN ── */
@@ -205,11 +214,18 @@
     #btnToTop:hover{transform:translateY(-3px)}
 
     @media(max-width:640px){
-      .topbar{padding:0 .8rem;height:auto;flex-wrap:wrap;padding:.45rem .8rem;gap:.35rem}
+      .topbar{padding:0 .8rem;height:60px;flex-wrap:nowrap;gap:.35rem}
+      .tb-center{display:none}
+      .topbar .nav-links{display:none}
+      .burger{display:flex}
       #clock{display:none}
       .tb-brand small{display:none}
+      .tb-brand{font-size:.86rem}
       .filters{padding:.65rem 1rem}
       main{padding:1.5rem 1rem 4rem}
+      #btnRetourLeft{left:.8rem;bottom:1.2rem}
+      #btnRetourRight{right:.8rem;bottom:1.2rem}
+      #btnToTop{right:4.2rem;bottom:1.2rem;width:46px;height:46px}
     }
   </style>
 </head>
@@ -239,7 +255,22 @@
       <li><a href="news.html" class="active">📰 Actu vélo</a></li>
       <li><a href="Flora 2026.html">Flora 2026</a></li>
     </ul>
+    <div class="burger" onclick="toggleMenu()" aria-label="Ouvrir le menu" role="button" tabindex="0">
+      <span></span><span></span><span></span>
+    </div>
   </div>
+</div>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" onclick="closeMenu()">Accueil</a>
+  <a href="index.html#leclub" onclick="closeMenu()">Le Club</a>
+  <a href="index.html#actualites" onclick="closeMenu()">Actualités</a>
+  <a href="index.html#agenda" onclick="closeMenu()">Agenda</a>
+  <a href="index.html#galerie" onclick="closeMenu()">Galerie</a>
+  <a href="index.html#contact" onclick="closeMenu()">Contact</a>
+  <a href="documents.html" onclick="closeMenu()">WT2026</a>
+  <a href="news.html" onclick="closeMenu()" style="color:#b3f0ff">📰 Actu vélo</a>
+  <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
 </div>
 
 <!-- ══ HERO ══ -->
@@ -342,48 +373,12 @@ const TV_THEME = { id:'t6', label:'📺 Courses à la TV', cls:'t2' };
 // Donnees informatives relevees sur des pages programmes/sport en ligne.
 // Les diffuseurs/horaires peuvent evoluer : verifier le lien source le jour J.
 const TV_GUIDE = [
-  {
-    course:'Strade Bianche',
-    jour:'Samedi 7 mars 2026',
-    heure:'14:00',
-    chaine:'Eurosport / Max',
-    source:'https://www.eurosport.fr/cyclisme/'
-  },
-  {
-    course:'Paris-Nice (Étape 1)',
-    jour:'Dimanche 8 mars 2026',
-    heure:'15:15',
-    chaine:'France 3 + Eurosport / Max',
-    source:'https://www.france.tv/sport/cyclisme/'
-  },
-  {
-    course:'Tirreno-Adriatico (Étape 1)',
-    jour:'Lundi 9 mars 2026',
-    heure:'14:30',
-    chaine:'Eurosport / Max',
-    source:'https://www.eurosport.fr/cyclisme/'
-  },
-  {
-    course:'Milan-San Remo',
-    jour:'Samedi 21 mars 2026',
-    heure:'14:30',
-    chaine:'Eurosport / Max',
-    source:'https://www.programme-tv.net/programme/sport/r303-cyclisme/'
-  },
-  {
-    course:'Tour des Flandres',
-    jour:'Dimanche 5 avril 2026',
-    heure:'13:30',
-    chaine:'Eurosport / Max',
-    source:'https://www.france.tv/sport/cyclisme/'
-  },
-  {
-    course:'Paris-Roubaix',
-    jour:'Dimanche 12 avril 2026',
-    heure:'13:30',
-    chaine:'France 3 + Eurosport / Max',
-    source:'https://www.france.tv/sport/cyclisme/'
-  }
+  { course:'Strade Bianche',                 slot:'2026-03-07T14:00:00+01:00', chaine:'Eurosport / Max',              source:'https://www.eurosport.fr/cyclisme/' },
+  { course:'Paris-Nice (Étape 1)',           slot:'2026-03-08T15:15:00+01:00', chaine:'France 3 + Eurosport / Max',  source:'https://www.france.tv/sport/cyclisme/' },
+  { course:'Tirreno-Adriatico (Étape 1)',    slot:'2026-03-09T14:30:00+01:00', chaine:'Eurosport / Max',              source:'https://www.eurosport.fr/cyclisme/' },
+  { course:'Milan-San Remo',                 slot:'2026-03-21T14:30:00+01:00', chaine:'Eurosport / Max',              source:'https://www.programme-tv.net/programme/sport/r303-cyclisme/' },
+  { course:'Tour des Flandres',              slot:'2026-04-05T13:30:00+02:00', chaine:'Eurosport / Max',              source:'https://www.france.tv/sport/cyclisme/' },
+  { course:'Paris-Roubaix',                  slot:'2026-04-12T13:30:00+02:00', chaine:'France 3 + Eurosport / Max',  source:'https://www.france.tv/sport/cyclisme/' }
 ];
 
 /* ════════════════════════════════════════════════════════════
@@ -513,15 +508,36 @@ function mkCard(item, theme, idx) {
   </a>`;
 }
 
+function formatTvDay(dt) {
+  return dt.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+}
+
+function formatTvHour(dt) {
+  return dt.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+}
+
 function renderTvGuide() {
   const updated = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' });
-  const cards = TV_GUIDE.map(x => `<a class="tv-card" href="${x.source}" target="_blank" rel="noopener">
-      <h3>${x.course}</h3>
-      <div class="tv-line"><b>Jour :</b> ${x.jour}</div>
-      <div class="tv-line"><b>Heure :</b> ${x.heure}</div>
+  const schedule = [...TV_GUIDE].sort((a, b) => new Date(a.slot) - new Date(b.slot));
+  const now = Date.now();
+  const nextIdx = schedule.findIndex(x => new Date(x.slot).getTime() >= now);
+
+  const cards = schedule.map((x, i) => {
+    const dt = new Date(x.slot);
+    const chainTag = x.chaine.includes('France') ? 'France TV' : (x.chaine.includes('Eurosport') ? 'Eurosport' : 'TV');
+    const isNext = nextIdx === -1 ? i === 0 : i === nextIdx;
+    return `<a class="tv-card ${isNext ? 'next' : ''}" href="${x.source}" target="_blank" rel="noopener">
+      <div class="tv-meta">
+        <h3>${x.course}</h3>
+        <span class="tv-pill">${chainTag}</span>
+      </div>
+      <div class="tv-line"><b>Jour :</b> ${formatTvDay(dt)}</div>
+      <div class="tv-line"><b>Heure :</b> ${formatTvHour(dt)}</div>
       <div class="tv-line"><b>Chaîne :</b> ${x.chaine}</div>
+      ${isNext ? '<span class="tv-pill next">Prochaine diffusion</span>' : ''}
       <span class="tv-link">Source programme ↗</span>
-    </a>`).join('');
+    </a>`;
+  }).join('');
 
   return `<section class="tv-wrap">
     <div class="tv-note">
@@ -676,6 +692,37 @@ async function loadAll() {
     ' · ' + n.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
   setTimeout(tick, 1000);
 })();
+
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+function closeMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('mobileMenu');
+  const burger = document.querySelector('.burger');
+  if (!menu || !burger) return;
+  if (!menu.contains(e.target) && !burger.contains(e.target)) {
+    menu.classList.remove('open');
+  }
+});
+
+const burgerBtn = document.querySelector('.burger');
+if (burgerBtn) {
+  burgerBtn.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleMenu();
+    }
+  });
+}
+
+window.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeMenu();
+});
 
 /* ════════════════════════════════════════════════════════════
   AUTO-REFRESH toutes les 6 heures
