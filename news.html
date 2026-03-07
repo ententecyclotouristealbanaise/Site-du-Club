@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
@@ -26,7 +26,7 @@
       box-shadow:0 3px 16px rgba(232,53,122,.35);
       position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.22);backdrop-filter:saturate(1.1) blur(5px);
     }
-    .tb-left{display:flex;align-items:center;gap:.9rem}
+    .tb-left{display:flex;align-items:center;gap:.9rem;min-width:0;overflow:hidden}
     .tb-logo{height:48px;width:124px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
     .btn-retour{
       display:inline-flex;align-items:center;gap:5px;
@@ -37,7 +37,7 @@
       text-decoration:none;
     }
     .btn-retour:hover{background:rgba(255,255,255,.38)}
-    .tb-brand{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:white;letter-spacing:.02em;line-height:1.05}
+    .tb-brand{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:white;letter-spacing:.02em;line-height:1.05;min-width:0;white-space:normal}
     .tb-brand small{display:block;font-size:.73rem;font-weight:600;opacity:.95;margin-left:0;letter-spacing:.03em}
     .tb-right{display:flex;align-items:center;gap:.7rem;flex-shrink:0;margin-left:auto}
     /* centre colonne pour action refresh */
@@ -47,6 +47,11 @@
     .topbar .nav-links{display:flex;gap:1rem;list-style:none;margin-left:1.5rem}
     .topbar .nav-links a{color:white;font-size:.75rem;font-weight:700;text-transform:uppercase;padding:.3rem .45rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:border-color .2s,background .2s}
     .topbar .nav-links a:hover,.topbar .nav-links a.active{border-color:white;background:rgba(255,255,255,.12)}
+    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:transparent;border:none;padding:0;margin-left:auto}
+    .burger span{display:block;width:26px;height:3px;background:var(--blanc);border-radius:2px}
+    .mobile-menu{display:none;position:fixed;top:54px;left:0;width:100%;z-index:999;background:var(--rose);padding:1rem 1.5rem 1.25rem;flex-direction:column;gap:1rem;box-shadow:0 8px 18px rgba(0,0,0,.18)}
+    .mobile-menu.open{display:flex}
+    .mobile-menu a{color:var(--blanc);font-size:.9rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
     #btn-refresh{
       display:flex;align-items:center;gap:5px;
       background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.5);
@@ -197,25 +202,20 @@
     .btn-flottant{position:fixed;bottom:2rem;z-index:900;background:var(--rose);color:var(--blanc);border:none;padding:.65rem 1.1rem;border-radius:2rem;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 16px rgba(232,53,122,.35);display:flex;align-items:center;gap:.5rem;transition:transform .2s,background .2s;text-decoration:none}
     .btn-flottant:hover{transform:translateY(-3px);background:#c9295e}
     #btnRetourLeft{left:1.25rem}
-    #btnRetourRight{right:1.25rem}
 
     /* BOUTON DE REMONTÉE */
     #btnToTop{position:fixed;bottom:2rem;right:5.5rem;z-index:900;background:var(--cyan);color:var(--blanc);border:none;width:52px;height:52px;border-radius:50%;font-size:1.5rem;cursor:pointer;box-shadow:0 4px 16px rgba(0,180,216,.4);transition:transform .2s,opacity .2s;display:none;align-items:center;justify-content:center}
     #btnToTop:hover{transform:translateY(-3px)}
 
     @media(max-width:1024px){
-      .topbar{padding:.45rem .8rem;height:auto;flex-wrap:wrap}
-      .tb-left{width:100%;justify-content:flex-start}
-      .tb-center{order:3;width:100%;justify-content:flex-end}
-      .tb-right{width:100%}
-      .topbar .nav-links{width:100%;margin-left:0;justify-content:center;flex-wrap:wrap;gap:.5rem}
-      .topbar .nav-links a{font-size:.7rem;padding:.22rem .4rem}
-      .tb-brand small{display:none}
+      .topbar{padding:0 .9rem;height:54px;flex-wrap:nowrap}
+      .tb-center{display:none}
+      .tb-right{display:none}
+      .burger{display:flex}
     }
 
     @media(max-width:640px){
-      .topbar{padding:0 .8rem;height:auto;flex-wrap:wrap;padding:.45rem .8rem;gap:.35rem}
-      .tb-brand small{display:none}
+      .tb-brand{font-size:1rem;line-height:1.05}
       .filters{padding:.65rem 1rem}
       main{padding:1.5rem 1rem 4rem}
     }
@@ -233,6 +233,9 @@
   <div class="tb-center">
     <button id="btn-refresh" onclick="loadAll()"><span class="ico">↻</span> Actualiser</button>
   </div>
+  <button class="burger" aria-label="Ouvrir le menu" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
   <div class="tb-right">
     <!-- liens de navigation similaires à index -->
     <ul class="nav-links">
@@ -247,6 +250,19 @@
       <li><a href="Flora 2026.html">Flora 2026</a></li>
     </ul>
   </div>
+</div>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" onclick="closeMenu()">Accueil</a>
+  <a href="index.html#leclub" onclick="closeMenu()">Le Club</a>
+  <a href="index.html#actualites" onclick="closeMenu()">Actualités</a>
+  <a href="index.html#agenda" onclick="closeMenu()">Agenda</a>
+  <a href="index.html#galerie" onclick="closeMenu()">Galerie</a>
+  <a href="index.html#contact" onclick="closeMenu()">Contact</a>
+  <a href="documents.html" onclick="closeMenu()">WT2026</a>
+  <a href="news.html" style="color:#b3f0ff" onclick="closeMenu()">📰 Actu vélo</a>
+  <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
+  <a href="#" onclick="loadAll(); closeMenu(); return false;">↻ Actualiser</a>
 </div>
 
 <!-- ══ HERO ══ -->
@@ -323,7 +339,6 @@
 
 <!-- boutons flottants vers l'accueil -->
 <a id="btnRetourLeft" class="btn-flottant" href="index.html" title="Accueil">← Accueil</a>
-<a id="btnRetourRight" class="btn-flottant" href="index.html" title="Accueil">Accueil →</a>
 <button id="btnToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">↑</button>
 
 
@@ -409,6 +424,31 @@ window.addEventListener('scroll', () => {
   } else {
     btnToTop.style.display = 'none';
   }
+});
+
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+function closeMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('mobileMenu');
+  const burger = document.querySelector('.burger');
+  if (!menu || !burger) return;
+  if (!menu.contains(e.target) && !burger.contains(e.target)) {
+    closeMenu();
+  }
+});
+
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 1024) closeMenu();
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeMenu();
 });
 
 const PROXIES = [

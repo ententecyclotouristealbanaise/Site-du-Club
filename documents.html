@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -22,13 +22,13 @@
     :root{--rose:#e8357a;--rose-clair:#f06fa0;--rose-pale:#fde8f1;--cyan:#00b4d8;--blanc:#f4f4f6;--texte:#1c1c2e;--gris:#6b7280;--gris-clair:#e8e4ed;--radius:10px;--card-bg:#f4f4f6;--input-bg:#f4f4f6}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
-    body{font-family:'Nunito',sans-serif;color:var(--texte);background:radial-gradient(1000px 520px at 12% -10%, #fff 0%, transparent 62%),linear-gradient(180deg,#f7f6fa 0%,var(--blanc) 34%,#eef3f8 100%)}
+    body{font-family:'Nunito',sans-serif;color:var(--texte);background:radial-gradient(1000px 520px at 12% -10%, #fff 0%, transparent 62%),linear-gradient(180deg,#f7f6fa 0%,var(--blanc) 34%,#eef3f8 100%);overflow-x:hidden}
     a{color:inherit;text-decoration:none}
     img{max-width:100%;display:block;object-fit:cover}
     /* (les autres règles CSS peuvent être copiées si nécessaire, ici on se contente de la base) */
 
-    /* ── NAV (identique à index mais nous gérerons l'active en dur) */
-    nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232,53,122,.96);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:54px;box-shadow:0 3px 16px rgba(232,53,122,.35);gap:.75rem;backdrop-filter:saturate(1.1) blur(5px);border-bottom:1px solid rgba(255,255,255,.22)}
+    /* --- NAV (identique à index mais nous gérerons l'active en dur) */
+    nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232,53,122,.96);display:flex;align-items:center;justify-content:space-between;padding:0 1rem;height:54px;box-shadow:0 3px 16px rgba(232,53,122,.35);gap:.75rem;backdrop-filter:saturate(1.1) blur(5px);border-bottom:1px solid rgba(255,255,255,.22)}
     .nav-brand{display:flex;align-items:center;gap:.75rem;min-width:0;overflow:hidden}
     /* rectangular logo like on index (no rounding) */
     .nav-logo-img{height:48px;width:124px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
@@ -44,11 +44,10 @@
     .mobile-menu{display:none;position:fixed;top:54px;left:0;width:100%;z-index:999;background:var(--rose);padding:1rem 1.5rem 1.25rem;flex-direction:column;gap:1rem}
     .mobile-menu.open{display:flex}
     .mobile-menu a{color:var(--blanc);font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
-    @media(max-width:1200px){
+    @media(max-width:1024px){
       nav{padding:0 .9rem}
       .nav-links{display:none}
       .burger{display:flex}
-      .nav-title small{display:none}
     }
 
     /* Encadré de présentation World Tour */
@@ -60,6 +59,9 @@
     .tour-card p{margin-top:.35rem;color:var(--gris);font-size:.96rem;line-height:1.5}
     .tour-divider{height:2px;max-width:900px;margin:0 auto 1.25rem;background:linear-gradient(90deg,var(--rose-pale),var(--rose),var(--rose-pale));border-radius:2px;opacity:.8}
 
+    #documents{padding-top:80px;display:flex;flex-direction:column;align-items:center}
+    #documents .container{width:100%;max-width:1200px;margin:0 auto;padding:2rem 1rem}
+
     .viewer-actions{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin:0 0 1rem}
     .viewer-btn{display:inline-block;background:var(--rose);color:var(--blanc);padding:.78rem 1.25rem;border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;transition:background .2s,transform .2s;box-shadow:0 4px 16px rgba(232,53,122,.35);border:none;cursor:pointer}
     .viewer-btn:hover{background:#c9295e;transform:translateY(-2px)}
@@ -70,7 +72,8 @@
     #pageInfo{font-family:'Barlow Condensed',sans-serif;font-size:.86rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#3d3d59}
 
     .pdf-container{
-      width:min(1100px,96vw);
+      width:100%;
+      max-width:1100px;
       height:calc(100vh - 220px);
       min-height:640px;
       margin:0 auto 2rem;
@@ -85,20 +88,29 @@
     .pdf-overlay-btn{border:none;background:#fff;color:#2c2c43;padding:.35rem .68rem;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;box-shadow:0 2px 9px rgba(0,0,0,.12)}
     .pdf-overlay-btn:disabled{opacity:.45;cursor:not-allowed}
     .pdf-overlay-info{font-family:'Barlow Condensed',sans-serif;font-size:.76rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#3d3d59;padding:0 .2rem;min-width:90px;text-align:center}
-    .pdf-frame{position:absolute;inset:0;overflow:auto;padding:.7rem;background:#f8f8fb}
+    .pdf-frame{position:absolute;inset:0;overflow:auto;padding:.7rem;background:#f8f8fb;display:flex;justify-content:center;align-items:flex-start}
     .pdf-inline-iframe{display:none;width:100%;height:100%;border:0;background:#fff;border-radius:8px}
     .pdf-page{display:block;max-width:100%;height:auto;margin:0 auto;border:1px solid #dfd8e5;border-radius:8px;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.08)}
     #pdfStatus{text-align:center;font-size:.92rem;color:#6b7280;padding:.8rem .9rem}
     .pdf-container:fullscreen{width:100vw;height:100vh;max-width:none;margin:0;border-radius:0}
 
     /* Edge: document en mode image plus large */
-    body.edge-mode .pdf-container{width:min(1400px,99vw)}
-    body.edge-mode .pdf-frame{padding:.25rem}
-    body.edge-mode .pdf-page{width:100%;max-width:none}
+    body.edge-mode .pdf-container{width:100%;max-width:1400px}
+    body.edge-mode .pdf-frame{padding:0}
+    body.edge-mode .pdf-page{width:100%;max-width:none;border-radius:0}
     body.edge-mode .pdf-overlay-nav{display:flex}
 
+    /* En plein ecran, occuper toute la largeur sans marge */
+    body.edge-mode .pdf-container:fullscreen .pdf-frame{padding:0}
+    body.edge-mode .pdf-container:fullscreen .pdf-page{width:100%;max-width:none;border:0;border-radius:0;box-shadow:none}
+
     @media(max-width:900px){
-      .pdf-container{width:96vw;height:72vh;min-height:460px}
+      .pdf-container{height:72vh;min-height:460px}
+    }
+
+    @media(max-width:640px){
+      .nav-title{font-size:1rem}
+      #documents .container{padding:1rem .6rem}
     }
 
     /* Lecteur PDF OneDrive */
@@ -142,12 +154,12 @@
   <a href="index.html#agenda" onclick="closeMenu()">Agenda</a>
   <a href="index.html#galerie" onclick="closeMenu()">Galerie</a>
   <a href="index.html#contact" onclick="closeMenu()">Contact</a>
-  <a href="documents.html">WT2026</a>
-  <a href="news.html" style="color:#b3f0ff">📰 Actu vélo</a>
-  <a href="Flora 2026.html">Flora 2026</a>
+  <a href="documents.html" onclick="closeMenu()">WT2026</a>
+  <a href="news.html" style="color:#b3f0ff" onclick="closeMenu()">📰 Actu vélo</a>
+  <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
 </div>
-<section id="documents" style="padding-top:80px;display:flex;flex-direction:column;align-items:center;">
-  <div class="container" style="max-width:100%;margin:0 auto;padding:2rem;">
+<section id="documents">
+  <div class="container">
     <div class="tour-card">
       <div class="section-header">
         <div class="section-label">🌍 World Tour 2026</div>
@@ -188,6 +200,19 @@
   // Scripts pour le menu mobile
   function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
   function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobileMenu');
+    const burger = document.querySelector('.burger');
+    if (!menu.contains(e.target) && !burger.contains(e.target)) {
+      closeMenu();
+    }
+  });
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 1024) closeMenu();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeMenu();
+  });
 
   // Chrome: PDF inline. Edge/autres: viewer image robuste.
   (function initDocViewer(){
@@ -277,3 +302,10 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
