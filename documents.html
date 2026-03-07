@@ -309,9 +309,7 @@
       pdfStatus.textContent = 'Impossible de charger cette page du document.';
     });
     docImg.addEventListener('load', () => {
-      if (!isChrome) {
-        pdfStatus.textContent = '';
-      }
+      pdfStatus.textContent = '';
     });
 
     prevPageBtn.addEventListener('click', () => isAndroid ? queueRenderPage(currentPage - 1) : renderPageImage(currentPage - 1));
@@ -321,21 +319,25 @@
 
     if (useInlinePdf) {
       if (isAndroid && window.pdfjsLib) {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+        // Evite les echecs de chargement du worker CDN sur certains Android.
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '';
         docNav.style.display = 'flex';
         docImg.style.display = 'none';
         pdfInlineFrame.style.display = 'none';
         pdfCanvas.style.display = 'block';
         pdfStatus.textContent = '';
-        pdfjsLib.getDocument('pdf/WT2026.pdf').promise.then(doc => {
+        pdfjsLib.getDocument({ url: 'pdf/WT2026.pdf', disableWorker: true }).promise.then(doc => {
           pdfDoc = doc;
           effectiveTotalPages = doc.numPages || totalPages;
           queueRenderPage(1);
         }).catch(() => {
-          // Si PDF.js echoue, on revient au mode image robuste.
+          // Si PDF.js echoue, on bascule sur l'iframe PDF natif (pas de mode image type Edge).
+          docNav.style.display = 'none';
           pdfCanvas.style.display = 'none';
-          docImg.style.display = 'block';
-          renderPageImage(1);
+          docImg.style.display = 'none';
+          pdfInlineFrame.style.display = 'block';
+          pdfInlineFrame.src = pdfRelativeUrl;
+          pdfStatus.textContent = '';
         });
       } else {
         docNav.style.display = 'none';
