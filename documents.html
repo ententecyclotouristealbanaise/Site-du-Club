@@ -64,6 +64,11 @@
     .viewer-btn{display:inline-block;background:var(--rose);color:var(--blanc);padding:.78rem 1.25rem;border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;transition:background .2s,transform .2s;box-shadow:0 4px 16px rgba(232,53,122,.35);border:none;cursor:pointer}
     .viewer-btn:hover{background:#c9295e;transform:translateY(-2px)}
 
+    .doc-nav{display:flex;justify-content:center;align-items:center;gap:.65rem;flex-wrap:wrap;margin:0 auto .8rem}
+    .doc-nav-btn{border:none;background:#fff;color:#2c2c43;padding:.45rem .8rem;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:.84rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;box-shadow:0 2px 9px rgba(0,0,0,.12)}
+    .doc-nav-btn:disabled{opacity:.45;cursor:not-allowed}
+    #pageInfo{font-family:'Barlow Condensed',sans-serif;font-size:.86rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#3d3d59}
+
     .pdf-container{
       width:min(1100px,96vw);
       height:calc(100vh - 220px);
@@ -76,9 +81,16 @@
       box-shadow:0 8px 22px rgba(0,0,0,.12);
       background:#fff;
     }
-    .pdf-container iframe{border:0;position:absolute;top:0;left:0;width:100%;height:100%}
+    .pdf-frame{position:absolute;inset:0;overflow:auto;padding:.7rem;background:#f8f8fb}
+    .pdf-inline-iframe{display:none;width:100%;height:100%;border:0;background:#fff;border-radius:8px}
+    .pdf-page{display:block;max-width:100%;height:auto;margin:0 auto;border:1px solid #dfd8e5;border-radius:8px;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+    #pdfStatus{text-align:center;font-size:.92rem;color:#6b7280;padding:.8rem .9rem}
     .pdf-container:fullscreen{width:100vw;height:100vh;max-width:none;margin:0;border-radius:0}
-    .pdf-container:fullscreen iframe{height:100vh}
+
+    /* Edge: document en mode image plus large */
+    body.edge-mode .pdf-container{width:min(1400px,99vw)}
+    body.edge-mode .pdf-frame{padding:.25rem}
+    body.edge-mode .pdf-page{width:100%;max-width:none}
 
     @media(max-width:900px){
       .pdf-container{width:96vw;height:72vh;min-height:460px}
@@ -140,10 +152,19 @@
     </div>
     <div class="tour-divider"></div>
     <div class="viewer-actions">
-      <a class="viewer-btn" href="pdf/WT2026.pdf" target="_blank" rel="noopener">Ouvrir en plein ecran</a>
+      <button class="viewer-btn" id="openFullscreenBtn" type="button">Ouvrir en plein ecran</button>
+    </div>
+    <div class="doc-nav" aria-label="Navigation du document">
+      <button class="doc-nav-btn" id="prevPageBtn" type="button">Page precedente</button>
+      <span id="pageInfo">Page 1 / 85</span>
+      <button class="doc-nav-btn" id="nextPageBtn" type="button">Page suivante</button>
     </div>
     <div class="pdf-container" id="pdfContainer">
-      <iframe src="pdf/WT2026.pdf#view=FitH" title="Lecteur PDF World Tour 2026" allow="fullscreen" allowfullscreen loading="lazy"></iframe>
+      <div class="pdf-frame">
+        <iframe id="pdfInlineFrame" class="pdf-inline-iframe" title="Lecteur PDF WT2026" loading="lazy"></iframe>
+        <img id="docPageImage" class="pdf-page" src="pdf/wt2026-pages/page-001.png" alt="Page 1 du document WT2026" loading="eager" />
+      </div>
+      <p id="pdfStatus"></p>
     </div>
     <p style="text-align:center;color:#6b7280;font-size:.9rem;margin-top:-1rem;">PDF Élaboré par VELOFUTE.COM</p>
     <!-- lien déplacé après le footer pour plus de clarté -->
@@ -157,6 +178,73 @@
   // Scripts pour le menu mobile
   function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
   function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+
+  // Chrome: PDF inline. Edge/autres: viewer image robuste.
+  (function initDocViewer(){
+    const pdfStatus = document.getElementById('pdfStatus');
+    const openFullscreenBtn = document.getElementById('openFullscreenBtn');
+    const pdfContainer = document.getElementById('pdfContainer');
+    const docImg = document.getElementById('docPageImage');
+    const pdfInlineFrame = document.getElementById('pdfInlineFrame');
+    const prevPageBtn = document.getElementById('prevPageBtn');
+    const nextPageBtn = document.getElementById('nextPageBtn');
+    const pageInfo = document.getElementById('pageInfo');
+    const docNav = document.querySelector('.doc-nav');
+    const totalPages = 85;
+    let currentPage = 1;
+    const ua = navigator.userAgent;
+    const isEdge = /Edg\//.test(ua);
+    const isChrome = /Chrome\//.test(ua) && !isEdge;
+
+    if (isEdge) {
+      document.body.classList.add('edge-mode');
+    }
+
+    function pageSrc(pageNum) {
+      return `pdf/wt2026-pages/page-${String(pageNum).padStart(3, '0')}.png`;
+    }
+
+    function renderPage(pageNum) {
+      currentPage = Math.max(1, Math.min(totalPages, pageNum));
+      docImg.src = pageSrc(currentPage);
+      docImg.alt = `Page ${currentPage} du document WT2026`;
+      pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
+      prevPageBtn.disabled = currentPage <= 1;
+      nextPageBtn.disabled = currentPage >= totalPages;
+    }
+
+    docImg.addEventListener('error', () => {
+      pdfStatus.textContent = 'Impossible de charger cette page du document.';
+    });
+    docImg.addEventListener('load', () => {
+      if (!isChrome) {
+        pdfStatus.textContent = '';
+      }
+    });
+
+    prevPageBtn.addEventListener('click', () => renderPage(currentPage - 1));
+    nextPageBtn.addEventListener('click', () => renderPage(currentPage + 1));
+
+    if (isChrome) {
+      docNav.style.display = 'none';
+      docImg.style.display = 'none';
+      pdfInlineFrame.style.display = 'block';
+      pdfInlineFrame.src = 'pdf/WT2026.pdf#view=FitH';
+      pdfStatus.textContent = '';
+    } else {
+      renderPage(1);
+    }
+
+    openFullscreenBtn.addEventListener('click', async () => {
+      try {
+        if (pdfContainer.requestFullscreen) {
+          await pdfContainer.requestFullscreen();
+        }
+      } catch (e) {
+        pdfStatus.textContent = 'Le mode plein ecran n\'est pas disponible sur ce navigateur.';
+      }
+    });
+  })();
 
   // Afficher/masquer le bouton "vers le haut"
   window.addEventListener('scroll', () => {
