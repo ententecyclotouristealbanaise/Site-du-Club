@@ -233,6 +233,8 @@
     const ua = navigator.userAgent;
     const isEdge = /Edg\//.test(ua);
     const isChrome = /Chrome\//.test(ua) && !isEdge;
+    const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+    const useInlinePdf = isChrome && !isMobile;
 
     if (isEdge) {
       document.body.classList.add('edge-mode');
@@ -268,7 +270,7 @@
     overlayPrevBtn.addEventListener('click', () => renderPage(currentPage - 1));
     overlayNextBtn.addEventListener('click', () => renderPage(currentPage + 1));
 
-    if (isChrome) {
+    if (useInlinePdf) {
       docNav.style.display = 'none';
       docImg.style.display = 'none';
       pdfInlineFrame.style.display = 'block';
