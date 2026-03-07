@@ -193,8 +193,10 @@
     .info-item p{font-size:.9rem;color:var(--gris);line-height:1.6}
     .info-item strong{display:block;color:var(--texte);font-size:.95rem}
     /* Carte OSM */
-    .map-container{width:min(100%,420px);border-radius:var(--radius);overflow:hidden;margin-top:1.5rem;box-shadow:0 2px 16px rgba(0,0,0,.1)}
+    .map-gps-row{display:flex;align-items:flex-end;gap:1rem;margin-top:1.5rem;flex-wrap:nowrap}
+    .map-container{width:min(100%,420px);border-radius:var(--radius);overflow:hidden;margin-top:0;box-shadow:0 2px 16px rgba(0,0,0,.1)}
     .map-container iframe{width:100%;height:170px;border:none;display:block}
+    .gps-link{display:inline-flex;align-items:center;align-self:flex-end;gap:.6rem;background:var(--rose);color:var(--blanc);padding:.75rem 1.75rem;border-radius:var(--radius);font-family:'Nunito',sans-serif;font-weight:700;font-size:.95rem;transition:background .2s,transform .15s;box-shadow:0 4px 14px rgba(232,53,122,.3);white-space:nowrap}
     .contact-form{background:var(--gris-clair);border-radius:var(--radius);padding:2rem}
     .contact-form h3{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;text-transform:uppercase;margin-bottom:1.25rem}
     .form-group{margin-bottom:1rem}
@@ -241,7 +243,9 @@
       .nav-center{display:none}
       .burger{display:flex}
       .contact-grid{grid-template-columns:1fr}
+      .map-gps-row{flex-direction:column;align-items:stretch;gap:.85rem}
       .map-container{width:100%}
+      .map-container{margin-top:0}
       .map-container iframe{height:150px}
       .footer-inner{grid-template-columns:1fr}
       .form-row{grid-template-columns:1fr}
@@ -530,18 +534,20 @@ const ECTA_DATA = {
           <div class="info-icon">🌐</div>
           <div><strong>Site Clubeo</strong><p><a href="https://ecta-saintalban.clubeo.com" target="_blank" style="color:var(--rose);">ecta-saintalban.clubeo.com</a></p></div>
         </div>
-        <!-- Carte OpenStreetMap -->
-        <div class="map-container">
-          <iframe
-            src="https://www.openstreetmap.org/export/embed.html?bbox=-2.5483%2C48.5454%2C-2.5284%2C48.5654&layer=mapnik&marker=48.5554%2C-2.5384"
-            allowfullscreen
-            loading="lazy"
-            title="Point de départ ECTA Saint-Alban">
-          </iframe>
+        <div class="map-gps-row">
+          <!-- Carte OpenStreetMap -->
+          <div class="map-container">
+            <iframe
+              src="https://www.openstreetmap.org/export/embed.html?bbox=-2.5483%2C48.5454%2C-2.5284%2C48.5654&layer=mapnik&marker=48.5554%2C-2.5384"
+              allowfullscreen
+              loading="lazy"
+              title="Point de départ ECTA Saint-Alban">
+            </iframe>
+          </div>
+          <a class="gps-link" href="geo:48.5554,-2.5384?q=48.5554,-2.5384(Point+de+départ+ECTA)" target="_blank" onclick="if(!navigator.userAgent.match(/Android/i) && !navigator.userAgent.match(/iPhone|iPad/i)){ event.preventDefault(); window.open('https://www.google.com/maps/dir/?api=1&destination=48.5554,-2.5384','_blank'); }" onmouseover="this.style.background='#c9295e';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='var(--rose)';this.style.transform='none'">
+            Ouvrir dans mon GPS
+          </a>
         </div>
-        <a href="geo:48.5554,-2.5384?q=48.5554,-2.5384(Point+de+départ+ECTA)" target="_blank" onclick="if(!navigator.userAgent.match(/Android/i) && !navigator.userAgent.match(/iPhone|iPad/i)){ event.preventDefault(); window.open('https://www.google.com/maps/dir/?api=1&destination=48.5554,-2.5384','_blank'); }" style="display:inline-flex;align-items:center;gap:.6rem;margin-top:.85rem;background:var(--rose);color:var(--blanc);padding:.75rem 1.75rem;border-radius:var(--radius);font-family:'Nunito',sans-serif;font-weight:700;font-size:.95rem;transition:background .2s,transform .15s;box-shadow:0 4px 14px rgba(232,53,122,.3);" onmouseover="this.style.background='#c9295e';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='var(--rose)';this.style.transform='none'">
-          Ouvrir dans mon GPS
-        </a>
       </div>
       <div class="contact-form">
         <h3>📬 Nous écrire</h3>

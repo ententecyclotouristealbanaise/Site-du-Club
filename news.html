@@ -203,6 +203,16 @@
     #btnToTop{position:fixed;bottom:2rem;right:5.5rem;z-index:900;background:var(--cyan);color:var(--blanc);border:none;width:52px;height:52px;border-radius:50%;font-size:1.5rem;cursor:pointer;box-shadow:0 4px 16px rgba(0,180,216,.4);transition:transform .2s,opacity .2s;display:none;align-items:center;justify-content:center}
     #btnToTop:hover{transform:translateY(-3px)}
 
+    @media(max-width:1024px){
+      .topbar{padding:.45rem .8rem;height:auto;flex-wrap:wrap}
+      .tb-left{width:100%;justify-content:flex-start}
+      .tb-center{order:3;width:100%;justify-content:flex-end}
+      .tb-right{width:100%}
+      .topbar .nav-links{width:100%;margin-left:0;justify-content:center;flex-wrap:wrap;gap:.5rem}
+      .topbar .nav-links a{font-size:.7rem;padding:.22rem .4rem}
+      .tb-brand small{display:none}
+    }
+
     @media(max-width:640px){
       .topbar{padding:0 .8rem;height:auto;flex-wrap:wrap;padding:.45rem .8rem;gap:.35rem}
       .tb-brand small{display:none}

@@ -16,8 +16,6 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
   <style>
     /* Copier le contenu de <style> depuis index.html pour garder le thème */
@@ -62,11 +60,15 @@
     .tour-card p{margin-top:.35rem;color:var(--gris);font-size:.96rem;line-height:1.5}
     .tour-divider{height:2px;max-width:900px;margin:0 auto 1.25rem;background:linear-gradient(90deg,var(--rose-pale),var(--rose),var(--rose-pale));border-radius:2px;opacity:.8}
 
+    .viewer-actions{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin:0 0 1rem}
+    .viewer-btn{display:inline-block;background:var(--rose);color:var(--blanc);padding:.78rem 1.25rem;border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;transition:background .2s,transform .2s;box-shadow:0 4px 16px rgba(232,53,122,.35);border:none;cursor:pointer}
+    .viewer-btn:hover{background:#c9295e;transform:translateY(-2px)}
+
     .pdf-container{
-      width:560px;
-      height:320px;
-      max-width:92vw;
-      margin:2rem 0;
+      width:min(1100px,96vw);
+      height:calc(100vh - 220px);
+      min-height:640px;
+      margin:0 auto 2rem;
       position:relative;
       border:1px solid var(--gris-clair);
       border-radius:var(--radius);
@@ -75,9 +77,11 @@
       background:#fff;
     }
     .pdf-container iframe{border:0;position:absolute;top:0;left:0;width:100%;height:100%}
+    .pdf-container:fullscreen{width:100vw;height:100vh;max-width:none;margin:0;border-radius:0}
+    .pdf-container:fullscreen iframe{height:100vh}
 
     @media(max-width:900px){
-      .pdf-container{width:92vw;height:240px}
+      .pdf-container{width:96vw;height:72vh;min-height:460px}
     }
 
     /* Lecteur PDF OneDrive */
@@ -87,10 +91,10 @@
     .btn-flottant{position:fixed;bottom:2rem;z-index:900;background:var(--rose);color:var(--blanc);border:none;padding:.65rem 1.1rem;border-radius:2rem;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 16px rgba(232,53,122,.35);display:flex;align-items:center;gap:.5rem;transition:transform .2s,background .2s;text-decoration:none}
     .btn-flottant:hover{transform:translateY(-3px);background:#c9295e}
     #btnRetourLeft{left:1.25rem}
-    #btnRetourRight{right:1.25rem}
 
     /* BOUTON FLOTTANT VERS LE HAUT (optionnel) */
     #btnToTop{position:fixed;bottom:2rem;right:5.5rem;z-index:900;background:var(--cyan);color:var(--blanc);border:none;width:52px;height:52px;border-radius:50%;font-size:1.5rem;cursor:pointer;box-shadow:0 4px 16px rgba(0,180,216,.4);transition:transform .2s,opacity .2s;display:none;align-items:center;justify-content:center}
+    #btnToTop.visible{display:flex}
     #btnToTop:hover{transform:translateY(-3px)}
   </style>
 </head>
@@ -135,16 +139,18 @@
       <p>Retrouvez ici la version complète du dossier, consultable en ligne.</p>
     </div>
     <div class="tour-divider"></div>
-    <a href="https://1drv.ms/b/c/0061cf29663b27b0/IQS8NQ4RKWvtR7UjsL0cnkUrAVtvjEIrGKgJMX_E_46h5zY" target="_blank" rel="noopener" style="display:block;text-align:center;margin-bottom:1.5rem;"><span style="display:inline-block;background:var(--rose);color:var(--blanc);padding:.85rem 1.5rem;border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:background .2s;box-shadow:0 4px 16px rgba(232,53,122,.35);" onmouseover="this.style.background='#c9295e';this.style.transform='translateY(-2px)';this.style.transition='transform .2s'" onmouseout="this.style.background='var(--rose)';this.style.transform='translateY(0)'">🔗 Consulter en plein écran</span></a>
-    <div class="pdf-container">
-      <iframe src="https://1drv.ms/b/c/0061cf29663b27b0/IQS8NQ4RKWvtR7UjsL0cnkUrAVtvjEIrGKgJMX_E_46h5zY" title="Lecteur PDF World Tour 2026" allowfullscreen></iframe>
+    <div class="viewer-actions">
+      <a class="viewer-btn" href="pdf/WT2026.pdf" target="_blank" rel="noopener">Ouvrir en plein ecran</a>
     </div>
+    <div class="pdf-container" id="pdfContainer">
+      <iframe src="pdf/WT2026.pdf#view=FitH" title="Lecteur PDF World Tour 2026" allow="fullscreen" allowfullscreen loading="lazy"></iframe>
+    </div>
+    <p style="text-align:center;color:#6b7280;font-size:.9rem;margin-top:-1rem;">PDF Élaboré par VELOFUTE.COM</p>
     <!-- lien déplacé après le footer pour plus de clarté -->
   </div>
 </section>
 
 <a id="btnRetourLeft" class="btn-flottant" href="index.html" title="Accueil">← Accueil</a>
-<a id="btnRetourRight" class="btn-flottant" href="index.html" title="Accueil">Accueil →</a>
 <button id="btnToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">↑</button>
 
 <script>
