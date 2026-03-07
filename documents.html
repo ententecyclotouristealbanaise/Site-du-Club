@@ -232,14 +232,8 @@
     let currentPage = 1;
     const ua = navigator.userAgent;
     const isEdge = /Edg\//.test(ua);
-    const isAndroid = /Android/i.test(ua);
-    const isHttpContext = /^https?:/i.test(window.location.href);
     const pdfRelativeUrl = 'pdf/WT2026.pdf#view=FitH';
-    const pdfAbsoluteUrl = isHttpContext ? new URL('pdf/WT2026.pdf', window.location.href).href : '';
-    const androidViewerUrl = pdfAbsoluteUrl
-      ? ('https://docs.google.com/gview?embedded=1&url=' + encodeURIComponent(pdfAbsoluteUrl))
-      : pdfRelativeUrl;
-    // Vrai lecteur sur mobile; fallback image reserve a Edge.
+    // Vrai lecteur PDF natif sur tous les navigateurs hors Edge.
     const useInlinePdf = !isEdge;
 
     if (isEdge) {
@@ -280,7 +274,7 @@
       docNav.style.display = 'none';
       docImg.style.display = 'none';
       pdfInlineFrame.style.display = 'block';
-      pdfInlineFrame.src = isAndroid ? androidViewerUrl : pdfRelativeUrl;
+      pdfInlineFrame.src = pdfRelativeUrl;
       pdfStatus.textContent = '';
     } else {
       renderPage(1);
