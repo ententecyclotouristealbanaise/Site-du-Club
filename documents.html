@@ -199,6 +199,7 @@
 <button id="btnToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">↑</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/build/pdf.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
   // Scripts pour le menu mobile
   function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
@@ -331,14 +332,22 @@
           effectiveTotalPages = doc.numPages || totalPages;
           queueRenderPage(1);
         }).catch(() => {
-          // Si PDF.js echoue, on bascule sur l'iframe PDF natif (pas de mode image type Edge).
-          docNav.style.display = 'none';
+          // Si PDF.js echoue sur Android, eviter le placeholder iframe et revenir au mode pages.
+          docNav.style.display = 'flex';
           pdfCanvas.style.display = 'none';
-          docImg.style.display = 'none';
-          pdfInlineFrame.style.display = 'block';
-          pdfInlineFrame.src = pdfRelativeUrl;
-          pdfStatus.textContent = '';
+          docImg.style.display = 'block';
+          pdfInlineFrame.style.display = 'none';
+          renderPageImage(1);
+          pdfStatus.textContent = 'Mode simplifie active (lecteur PDF indisponible sur cet appareil).';
         });
+      } else if (isAndroid) {
+        // PDF.js non charge sur Android : fallback robuste en pages images.
+        docNav.style.display = 'flex';
+        pdfCanvas.style.display = 'none';
+        docImg.style.display = 'block';
+        pdfInlineFrame.style.display = 'none';
+        renderPageImage(1);
+        pdfStatus.textContent = 'Mode simplifie active (lecteur PDF indisponible sur cet appareil).';
       } else {
         docNav.style.display = 'none';
         docImg.style.display = 'none';
