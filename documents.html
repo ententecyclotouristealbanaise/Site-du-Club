@@ -238,8 +238,10 @@
     const isEdge = /Edg\//.test(ua);
     const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
     const pdfRelativeUrl = 'pdf/WT2026.pdf#view=FitH';
-    // Mobile: forcer le mode pages (robuste). Iframe PDF uniquement desktop hors Edge.
-    const useInlinePdf = !isEdge && !isMobile;
+    const pdfAbsoluteUrl = new URL('pdf/WT2026.pdf', window.location.href).href;
+    const pdfMobileViewerUrl = 'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(pdfAbsoluteUrl);
+    // Lecteur type PC sur mobile/desktop, fallback image reserve a Edge.
+    const useInlinePdf = !isEdge;
 
     if (isEdge) {
       document.body.classList.add('edge-mode');
@@ -282,7 +284,7 @@
       docImg.style.display = 'none';
       pdfCanvas.style.display = 'none';
       pdfInlineFrame.style.display = 'block';
-      pdfInlineFrame.src = pdfRelativeUrl;
+      pdfInlineFrame.src = isMobile ? pdfMobileViewerUrl : pdfRelativeUrl;
       pdfStatus.textContent = '';
     } else {
       pdfCanvas.style.display = 'none';
@@ -290,9 +292,7 @@
       docImg.style.display = 'block';
       docNav.style.display = 'flex';
       renderPageImage(1);
-      if (isMobile) {
-        pdfStatus.textContent = 'Mode mobile actif : affichage page par page pour une compatibilite maximale.';
-      }
+      pdfStatus.textContent = '';
     }
 
     openFullscreenBtn.addEventListener('click', async () => {
