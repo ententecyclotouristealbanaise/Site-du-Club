@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flora 2026 · ECTA Saint-Alban 22</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e8357a'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --rose:#e8357a;
+      --rose-clair:#f06fa0;
+      --cyan:#00b4d8;
+      --blanc:#f4f4f6;
+      --texte:#1c1c2e;
+      --gris-clair:#e8e4ed;
+      --radius:12px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:'Nunito',sans-serif;
+      color:var(--texte);
+      background:radial-gradient(900px 460px at 12% -6%, rgba(255,255,255,.25) 0%, transparent 62%),linear-gradient(145deg,var(--rose) 0%,var(--rose-clair) 42%,var(--cyan) 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:1.2rem;
+      padding-top:88px;
+    }
+    .topbar{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      z-index:1000;
+      background:rgba(232,53,122,.96);
+      height:54px;
+      box-shadow:0 3px 16px rgba(232,53,122,.35);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:.75rem;
+      padding:0 1rem;
+      border-bottom:1px solid rgba(255,255,255,.22);
+      backdrop-filter:saturate(1.1) blur(5px);
+    }
+    .tb-left{display:flex;align-items:center;gap:.8rem;min-width:0}
+    .tb-logo{height:48px;width:124px;border-radius:0;object-fit:contain;background:transparent;padding:0;flex-shrink:0;border:none;box-shadow:none}
+    .tb-right{display:flex;align-items:center;margin-left:auto}
+    .nav-links{display:flex;gap:1rem;list-style:none}
+    .nav-links a{color:var(--blanc);font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .45rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:border-color .2s,background .2s}
+    .nav-links a:hover,.nav-links a.active{border-color:var(--blanc);background:rgba(255,255,255,.12)}
+    .nav-links a.link-news{color:#b3f0ff}
+    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;margin-left:.6rem}
+    .burger span{display:block;width:24px;height:3px;background:var(--blanc);border-radius:2px}
+    .mobile-menu{display:none;position:fixed;top:54px;left:0;width:100%;z-index:999;background:var(--rose);padding:.9rem 1rem 1.1rem;flex-direction:column;gap:.75rem;box-shadow:0 8px 18px rgba(0,0,0,.18)}
+    .mobile-menu.open{display:flex}
+    .mobile-menu a{color:var(--blanc);font-size:.88rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    @media (max-width: 1024px){
+      .nav-links{display:none}
+      .burger{display:flex}
+      .tb-brand small{display:none}
+    }
+    .tb-brand{
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:1rem;
+      font-weight:800;
+      color:#fff;
+      letter-spacing:.02em;
+      line-height:1.05;
+    }
+    .tb-brand small{
+      display:block;
+      font-size:.73rem;
+      font-weight:600;
+      letter-spacing:.03em;
+      opacity:.95;
+    }
+    .panel{
+      width:min(900px,92vw);
+      background:rgba(244,244,246,.96);
+      border:1px solid var(--gris-clair);
+      border-radius:var(--radius);
+      box-shadow:0 14px 36px rgba(0,0,0,.18);
+      padding:2.2rem 1.4rem;
+      text-align:center;
+    }
+    .banner-wrap{
+      margin:0 auto 1.15rem;
+      background:#fff;
+      border:1px solid #e2dbe8;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 8px 24px rgba(0,0,0,.12);
+    }
+    .banner-wrap img{
+      display:block;
+      width:100%;
+      height:auto;
+    }
+    .banner-caption{
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:700;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:#3d3d59;
+      background:linear-gradient(90deg, rgba(232,53,122,.09), rgba(0,180,216,.09));
+      padding:.5rem .7rem;
+      font-size:.9rem;
+    }
+    .title{
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:clamp(2.2rem,8vw,5rem);
+      font-weight:800;
+      letter-spacing:.03em;
+      text-transform:uppercase;
+      line-height:1.02;
+      color:var(--rose);
+      text-shadow:0 2px 0 rgba(255,255,255,.55);
+    }
+    .subtitle{
+      margin-top:.85rem;
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:clamp(1.1rem,3.6vw,2rem);
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#3d3d59;
+    }
+    .quick-nav{
+      margin:1.2rem auto 0;
+      max-width:440px;
+      text-align:left;
+      background:rgba(255,255,255,.78);
+      border:1px solid var(--gris-clair);
+      border-radius:10px;
+      padding:.85rem .9rem;
+      box-shadow:0 8px 20px rgba(0,0,0,.08);
+    }
+    .quick-nav label{
+      display:block;
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:.82rem;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#3d3d59;
+      margin-bottom:.45rem;
+    }
+    .quick-nav select{
+      width:100%;
+      border:1px solid #d8d2df;
+      border-radius:8px;
+      padding:.65rem .7rem;
+      font-family:'Nunito',sans-serif;
+      font-size:.95rem;
+      color:#2c2c43;
+      background:#fff;
+      outline:none;
+    }
+    .quick-nav select:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,53,122,.16)}
+    .btn-flottant{
+      position:fixed;
+      bottom:2rem;
+      z-index:900;
+      background:var(--rose);
+      color:var(--blanc);
+      border:none;
+      padding:.65rem 1.1rem;
+      border-radius:2rem;
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:.85rem;
+      font-weight:700;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      cursor:pointer;
+      box-shadow:0 4px 16px rgba(232,53,122,.35);
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+      transition:transform .2s,background .2s;
+      text-decoration:none;
+    }
+    .btn-flottant:hover{transform:translateY(-3px);background:#c9295e}
+    #btnRetourLeft{left:1.25rem}
+    #btnRetourRight{right:1.25rem}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="tb-left">
+      <img class="tb-logo" src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
+      <div class="tb-brand">Entente Cyclotouriste Albanaise<small>Saint-Alban - Côtes-d'Armor</small></div>
+    </div>
+    <div class="tb-right">
+      <ul class="nav-links">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="index.html#leclub">Le Club</a></li>
+        <li><a href="index.html#actualites">Actualités</a></li>
+        <li><a href="index.html#agenda">Agenda</a></li>
+        <li><a href="index.html#galerie">Galerie</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li><a href="documents.html">WT2026</a></li>
+        <li><a class="link-news" href="news.html">📰 Actu vélo</a></li>
+        <li><a href="Flora 2026.html" class="active">Flora 2026</a></li>
+      </ul>
+      <div class="burger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" onclick="closeMenu()">Accueil</a>
+    <a href="index.html#leclub" onclick="closeMenu()">Le Club</a>
+    <a href="index.html#actualites" onclick="closeMenu()">Actualités</a>
+    <a href="index.html#agenda" onclick="closeMenu()">Agenda</a>
+    <a href="index.html#galerie" onclick="closeMenu()">Galerie</a>
+    <a href="index.html#contact" onclick="closeMenu()">Contact</a>
+    <a href="documents.html" onclick="closeMenu()">WT2026</a>
+    <a href="news.html" onclick="closeMenu()">Actu vélo</a>
+    <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
+  </div>
+  <main class="panel">
+    <figure class="banner-wrap">
+      <img src="images/banderole_rando_de_la_Flora_2026.webp" alt="Banderole officielle Randonnee de la Flora 2026" loading="eager" />
+      <figcaption class="banner-caption">Randonnee de la Flora - Saint-Alban - Dimanche 17 mai</figcaption>
+    </figure>
+  </main>
+
+  <a id="btnRetourLeft" class="btn-flottant" href="index.html" title="Accueil">← Accueil</a>
+  <a id="btnRetourRight" class="btn-flottant" href="index.html" title="Accueil">Accueil →</a>
+  <script>
+    function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+    function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+  </script>
+</body>
+</html>
