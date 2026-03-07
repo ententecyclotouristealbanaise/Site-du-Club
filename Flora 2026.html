@@ -27,27 +27,56 @@
       align-items:center;
       justify-content:center;
       padding:1.2rem;
-      padding-top:104px;
+      padding-top:88px;
     }
-    nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232,53,122,.96);display:flex;align-items:center;justify-content:flex-start;padding:0 2rem;height:68px;box-shadow:0 3px 16px rgba(232,53,122,.35);backdrop-filter:saturate(1.1) blur(5px);border-bottom:1px solid rgba(255,255,255,.22);transition:box-shadow .2s}
-    .nav-brand{display:flex;align-items:center;gap:.75rem;min-width:0;overflow:hidden}
-    .nav-logo-img{height:50px;width:130px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
-    .nav-title{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:800;color:var(--blanc);letter-spacing:.02em;line-height:1.2;min-width:0}
-    .nav-title small{display:block;font-size:.65rem;font-weight:400;letter-spacing:.1em;opacity:.85}
-    .nav-center{display:flex;align-items:center;justify-content:center;flex:1;min-width:0;pointer-events:none}
-    #clock{font-family:'Barlow Condensed',sans-serif;font-size:.74rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--blanc);white-space:nowrap;opacity:.95}
-    .nav-links{display:flex;gap:1.25rem;list-style:none;margin-left:auto}
-    .nav-links a{color:var(--blanc);font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.32rem .5rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:border-color .2s,background .2s}
+    .topbar{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      z-index:1000;
+      background:rgba(232,53,122,.96);
+      height:54px;
+      box-shadow:0 3px 16px rgba(232,53,122,.35);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:.75rem;
+      padding:0 1rem;
+      border-bottom:1px solid rgba(255,255,255,.22);
+      backdrop-filter:saturate(1.1) blur(5px);
+    }
+    .tb-left{display:flex;align-items:center;gap:.8rem;min-width:0}
+    .tb-logo{height:48px;width:124px;border-radius:0;object-fit:contain;background:transparent;padding:0;flex-shrink:0;border:none;box-shadow:none}
+    .tb-right{display:flex;align-items:center;margin-left:auto}
+    .nav-links{display:flex;gap:1rem;list-style:none}
+    .nav-links a{color:var(--blanc);font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .45rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:border-color .2s,background .2s}
     .nav-links a:hover,.nav-links a.active{border-color:var(--blanc);background:rgba(255,255,255,.12)}
-    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;margin-left:auto}
-    .burger span{display:block;width:26px;height:3px;background:var(--blanc);border-radius:2px}
-    .mobile-menu{display:none;position:fixed;top:68px;left:0;width:100%;z-index:999;background:var(--rose);padding:1rem 2rem 1.5rem;flex-direction:column;gap:1rem}
+    .nav-links a.link-news{color:#b3f0ff}
+    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;margin-left:.6rem}
+    .burger span{display:block;width:24px;height:3px;background:var(--blanc);border-radius:2px}
+    .mobile-menu{display:none;position:fixed;top:54px;left:0;width:100%;z-index:999;background:var(--rose);padding:.9rem 1rem 1.1rem;flex-direction:column;gap:.75rem;box-shadow:0 8px 18px rgba(0,0,0,.18)}
     .mobile-menu.open{display:flex}
-    .mobile-menu a{color:var(--blanc);font-size:1rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-    @media (max-width: 768px){
+    .mobile-menu a{color:var(--blanc);font-size:.88rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    @media (max-width: 1024px){
       .nav-links{display:none}
-      .nav-center{display:none}
       .burger{display:flex}
+      .tb-brand small{display:none}
+    }
+    .tb-brand{
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:1rem;
+      font-weight:800;
+      color:#fff;
+      letter-spacing:.02em;
+      line-height:1.05;
+    }
+    .tb-brand small{
+      display:block;
+      font-size:.73rem;
+      font-weight:600;
+      letter-spacing:.03em;
+      opacity:.95;
     }
     .panel{
       width:min(900px,92vw);
@@ -134,32 +163,29 @@
     .btn-flottant:hover{transform:translateY(-3px);background:#c9295e}
     #btnRetourLeft{left:1.25rem}
     #btnRetourRight{right:1.25rem}
-    @media(max-width:640px){
-      #btnRetourLeft{left:.8rem;bottom:1.2rem}
-      #btnRetourRight{right:.8rem;bottom:1.2rem}
-    }
   </style>
 </head>
 <body>
-  <nav>
-    <div class="nav-brand">
-      <img class="nav-logo-img" src="images/logo_ECTA.png" alt="Logo ECTA Saint-Alban" />
-      <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban · Côtes-d'Armor</small></div>
+  <div class="topbar">
+    <div class="tb-left">
+      <img class="tb-logo" src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
+      <div class="tb-brand">Entente Cyclotouriste Albanaise<small>Saint-Alban - Côtes-d'Armor</small></div>
     </div>
-    <div class="nav-center"><span id="clock"></span></div>
-    <ul class="nav-links">
-      <li><a href="index.html">Accueil</a></li>
-      <li><a href="index.html#leclub">Le Club</a></li>
-      <li><a href="index.html#actualites">Actualités</a></li>
-      <li><a href="index.html#agenda">Agenda</a></li>
-      <li><a href="index.html#galerie">Galerie</a></li>
-      <li><a href="index.html#contact">Contact</a></li>
-      <li><a href="documents.html">WT2026</a></li>
-      <li><a href="news.html" style="color:#b3f0ff">📰 Actu vélo</a></li>
-      <li><a href="Flora 2026.html" class="active">Flora 2026</a></li>
-    </ul>
-    <div class="burger" onclick="toggleMenu()" aria-label="Ouvrir le menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
-  </nav>
+    <div class="tb-right">
+      <ul class="nav-links">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="index.html#leclub">Le Club</a></li>
+        <li><a href="index.html#actualites">Actualités</a></li>
+        <li><a href="index.html#agenda">Agenda</a></li>
+        <li><a href="index.html#galerie">Galerie</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li><a href="documents.html">WT2026</a></li>
+        <li><a class="link-news" href="news.html">📰 Actu vélo</a></li>
+        <li><a href="Flora 2026.html" class="active">Flora 2026</a></li>
+      </ul>
+      <div class="burger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></div>
+    </div>
+  </div>
   <div class="mobile-menu" id="mobileMenu">
     <a href="index.html" onclick="closeMenu()">Accueil</a>
     <a href="index.html#leclub" onclick="closeMenu()">Le Club</a>
@@ -168,7 +194,7 @@
     <a href="index.html#galerie" onclick="closeMenu()">Galerie</a>
     <a href="index.html#contact" onclick="closeMenu()">Contact</a>
     <a href="documents.html" onclick="closeMenu()">WT2026</a>
-    <a href="news.html" onclick="closeMenu()" style="color:#b3f0ff">📰 Actu vélo</a>
+    <a href="news.html" onclick="closeMenu()">Actu vélo</a>
     <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
   </div>
   <main class="panel">
@@ -192,42 +218,8 @@
   <a id="btnRetourLeft" class="btn-flottant" href="index.html" title="Accueil">← Accueil</a>
   <a id="btnRetourRight" class="btn-flottant" href="index.html" title="Accueil">Accueil →</a>
   <script>
-    function updateNavClock() {
-      const el = document.getElementById('clock');
-      if (!el) return;
-      const now = new Date();
-      const date = now.toLocaleDateString('fr-FR', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
-      const time = now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-      el.textContent = `${date} · ${time}`;
-    }
-    updateNavClock();
-    setInterval(updateNavClock, 1000);
-
     function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
     function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
-
-    document.addEventListener('click', function(e) {
-      const menu = document.getElementById('mobileMenu');
-      const burger = document.querySelector('.burger');
-      if (!menu || !burger) return;
-      if (!menu.contains(e.target) && !burger.contains(e.target)) {
-        closeMenu();
-      }
-    });
-
-    const burgerBtn = document.querySelector('.burger');
-    if (burgerBtn) {
-      burgerBtn.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          toggleMenu();
-        }
-      });
-    }
-
-    window.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeMenu();
-    });
   </script>
 </body>
 </html>
