@@ -367,32 +367,25 @@ const TV_THEME = { id:'t6', label:'📺 Courses à la TV', cls:'t2' };
 // Les diffuseurs/horaires peuvent evoluer : verifier le lien source le jour J.
 const TV_GUIDE = [
   {
-    course:'Strade Bianche',
-    jour:'Samedi 7 mars 2026',
-    heure:'14:00',
-    chaine:'Eurosport / Max',
-    source:'https://www.eurosport.fr/cyclisme/'
-  },
-  {
-    course:'Paris-Nice (Étape 1)',
-    jour:'Dimanche 8 mars 2026',
-    heure:'15:15',
-    chaine:'France 3 + Eurosport / Max',
-    source:'https://www.france.tv/sport/cyclisme/'
-  },
-  {
-    course:'Tirreno-Adriatico (Étape 1)',
-    jour:'Lundi 9 mars 2026',
-    heure:'14:30',
-    chaine:'Eurosport / Max',
-    source:'https://www.eurosport.fr/cyclisme/'
-  },
-  {
     course:'Milan-San Remo',
     jour:'Samedi 21 mars 2026',
     heure:'14:30',
     chaine:'Eurosport / Max',
+    source:'https://www.eurosport.fr/cyclisme/'
+  },
+  {
+    course:'E3 Classic',
+    jour:'Vendredi 27 mars 2026',
+    heure:'14:15',
+    chaine:'Eurosport / Max',
     source:'https://www.programme-tv.net/programme/sport/r303-cyclisme/'
+  },
+  {
+    course:'Gent-Wevelgem',
+    jour:'Dimanche 29 mars 2026',
+    heure:'14:30',
+    chaine:'Eurosport / Max',
+    source:'https://www.eurosport.fr/cyclisme/'
   },
   {
     course:'Tour des Flandres',
@@ -405,7 +398,42 @@ const TV_GUIDE = [
     course:'Paris-Roubaix',
     jour:'Dimanche 12 avril 2026',
     heure:'13:30',
-    chaine:'France 3 + Eurosport / Max',
+    chaine:'Eurosport / Max',
+    source:'https://www.france.tv/sport/cyclisme/'
+  },
+  {
+    course:'Flèche Wallonne',
+    jour:'Mercredi 22 avril 2026',
+    heure:'14:00',
+    chaine:'Eurosport / Max',
+    source:'https://www.eurosport.fr/cyclisme/'
+  },
+  {
+    course:'Liège-Bastogne-Liège',
+    jour:'Dimanche 26 avril 2026',
+    heure:'13:30',
+    chaine:'Eurosport / Max',
+    source:'https://www.eurosport.fr/cyclisme/'
+  },
+  {
+    course:'Giro d\'Italia (Étape 1)',
+    jour:'Samedi 9 mai 2026',
+    heure:'14:00',
+    chaine:'Eurosport / Max',
+    source:'https://www.eurosport.fr/cyclisme/'
+  },
+  {
+    course:'Critérium du Dauphiné (Étape 1)',
+    jour:'Dimanche 7 juin 2026',
+    heure:'15:00',
+    chaine:'Eurosport / Max',
+    source:'https://www.france.tv/sport/cyclisme/'
+  },
+  {
+    course:'Tour de France (Étape 1)',
+    jour:'Samedi 4 juillet 2026',
+    heure:'14:00',
+    chaine:'France TV + Eurosport / Max',
     source:'https://www.france.tv/sport/cyclisme/'
   }
 ];
@@ -453,53 +481,102 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeMenu();
 });
 
+const CACHE_KEY = 'ecta_news_cache_v1';
+
 const PROXIES = [
-  // Proxy 1 : allorigins /raw — retourne le XML directement
-  feedUrl => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(feedUrl),
-  // Proxy 2 : corsproxy.io
-  feedUrl => 'https://corsproxy.io/?' + encodeURIComponent(feedUrl),
-  // Proxy 3 : allorigins /get — retourne JSON avec .contents
-  feedUrl => 'https://api.allorigins.win/get?url=' + encodeURIComponent(feedUrl),
+  { name:'allorigins-raw', mode:'xml', build: feedUrl => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(feedUrl) },
+  { name:'corsproxy',      mode:'xml', build: feedUrl => 'https://corsproxy.io/?' + encodeURIComponent(feedUrl) },
+  { name:'allorigins-get', mode:'json-contents', build: feedUrl => 'https://api.allorigins.win/get?url=' + encodeURIComponent(feedUrl) },
+  { name:'codetabs',       mode:'xml', build: feedUrl => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(feedUrl) },
+  { name:'thingproxy',     mode:'xml', build: feedUrl => 'https://thingproxy.freeboard.io/fetch/' + feedUrl },
+  // Secours: transforme le flux RSS en JSON exploitable directement.
+  { name:'rss2json',       mode:'rss2json', build: feedUrl => 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feedUrl) },
 ];
+
+function parseXmlItems(xmlStr){
+  const doc   = new DOMParser().parseFromString(xmlStr, 'text/xml');
+  const items = [...doc.querySelectorAll('item')];
+  if (items.length === 0) throw new Error('Aucun article dans le flux');
+
+  return items.map(el => {
+    const rawTitle = el.querySelector('title')?.textContent || '';
+    const m      = rawTitle.match(/^(.*?)\s+-\s+([^-]+)$/s);
+    const title  = m ? m[1].trim() : rawTitle.trim();
+    const via    = m ? m[2].trim() : '';
+    const link   = el.querySelector('link')?.textContent?.trim()
+                || el.querySelector('link')?.getAttribute('href') || '#';
+    const pubDate = el.querySelector('pubDate')?.textContent || '';
+    const desc    = stripHtml(el.querySelector('description')?.textContent || '');
+    return { title, via, link, pubDate, desc };
+  });
+}
+
+function parseRss2JsonItems(json){
+  const arr = Array.isArray(json?.items) ? json.items : [];
+  if (arr.length === 0) throw new Error('Aucun article dans le flux');
+
+  return arr.map(it => {
+    const rawTitle = (it?.title || '').trim();
+    const m      = rawTitle.match(/^(.*?)\s+-\s+([^-]+)$/s);
+    const title  = m ? m[1].trim() : rawTitle;
+    const via    = m ? m[2].trim() : (it?.author || '');
+    const link   = it?.link || '#';
+    const pubDate = it?.pubDate || '';
+    const desc    = stripHtml(it?.description || it?.content || '');
+    return { title, via, link, pubDate, desc };
+  });
+}
+
+function saveCache(items){
+  try {
+    if (!Array.isArray(items) || items.length === 0) return;
+    const payload = {
+      savedAt: Date.now(),
+      items
+    };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
+  } catch (_) {}
+}
+
+function loadCache(){
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !Array.isArray(parsed.items) || parsed.items.length === 0) return null;
+    return parsed;
+  } catch (_) {
+    return null;
+  }
+}
 
 async function fetchRss(feedUrl) {
   let lastErr = null;
   for (let i = 0; i < PROXIES.length; i++) {
     try {
-      const proxyUrl = PROXIES[i](feedUrl);
+      const proxy = PROXIES[i];
+      const proxyUrl = proxy.build(feedUrl);
       const resp = await fetch(proxyUrl, { signal: AbortSignal.timeout(12000) });
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
 
-      let xmlStr;
-      // Proxy 3 retourne du JSON
-      if (i === 2) {
+      if (proxy.mode === 'json-contents') {
         const json = await resp.json();
-        xmlStr = json.contents;
-      } else {
-        xmlStr = await resp.text();
+        const xmlStr = json?.contents || '';
+        if (!xmlStr || xmlStr.length < 100) throw new Error('Réponse vide');
+        return parseXmlItems(xmlStr);
       }
+
+      if (proxy.mode === 'rss2json') {
+        const json = await resp.json();
+        return parseRss2JsonItems(json);
+      }
+
+      const xmlStr = await resp.text();
       if (!xmlStr || xmlStr.length < 100) throw new Error('Réponse vide');
-
-      // Parser le XML
-      const doc   = new DOMParser().parseFromString(xmlStr, 'text/xml');
-      const items = [...doc.querySelectorAll('item')];
-      if (items.length === 0) throw new Error('Aucun article dans le flux');
-
-      return items.map(el => {
-        const rawTitle = el.querySelector('title')?.textContent || '';
-        // Google News met la source à la fin : "Titre - NomDuSite"
-        const m      = rawTitle.match(/^(.*?)\s+-\s+([^-]+)$/s);
-        const title  = m ? m[1].trim() : rawTitle.trim();
-        const via    = m ? m[2].trim() : '';
-        const link   = el.querySelector('link')?.textContent?.trim()
-                    || el.querySelector('link')?.getAttribute('href') || '#';
-        const pubDate = el.querySelector('pubDate')?.textContent || '';
-        const desc    = stripHtml(el.querySelector('description')?.textContent || '');
-        return { title, via, link, pubDate, desc };
-      });
+      return parseXmlItems(xmlStr);
 
     } catch (e) {
-      lastErr = e;
+      lastErr = new Error((PROXIES[i]?.name || 'proxy') + ' : ' + e.message);
       // Passer au proxy suivant
     }
   }
@@ -707,6 +784,18 @@ async function loadAll() {
     }
     renderGrid();
   }));
+
+  if (allItems.length > 0) {
+    saveCache(allItems);
+  } else {
+    const cache = loadCache();
+    if (cache && cache.items?.length) {
+      allItems = cache.items;
+      debugLines.push('ℹ mode cache : ' + cache.items.length + ' articles');
+      document.getElementById('last-upd').textContent =
+        'Mode cache · ' + new Date(cache.savedAt).toLocaleString('fr-FR');
+    }
+  }
 
   // Rendu final
   renderGrid();
