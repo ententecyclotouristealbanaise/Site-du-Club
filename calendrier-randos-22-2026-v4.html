@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Randonnées 2026 – Côtes-d'Armor | ECTA Saint-Alban</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy:#e8357a; --navy-d:#c9295e; --navy-m:#00b4d8;
+      --rose:#e8357a; --rose-s:#fde8f1;
+      --bg:#f4f4f6; --bg2:#eef3f8; --white:#ffffff;
+      --border:#e8e4ed; --border-l:#f0edf4;
+      --txt:#1c1c2e; --muted:#6b7280;
+      --green:#1d7a3a; --green-s:#e5f4eb;
+      --amber:#b45309; --amber-s:#fef3c7;
+      --r:10px; --r-sm:6px;
+      --sh:0 2px 14px rgba(232,53,122,.12);
+      --sh-h:0 6px 24px rgba(232,53,122,.2);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;font-size:15px;line-height:1.45;padding-top:54px;}
+
+    /* ──── TOP NAV ──── */
+    .top-nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232,53,122,.96);display:flex;align-items:center;justify-content:space-between;padding:0 1rem;height:54px;box-shadow:0 3px 16px rgba(232,53,122,.35);gap:.75rem;backdrop-filter:saturate(1.1) blur(5px);border-bottom:1px solid rgba(255,255,255,.22)}
+    .nav-brand{display:flex;align-items:center;gap:.75rem;min-width:0;overflow:hidden}
+    .nav-logo-img{height:48px;width:124px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
+    .nav-title{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:#f4f4f6;letter-spacing:.02em;line-height:1.05;min-width:0;white-space:normal}
+    .nav-title small{display:block;font-size:.73rem;font-weight:600;letter-spacing:.03em;opacity:.95;margin-left:0;text-transform:none}
+    .top-nav .nav-links{display:flex;gap:1rem;list-style:none;margin-left:auto}
+    .top-nav .nav-links a{color:#f4f4f6;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .45rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:border-color .2s,background .2s}
+    .top-nav .nav-links a:hover,.top-nav .nav-links a.active{border-color:#f4f4f6;background:rgba(255,255,255,.12)}
+    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer}
+    .burger span{display:block;width:26px;height:3px;background:#f4f4f6;border-radius:2px}
+    .mobile-menu{display:none;position:fixed;top:54px;left:0;width:100%;z-index:999;background:var(--rose);padding:1rem 1.5rem 1.25rem;flex-direction:column;gap:1rem;box-shadow:0 8px 18px rgba(0,0,0,.18)}
+    .mobile-menu.open{display:flex}
+    .mobile-menu a{color:#f4f4f6;font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;text-decoration:none}
+
+    /* ──── HEADER ──── */
+    .site-header{
+      background:linear-gradient(140deg,var(--navy-d) 0%,var(--navy) 50%,var(--navy-m) 100%);
+      color:#fff;padding:44px 24px 36px;text-align:center;position:relative;overflow:hidden;
+    }
+    .site-header::before{content:'';position:absolute;top:-100px;right:-100px;width:340px;height:340px;border-radius:50%;background:rgba(214,50,94,.12);}
+    .site-header::after{content:'';position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);}
+    .header-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:5px 16px;border-radius:20px;margin-bottom:18px;backdrop-filter:blur(4px);}
+    .header-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(26px,5.5vw,44px);font-weight:800;line-height:1.1;margin-bottom:10px;letter-spacing:.3px;text-transform:uppercase;}
+    .header-title em{color:#f9b8cc;font-style:normal;}
+    .header-sub{font-size:15px;opacity:.85;max-width:560px;margin:0 auto 24px;line-height:1.55;}
+    .header-pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+    .hpill{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:12px;font-weight:500;padding:4px 12px;border-radius:16px;}
+
+    /* ──── STATS BAR ──── */
+    .stats-bar{background:var(--white);border-bottom:2px solid var(--border);padding:0 20px;}
+    .stats-inner{max-width:1160px;margin:0 auto;display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none;}
+    .stats-inner::-webkit-scrollbar{display:none;}
+    .stat-pill{display:flex;align-items:center;gap:7px;padding:14px 18px;border-right:1px solid var(--border-l);white-space:nowrap;flex-shrink:0;}
+    .stat-pill:last-child{border-right:none;}
+    .stat-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+    .stat-label{font-size:12px;font-weight:500;color:var(--muted);}
+    .stat-num{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--navy);margin-left:4px;}
+
+    /* ──── NAV MOIS ──── */
+    .month-nav{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:54px;z-index:100;box-shadow:0 2px 8px rgba(232,53,122,.12);}
+    .month-nav-inner{max-width:1160px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none;}
+    .month-nav-inner::-webkit-scrollbar{display:none;}
+    .mnav-btn{flex-shrink:0;padding:10px 14px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .18s;white-space:nowrap;}
+    .mnav-btn:hover{color:var(--navy);}
+    .mnav-btn.active{color:var(--navy);border-bottom-color:var(--rose);}
+
+    /* ──── FILTRES ──── */
+    .filter-wrap{max-width:1160px;margin:20px auto 0;padding:0 20px;}
+    .filter-section{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;}
+    .fsep{width:1px;height:28px;background:var(--border);flex-shrink:0;}
+    .filter-group{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+    .filter-group-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-right:2px;}
+    .chip{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);color:var(--txt);font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .16s;user-select:none;}
+    .chip:hover{border-color:var(--navy);color:var(--navy);}
+    .chip.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:600;}
+    .chip.on.rose-chip{background:var(--rose);border-color:var(--rose);}
+
+    /* Search */
+    .search-wrap{flex:1;min-width:180px;}
+    .search-input{width:100%;padding:7px 12px 7px 34px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:'Nunito',sans-serif;font-size:13px;color:var(--txt);background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7d95' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;transition:border-color .15s;}
+    .search-input:focus{outline:none;border-color:var(--navy);}
+    .search-input::placeholder{color:var(--muted);}
+
+    /* ──── RÉSULTATS BAR ──── */
+    .results-bar{max-width:1160px;margin:14px auto 8px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+    .results-count{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.04em;color:var(--muted);}
+    .results-count b{color:var(--navy);font-size:18px;}
+    .source-note{font-size:11px;color:var(--muted);}
+
+    /* ──── GROUPE MOIS ──── */
+    .month-group{max-width:1160px;margin:0 auto 24px;padding:0 20px;}
+    .month-head-row{display:flex;align-items:center;gap:12px;margin-bottom:0;}
+    .month-head{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#fff;background:var(--navy);padding:6px 16px 6px 14px;border-radius:7px 7px 0 0;display:inline-flex;align-items:center;gap:7px;}
+    .month-count-badge{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;background:rgba(255,255,255,.2);color:#fff;padding:1px 8px;border-radius:10px;margin-left:4px;}
+    .month-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;background:var(--white);border:1.5px solid var(--border);border-radius:0 var(--r) var(--r) var(--r);padding:14px;}
+
+    /* ──── CARD ──── */
+    .card{border:1.5px solid var(--border-l);border-radius:var(--r);padding:15px;background:var(--white);transition:box-shadow .2s,border-color .2s,transform .15s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:10px;}
+    .card:hover{box-shadow:var(--sh-h);border-color:var(--navy-m);transform:translateY(-2px);}
+    .card.ecta{border-color:var(--rose);background:var(--rose-s);}
+    .card.ecta::after{content:'⭐ ECTA';position:absolute;top:0;right:0;background:var(--rose);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:.5px;padding:4px 10px;border-radius:0 var(--r) 0 var(--r);}
+
+    /* Date badge */
+    .date-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 10px;border-radius:6px;}
+    .date-badge.ok{background:var(--green-s);color:var(--green);}
+    .date-badge.tbc{background:var(--amber-s);color:var(--amber);}
+
+    .card-name{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--navy);line-height:1.2;letter-spacing:.01em;}
+    .card-loc{font-size:13px;color:var(--muted);display:flex;align-items:flex-start;gap:4px;line-height:1.45;}
+    .card-info{font-size:12px;color:var(--muted);font-style:italic;line-height:1.55;}
+
+    /* Disciplines */
+    .discips{display:flex;flex-direction:column;gap:5px;background:var(--bg);border-radius:6px;padding:9px 10px;}
+    .dr{display:flex;align-items:flex-start;gap:7px;}
+    .dl{font-weight:600;font-size:10px;white-space:nowrap;padding:2px 7px;border-radius:8px;letter-spacing:.3px;flex-shrink:0;}
+    .d-route{background:#ddeeff;color:#1255aa;}
+    .d-vtt{background:#d4eed8;color:#1d6e30;}
+    .d-gravel{background:#fde8cc;color:#b04000;}
+    .d-marche{background:#fad5e4;color:#922050;}
+    .d-trail{background:#ede0f8;color:#6017a3;}
+    .dkm{color:var(--muted);font-size:12px;line-height:1.55;}
+
+    /* Footer card */
+    .card-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:8px;border-top:1px solid var(--border-l);}
+    .ptag{font-size:12px;font-weight:700;color:var(--navy);background:var(--bg2);border-radius:8px;padding:3px 9px;white-space:nowrap;}
+    .links{display:flex;gap:5px;flex-wrap:wrap;}
+    .bl{font-size:11px;font-weight:700;padding:4px 9px;border-radius:8px;text-decoration:none;display:inline-flex;align-items:center;gap:3px;transition:opacity .15s;white-space:nowrap;}
+    .bl:hover{opacity:.8;}
+    .bl-asso{background:var(--navy);color:#fff;}
+    .bl-mail{background:var(--bg2);color:var(--navy);border:1px solid var(--border);}
+    .bl-miles{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+
+    /* ──── NO RESULTS ──── */
+    .no-results{max-width:1160px;margin:20px auto;padding:50px 20px;text-align:center;color:var(--muted);font-size:15px;display:none;}
+    .no-results-icon{font-size:48px;margin-bottom:12px;}
+
+    /* ──── BACK TO TOP ──── */
+    #btt{position:fixed;bottom:24px;right:24px;width:42px;height:42px;background:var(--navy);color:#fff;border:none;border-radius:50%;font-size:18px;cursor:pointer;box-shadow:var(--sh-h);display:none;align-items:center;justify-content:center;transition:all .2s;z-index:999;}
+    #btt:hover{background:var(--rose);transform:translateY(-2px);}
+    #btt.show{display:flex;}
+
+    .btn-flottant{position:fixed;bottom:24px;left:24px;z-index:900;background:var(--rose);color:var(--white);border:none;padding:.55rem 1rem;border-radius:2rem;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 3px 14px rgba(232,53,122,.35);display:flex;align-items:center;gap:.4rem;transition:all .2s;text-decoration:none;white-space:nowrap;}
+    .btn-flottant:hover{opacity:1;transform:translateY(-2px);background:#c9295e;}
+
+    /* ──── FOOTER ──── */
+    footer{background:var(--white);border-top:1px solid var(--border);padding:24px 20px;text-align:center;font-size:12px;color:var(--muted);margin-top:24px;}
+    footer a{color:var(--navy);text-decoration:none;}
+    footer a:hover{text-decoration:underline;}
+    footer strong{color:var(--navy);}
+
+    .hidden{display:none!important;}
+    @media(max-width:1024px){.top-nav{padding:0 .9rem}.top-nav .nav-links{display:none}.burger{display:flex}}
+    @media(max-width:640px){.month-cards{grid-template-columns:1fr;}.stats-bar{display:none;}.filter-section{gap:10px;}.fsep{display:none;}#btt{bottom:80px;right:14px}.btn-flottant{left:14px;bottom:14px;font-size:.72rem;padding:.45rem .8rem;}.nav-title{font-size:1rem}}
+  </style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="nav-brand">
+    <img class="nav-logo-img" src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
+    <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban - Côtes-d'Armor</small></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="index.html#leclub">Le Club</a></li>
+    <li><a href="index.html#actualites">Actualités</a></li>
+    <li><a href="index.html#agenda">Agenda</a></li>
+    <li><a href="index.html#galerie">Galerie</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+    <li><a href="documents.html">WT2026</a></li>
+    <li><a href="news.html" style="color:#b3f0ff">📰 Actu vélo</a></li>
+    <li><a href="calendrier-randos-22-2026-v4.html" class="active">📅 Agenda Randos 2026</a></li>
+    <li><a href="Flora 2026.html">Flora 2026</a></li>
+  </ul>
+  <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html#accueil" onclick="closeMenu()">Accueil</a>
+  <a href="index.html#leclub" onclick="closeMenu()">Le Club</a>
+  <a href="index.html#actualites" onclick="closeMenu()">Actualités</a>
+  <a href="index.html#agenda" onclick="closeMenu()">Agenda</a>
+  <a href="index.html#galerie" onclick="closeMenu()">Galerie</a>
+  <a href="index.html#contact" onclick="closeMenu()">Contact</a>
+  <a href="documents.html" onclick="closeMenu()">WT2026</a>
+  <a href="news.html" style="color:#b3f0ff" onclick="closeMenu()">📰 Actu vélo</a>
+  <a href="calendrier-randos-22-2026-v4.html" onclick="closeMenu()">📅 Agenda Randos 2026</a>
+  <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
+</div>
+
+<!-- ════ HEADER ════ -->
+<header class="site-header">
+  <div class="header-badge">🚴 Entente Cyclotouriste Albanaise · Saint-Alban (22)</div>
+  <h1 class="header-title">Randonnées <em>2026</em><br>Côtes-d'Armor</h1>
+  <p class="header-sub">Tous les événements Route · VTT · Gravel · Marche de l'année, avec dates, disciplines et liens officiels</p>
+  <div class="header-pills">
+    <span class="hpill">🗺️ Côtes-d'Armor</span>
+    <span class="hpill">📅 Mars → Novembre 2026</span>
+    <span class="hpill" id="total-pill">⏳ Chargement…</span>
+  </div>
+</header>
+
+<!-- ════ STATS BAR ════ -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-pill"><span class="stat-dot" style="background:#1255aa"></span><span class="stat-label">Route / Cyclo</span><span class="stat-num" id="s-route">-</span></div>
+    <div class="stat-pill"><span class="stat-dot" style="background:#1d6e30"></span><span class="stat-label">VTT</span><span class="stat-num" id="s-vtt">-</span></div>
+    <div class="stat-pill"><span class="stat-dot" style="background:#b04000"></span><span class="stat-label">Gravel</span><span class="stat-num" id="s-gravel">-</span></div>
+    <div class="stat-pill"><span class="stat-dot" style="background:#922050"></span><span class="stat-label">Marche</span><span class="stat-num" id="s-marche">-</span></div>
+    <div class="stat-pill"><span class="stat-dot" style="background:#1d7a3a"></span><span class="stat-label">✅ Dates confirmées</span><span class="stat-num" id="s-ok">-</span></div>
+    <div class="stat-pill"><span class="stat-dot" style="background:#b45309"></span><span class="stat-label">📌 À confirmer</span><span class="stat-num" id="s-tbc">-</span></div>
+  </div>
+</div>
+
+<!-- ════ NAV MOIS ════ -->
+<div class="month-nav">
+  <div class="month-nav-inner">
+    <button class="mnav-btn active" onclick="scrollToMonth('all',this)">Tout</button>
+    <button class="mnav-btn" onclick="scrollToMonth('mars',this)">Mars</button>
+    <button class="mnav-btn" onclick="scrollToMonth('avril',this)">Avril</button>
+    <button class="mnav-btn" onclick="scrollToMonth('mai',this)">Mai</button>
+    <button class="mnav-btn" onclick="scrollToMonth('juin',this)">Juin</button>
+    <button class="mnav-btn" onclick="scrollToMonth('juillet',this)">Juillet</button>
+    <button class="mnav-btn" onclick="scrollToMonth('aout',this)">Août</button>
+    <button class="mnav-btn" onclick="scrollToMonth('septembre',this)">Septembre</button>
+    <button class="mnav-btn" onclick="scrollToMonth('octobre',this)">Octobre</button>
+    <button class="mnav-btn" onclick="scrollToMonth('novembre',this)">Novembre</button>
+  </div>
+</div>
+
+<!-- ════ FILTRES ════ -->
+<div class="filter-wrap">
+  <div class="filter-section">
+    <div class="search-wrap">
+      <input class="search-input" type="text" id="search" placeholder="Rechercher une commune, un club…" oninput="applyFilters()"/>
+    </div>
+    <div class="fsep"></div>
+    <div class="filter-group" id="ftype">
+      <span class="filter-group-label">Discipline</span>
+      <button class="chip on" data-value="all" onclick="setF('type','all',this)">Tout</button>
+      <button class="chip" data-value="route" onclick="setF('type','route',this)">🚴 Route</button>
+      <button class="chip" data-value="vtt" onclick="setF('type','vtt',this)">🏔️ VTT</button>
+      <button class="chip" data-value="gravel" onclick="setF('type','gravel',this)">🪨 Gravel</button>
+      <button class="chip" data-value="marche" onclick="setF('type','marche',this)">🚶 Marche</button>
+    </div>
+    <div class="fsep"></div>
+    <div class="filter-group" id="fmonth">
+      <span class="filter-group-label">Mois</span>
+      <button class="chip on rose-chip" data-value="all" onclick="setF('month','all',this)">Tous</button>
+      <button class="chip" data-value="mars" onclick="setF('month','mars',this)">Mars</button>
+      <button class="chip" data-value="avril" onclick="setF('month','avril',this)">Avril</button>
+      <button class="chip" data-value="mai" onclick="setF('month','mai',this)">Mai</button>
+      <button class="chip" data-value="juin" onclick="setF('month','juin',this)">Juin</button>
+      <button class="chip" data-value="juillet" onclick="setF('month','juillet',this)">Juil.</button>
+      <button class="chip" data-value="aout" onclick="setF('month','aout',this)">Août</button>
+      <button class="chip" data-value="septembre" onclick="setF('month','septembre',this)">Sept.</button>
+      <button class="chip" data-value="octobre" onclick="setF('month','octobre',this)">Oct.</button>
+      <button class="chip" data-value="novembre" onclick="setF('month','novembre',this)">Nov.</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ COMPTEUR ════ -->
+<div class="results-bar">
+  <div class="results-count"><b id="cnt">0</b> événements affichés</div>
+  <div class="source-note">Sources : vtt.bzh · milesrepublic.com · sites officiels des clubs</div>
+</div>
+
+<!-- ════════════ CONTENU ════════════ -->
+<div id="all-groups">
+
+<!-- ══ MARS ══ -->
+<div class="month-group" id="m-mars" data-month="mars">
+  <div class="month-head-row"><div class="month-head">📅 Mars 2026<span class="month-count-badge" id="mc-mars"></span></div></div>
+  <div class="month-cards">
+
+    <div class="card" data-type="route vtt gravel marche" data-search="langueux grand pré amic cyclo langueusienne">
+      <span class="date-badge ok">✅ Dim. 22 mars 2026</span>
+      <div class="card-name">Rando Cyclo-VTT de Langueux</div>
+      <div class="card-loc">📍 Langueux (22) · Le Grand Pré · 8h30–9h30</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">50 km (OpenR. 23045948) · 70 km (23041042)</span></div>
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">25 · 35 · 45 km</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">60 km (229585) · 80 km (22958082)</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">10 · 12 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">5 €</span>
+        <div class="links">
+          <a class="bl bl-asso" href="https://aclangueux.wixsite.com/cyclo" target="_blank">🌐 Site asso</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route vtt marche" data-search="broons amicale cyclotouriste broonaise espace convivialite">
+      <span class="date-badge ok">✅ Dim. 22 mars 2026</span>
+      <div class="card-name">Rando Amicale Cyclotouriste Broonaise</div>
+      <div class="card-loc">📍 Broons (22) · Espace de Convivialité · 7h30–9h30</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">55 km (+555m) · 73 km (+720m)</span></div>
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">25 km (+358m) · 35 km (+335m) · 40 km (+370m) · 45 km (+431m)</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">8 · 10 · 14 km – Bois de Broons</span></div>
+      </div>
+      <div class="card-info">Ravitaillements · pot d'accueil · boisson et casse-croûte à l'arrivée</div>
+      <div class="card-foot">
+        <span class="ptag">6 € route/VTT · 5 € marche</span>
+        <div class="links">
+          <a class="bl bl-mail" href="mailto:amicalecyclo.broons@gmail.com">✉ Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route vtt gravel marche" data-search="ploeuc hermitage olympique cyclo ploeucois bozec">
+      <span class="date-badge ok">✅ Dim. 29 mars 2026</span>
+      <div class="card-name">Rando Olympique Cyclo Plœucois</div>
+      <div class="card-loc">📍 Plœuc-l'Hermitage (22) · Espace Le Bozec · 8h–10h</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">66 · 86 km</span></div>
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">26 · 33 · 40 · 45 · 50 km</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">60 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">9 · 13 · 18 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">9 €</span>
+        <div class="links">
+          <a class="bl bl-asso" href="https://www.facebook.com/cycloploeucois" target="_blank">📘 Facebook</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route vtt gravel marche" data-search="plerin arvtt ecp entente cyclo plerin baie saint brieuc">
+      <span class="date-badge ok">✅ Dim. 29 mars 2026</span>
+      <div class="card-name">Multi-Rando ARVTT–ECP Plérin</div>
+      <div class="card-loc">📍 Plérin (22) · Salle Roger Ollivier, rue des sports · 8h–13h</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">60 · 82 km</span></div>
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">16 · 20 · 24 · 25 km – vues sur la baie de Saint-Brieuc</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">55 · 65 km (trace GPX)</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">8 · 13 · 18 km</span></div>
+      </div>
+      <div class="card-info">Entre terre et mer · 1 € reversé au Téléthon</div>
+      <div class="card-foot">
+        <span class="ptag">6 €</span>
+        <div class="links">
+          <a class="bl bl-asso" href="https://arvtt.com" target="_blank">🌐 ARVTT</a>
+          <a class="bl bl-asso" href="https://www.entente-cyclo-plerin.fr" target="_blank">🌐 Cyclo Plérin</a>
+          <a class="bl bl-mail" href="mailto:arvtt@hotmail.fr">✉ Mail</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ AVRIL ══ -->
+<div class="month-group" id="m-avril" data-month="avril">
+  <div class="month-head-row"><div class="month-head">📅 Avril 2026<span class="month-count-badge" id="mc-avril"></span></div></div>
+  <div class="month-cards">
+
+    <div class="card" data-type="route vtt marche" data-search="saint cast guildo notre dame cyclo randonneur presquile castine">
+      <span class="date-badge ok">✅ Dim. 5 avril 2026</span>
+      <div class="card-name">Rando Cyclo Randonneur Presqu'île Castine</div>
+      <div class="card-loc">📍 St-Cast-le-Guildo (22) · Salle Yves du Manoir · 8h–12h</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">61 · 73 km</span></div>
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">35 · 44 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">9,8 · 11 km</span></div>
+      </div>
+      <div class="card-info">N° Openrunner sur l'affiche</div>
+      <div class="card-foot">
+        <div class="links">
+          <a class="bl bl-mail" href="mailto:gilles.grippon@sfr.fr">✉ Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="vtt marche" data-search="quessoy ecole sainte anne parcs chateaux">
+      <span class="date-badge ok">✅ Dim. 12 avril 2026</span>
+      <div class="card-name">Rando Ste-Anne – Quessoy</div>
+      <div class="card-loc">📍 Quessoy (22) · École Sainte-Anne · dès 8h</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">23 · 35 · 50 km – parcs et châteaux</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">9 · 12 · 16 · 19 km + poussette + enfants</span></div>
+      </div>
+      <div class="card-info">Tombola · restauration sur place</div>
+      <div class="card-foot">
+        <span class="ptag">5 € adulte · 2 € enfant</span>
+        <div class="links">
+          <a class="bl bl-mail" href="mailto:eco22.ste-anne.quessoy@e-c.bzh">✉ Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="vtt marche" data-search="lanvallay club vtt salle omnisports">
+      <span class="date-badge ok">✅ Dim. 19 avril 2026</span>
+      <div class="card-name">Rando Club VTT Lanvallay</div>
+      <div class="card-loc">📍 Lanvallay (22) · Salle omnisports · 7h30</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">35 à 55 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">2 circuits pédestres</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">7 € VTT · 4 € pédestre</span>
+        <div class="links">
+          <a class="bl bl-mail" href="mailto:jonathan.leflem@orange.fr">✉ Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="vtt marche" data-search="begard ac begard mjc">
+      <span class="date-badge ok">✅ Dim. 19 avril 2026</span>
+      <div class="card-name">Rando AC Bégard</div>
+      <div class="card-loc">📍 Bégard (22) · MJC · dès 8h</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">circuits à confirmer</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">circuits à confirmer</span></div>
+      </div>
+      <div class="card-foot"></div>
+    </div>
+
+    <div class="card" data-type="vtt" data-search="saint goueno le mene team bike salle des fetes">
+      <span class="date-badge ok">✅ Sam. 25 avril 2026</span>
+      <div class="card-name">Rando Le Mené Team Bike</div>
+      <div class="card-loc">📍 Saint-Gouëno (22) · Salle des fêtes · 9h</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">circuits à confirmer</span></div>
+      </div>
+      <div class="card-foot"></div>
+    </div>
+
+    <div class="card" data-type="vtt gravel marche" data-search="belle isle en terre muco defi vtt gravel stade prat eles">
+      <span class="date-badge ok">✅ Dim. 26 avril 2026</span>
+      <div class="card-name">Un Souffle pour la Muco – Belle-Isle-en-Terre</div>
+      <div class="card-loc">📍 Belle-Isle-en-Terre (22) · Stade du Prat Eles · 8h30</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT Défi</span><span class="dkm">65 km avec classement (barrière horaire au km 35)</span></div>
+        <div class="dr"><span class="dl d-vtt">VTT Rando</span><span class="dkm">20 · 30 · 40 · 60 km</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">65 · 130 km (GPX téléchargeable)</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">circuits pédestres</span></div>
+      </div>
+      <div class="card-info">Podiums masculin/féminin · ravitaillements · PPS ou certificat médical pour le défi</div>
+      <div class="card-foot">
+        <span class="ptag">8–10 € rando · 10–12 € défi</span>
+        <div class="links">
+          <a class="bl bl-mail" href="mailto:belleislemuco@gmail.com">✉ Contact</a>
+          <a class="bl bl-miles" href="https://fr.milesrepublic.com/event/un-souffle-pour-la-muco-13503" target="_blank">↗ Détails</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="vtt marche" data-search="plemet ecole saint joseph apel">
+      <span class="date-badge ok">✅ Dim. 26 avril 2026</span>
+      <div class="card-name">Rando École St-Joseph – Plémet</div>
+      <div class="card-loc">📍 Plémet (22) · Cour de l'école · 7h30–11h</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">20 · 30 · 45 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">5 km (poussette) · 8 · 12 · 16 km</span></div>
+      </div>
+      <div class="card-info">Buvette et restauration sur place</div>
+      <div class="card-foot">
+        <span class="ptag">5 €</span>
+        <div class="links">
+          <a class="bl bl-mail" href="mailto:apel.plemet.22@gmail.com">✉ Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route vtt gravel marche" data-search="trelivan club vtt cyclo pedestre clement ader">
+      <span class="date-badge ok">✅ Dim. 26 avril 2026</span>
+      <div class="card-name">Rando VTT-Cyclo-Pédestre Trélivan</div>
+      <div class="card-loc">📍 Trélivan (22) · Salle Clément Ader · dès 7h30</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">3 circuits (63 · 80 · 82 km)</span></div>
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">6 circuits (25 · 36 · 43 · 50 · 58 km…)</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">2 circuits (80 km…)</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">3 circuits (8 · 11 · 14 km)</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">5 €</span>
+        <div class="links">
+          <a class="bl bl-mail" href="mailto:clubvttcyclo-trelivan@orange.fr">✉ Contact club</a>
+          <a class="bl bl-mail" href="mailto:clubvttcyclo-trelivan@orange.fr">✉ Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route marche" data-search="plerin plerinaise printemps">
+      <span class="date-badge tbc">📌 Avril 2026 – date à confirmer</span>
+      <div class="card-name">Rando La Plérinaise (printemps)</div>
+      <div class="card-loc">📍 Plérin (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">15 · 18 · 25 · 30 · 40 · 50 · 55 · 70 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">8 · 14 km</span></div>
+      </div>
+      <div class="card-foot">
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/rando-la-plerinaise-11849" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route" data-search="matignon brevet 200">
+      <span class="date-badge tbc">📌 Avril 2026 – date à confirmer</span>
+      <div class="card-name">Brevet 200 km</div>
+      <div class="card-loc">📍 Matignon (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">200 km</span></div>
+      </div>
+      <div class="card-foot">
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/brevet-200-km-11613" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ MAI ══ -->
+<div class="month-group" id="m-mai" data-month="mai">
+  <div class="month-head-row"><div class="month-head">📅 Mai 2026<span class="month-count-badge" id="mc-mai"></span></div></div>
+  <div class="month-cards">
+
+    <div class="card" data-type="route vtt marche" data-search="rospez ac rospez rando">
+      <span class="date-badge ok">✅ Ven. 1er mai 2026</span>
+      <div class="card-name">Rando AC Rospez</div>
+      <div class="card-loc">📍 Rospez (22) · dès 7h30</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">50 · 80 · 100 · 130 km</span></div>
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">35 · 45 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">5 · 8 · 12 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">8 € vélo/VTT · 6 € marche</span>
+        <div class="links"><a class="bl bl-mail" href="mailto:ac.rospez@gmail.com">✉ Contact</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route marche trail" data-search="erquy landes bruyeres cap frehel landesetbruyeres">
+      <span class="date-badge ok">✅ Sam. 2 mai 2026 – 13h</span>
+      <div class="card-name">Landes et Bruyères – Cap d'Erquy / Cap Fréhel</div>
+      <div class="card-loc">📍 Erquy (22) · 3 044 participants en 2025</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">60 · 80 · 100 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">6 · 9 · 11 · 12 · 15 · 16 · 27 km</span></div>
+        <div class="dr"><span class="dl d-trail">Trail</span><span class="dkm">7 km (+117m) · 15 km (+302m) · 33 km (+821m)</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">Dès 2 €</span>
+        <div class="links">
+          <a class="bl bl-asso" href="https://landesetbruyeres.bzh/" target="_blank">🌐 Site asso</a>
+          <a class="bl bl-miles" href="https://fr.milesrepublic.com/event/landes-et-bruyeres-cap-derquy-cap-frehel-6059" target="_blank">↗ Détails</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="vtt gravel marche" data-search="plaintel velo loisir chaos gouet salle oceane">
+      <span class="date-badge ok">✅ Dim. 3 mai 2026</span>
+      <div class="card-name">Rando des Chaos – Plaintel Vélo Loisir</div>
+      <div class="card-loc">📍 Plaintel (22) · Salle Océane · 7h15–10h</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">21 · 28 · 38 · 45 · 58 km (rivière Gouët, chaos)</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">45 · 70 · 95 km (trace GPS QR code)</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">8 · 14 km</span></div>
+      </div>
+      <div class="card-info">Bière pression · sandwich · lavage vélo à l'arrivée · 1–3 ravitos</div>
+      <div class="card-foot">
+        <span class="ptag">6 €</span>
+        <div class="links">
+          <a class="bl bl-asso" href="https://www.facebook.com/plaintelveloloisir" target="_blank">📘 Facebook</a>
+          <a class="bl bl-mail" href="mailto:jeremy.missonnier@waika9.com">✉ Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route gravel" data-search="penguily breizhflandrienne flandrienne cyclosportive">
+      <span class="date-badge ok">✅ Ven. 8 mai 2026</span>
+      <div class="card-name">La Breizh'Flandrienne</div>
+      <div class="card-loc">📍 Penguily (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">55 · 90 · 120 km (départ 8h)</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">50 · 90 · 120 km (départ 6h)</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">À partir de 8 €</span>
+        <div class="links">
+          <a class="bl bl-asso" href="https://www.penguily-cdf.fr/" target="_blank">🌐 Site asso</a>
+          <a class="bl bl-miles" href="https://fr.milesrepublic.com/event/la-breizhflandrienne-9277" target="_blank">↗ Détails</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="vtt marche" data-search="crehen emeraude cyclo vtt chateau guildo">
+      <span class="date-badge ok">✅ Dim. 10 mai 2026</span>
+      <div class="card-name">Rando Émeraude Cyclo VTT Créhen</div>
+      <div class="card-loc">📍 Créhen (22) · Château du Guildo · 7h30</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">circuits à confirmer</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">circuits à confirmer</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">6 €</span>
+        <div class="links"><a class="bl bl-mail" href="mailto:fabdaligot@free.fr">✉ Contact</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route vtt gravel marche" data-search="tregueux entente cyclos tregueusienne stade allenic">
+      <span class="date-badge ok">✅ Dim. 10 mai 2026</span>
+      <div class="card-name">Rando Entente Cyclos Trégueux</div>
+      <div class="card-loc">📍 Trégueux (22) · Stade Allenic · 7h30–9h30</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">60 · 80 km</span></div>
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">22 · 29 · 35 · 44 · 56 km</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">60 km (+80m)</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">10 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">9 €</span>
+      </div>
+    </div>
+
+    <div class="card" data-type="vtt marche" data-search="saint jacut du mene team des 3 rivieres">
+      <span class="date-badge ok">✅ Jeu. 14 mai 2026</span>
+      <div class="card-name">Rando Team des 3 Rivières</div>
+      <div class="card-loc">📍 Saint-Jacut-du-Méné (22) · Rue des Écureuils · 7h30</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">circuits à confirmer</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">circuits à confirmer</span></div>
+      </div>
+      <div class="card-foot"><span class="ptag">Tout public</span></div>
+    </div>
+
+    <div class="card ecta" data-type="route vtt gravel marche" data-search="saint alban flora ecta entente cyclotouriste albanaise">
+      <span class="date-badge ok">✅ Dim. 17 mai 2026</span>
+      <div class="card-name">🌸 Randonnée de la Flora – ECTA</div>
+      <div class="card-loc">📍 Saint-Alban (22) · 7h30–10h</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">55 · 80 · 105 km</span></div>
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">20 km (+320m) · 35 km (+459m) · 45 km (+524m) · 50 km (+546m) · 60 km (+590m)</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">55 · 90 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">5 · 10 · 15 · 20 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">9 €</span>
+        <div class="links">
+          <a class="bl bl-asso" href="index.html">🌐 Notre site</a>
+          <a class="bl bl-mail" href="mailto:ectastalban@gmail.com">✉ Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="gravel" data-search="trebeurden roz ar mor gravel tregoride cotes maritimes">
+      <span class="date-badge ok">✅ Dim. 24 mai 2026 – dès 7h</span>
+      <div class="card-name">Roz Ar Mor Gravel – Édition 5</div>
+      <div class="card-loc">📍 Trébeurden (22) · Départ Trégoride · parcours côtiers</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">50 · 70 · 100 · 140 km</span></div>
+      </div>
+      <div class="card-info">Sans chrono · paysages maritimes bretons · océan comme fil conducteur</div>
+      <div class="card-foot">
+        <span class="ptag">10 €</span>
+        <div class="links">
+          <a class="bl bl-asso" href="https://www.tregoride.bzh/event/roz-ar-mor-gravel-5-5/register" target="_blank">🌐 Inscription</a>
+          <a class="bl bl-miles" href="https://fr.milesrepublic.com/event/roz-ar-mor-gravel-4-14027" target="_blank">↗ Détails</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ JUIN ══ -->
+<div class="month-group" id="m-juin" data-month="juin">
+  <div class="month-head-row"><div class="month-head">📅 Juin 2026<span class="month-count-badge" id="mc-juin"></span></div></div>
+  <div class="month-cards">
+
+    <div class="card" data-type="vtt marche" data-search="saint agathon frout tunnel voie ferree comite animation">
+      <span class="date-badge ok">✅ Dim. 7 juin 2026 – 7h30</span>
+      <div class="card-name">Rando du Frout – St-Agathon</div>
+      <div class="card-loc">📍 Saint-Agathon (22) · Parking salle des sports</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">circuits le long du Frout · tunnel 40m sous la voie ferrée</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">circuits boisés et chemins creux</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">6 €</span>
+        <div class="links"><a class="bl bl-mail" href="mailto:asvttdufrout@free.fr">✉ Contact</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="gravel" data-search="dinan gravel brasseurs franceingravel">
+      <span class="date-badge ok">✅ Dim. 21 juin 2026</span>
+      <div class="card-name">La Gravel des Brasseurs</div>
+      <div class="card-loc">📍 Dinan (22) · départ 7h (100km) et 8h (65km)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">65 km (8h) · 105 km (7h)</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">À partir de 20 €</span>
+        <div class="links">
+          <a class="bl bl-asso" href="https://www.franceingravel.com/gravel-des-brasseurs/" target="_blank">🌐 Site asso</a>
+          <a class="bl bl-miles" href="https://fr.milesrepublic.com/event/la-gravel-des-brasseurs-13676" target="_blank">↗ Détails</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route" data-search="bourbriac briacine cyclobourbriac">
+      <span class="date-badge ok">✅ Lun. 22 juin 2026</span>
+      <div class="card-name">La Briacine</div>
+      <div class="card-loc">📍 Bourbriac (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">50 · 100 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">À partir de 9 €</span>
+        <div class="links">
+          <a class="bl bl-miles" href="https://fr.milesrepublic.com/event/la-briacine-14271" target="_blank">↗ Détails</a>
+          <a class="bl bl-miles" href="https://fr.milesrepublic.com/event/la-briacine-14271" target="_blank">↗ Détails</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="vtt gravel marche" data-search="binic etables tagarine velos verts ic vvi jour 1 samedi">
+      <span class="date-badge ok">✅ Sam. 27 juin 2026 – 13h30</span>
+      <div class="card-name">La Tagarine – VVI Binic-Étables · Jour 1</div>
+      <div class="card-loc">📍 Binic-Étables-sur-Mer (22) · Salle omnisports</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">21 · 34 · 46 · 58 km + Raid 70 km (GPX)</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">65 · 72 · 83 km (GPX)</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">10 · 12 · 16 · 20 km</span></div>
+      </div>
+      <div class="card-info">Possible de participer aux 2 jours · ravitos au top</div>
+      <div class="card-foot">
+        <span class="ptag">6 € VTT/Gravel · 4 € Marche</span>
+        <div class="links">
+          <a class="bl bl-mail" href="mailto:bureau.vvi@gmail.com">✉ Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="vtt gravel marche" data-search="binic etables tagarine velos verts ic vvi jour 2 dimanche">
+      <span class="date-badge ok">✅ Dim. 28 juin 2026 – 8h</span>
+      <div class="card-name">La Tagarine – VVI Binic-Étables · Jour 2</div>
+      <div class="card-loc">📍 Binic-Étables-sur-Mer (22) · Salle omnisports</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">21 · 34 · 46 · 58 km + Raid 70 km (GPX)</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">65 · 72 · 83 km (GPX)</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">10 · 12 · 16 · 20 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">6 € VTT/Gravel · 4 € Marche</span>
+        <div class="links">
+          <a class="bl bl-mail" href="mailto:bureau.vvi@gmail.com">✉ Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route marche" data-search="tremorel randonnee des bois">
+      <span class="date-badge tbc">📌 Juin 2026 – date à confirmer</span>
+      <div class="card-name">Randonnée des Bois</div>
+      <div class="card-loc">📍 Trémorel (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">distances à confirmer</span></div>
+      </div>
+      <div class="card-foot">
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/randonnee-des-bois-11781" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route marche" data-search="plouguenast langast semi nocturne">
+      <span class="date-badge tbc">📌 Juin 2026 – date à confirmer</span>
+      <div class="card-name">Rando Semi-Nocturne</div>
+      <div class="card-loc">📍 Plouguenast-Langast (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">24 · 25 · 30 · 40 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">8 · 10 · 13 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">À partir de 9 €</span>
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/rando-semi-nocturne-14198" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ JUILLET ══ -->
+<div class="month-group" id="m-juillet" data-month="juillet">
+  <div class="month-head-row"><div class="month-head">📅 Juillet 2026<span class="month-count-badge" id="mc-juillet"></span></div></div>
+  <div class="month-cards">
+
+    <div class="card" data-type="route vtt marche" data-search="plouec trieux club olympique ploeucois salle multifonctions">
+      <span class="date-badge ok">✅ Dim. 5 juillet 2026 – 8h–10h</span>
+      <div class="card-name">Rando Club Olympique Plouëcois</div>
+      <div class="card-loc">📍 Plouec-du-Trieux (22) · Salle multifonctions</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">50 km (+451m) · 75 km (+622m) · 100 km (+892m)</span></div>
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">33 km (+427m) · 42 km (+554m) · 48 km (+563m)</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">6 · 11 km</span></div>
+      </div>
+      <div class="card-foot"><span class="ptag">9 €</span></div>
+    </div>
+
+    <div class="card" data-type="route" data-search="plouisy plouisyenne rando route">
+      <span class="date-badge ok">✅ Lun. 20 juillet 2026</span>
+      <div class="card-name">La Plouisyenne</div>
+      <div class="card-loc">📍 Plouisy (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">48 km (+342m) · 85 km (+699m) · 100 km (+1224m)</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">À partir de 9 €</span>
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/la-plouisyenne-15041" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ AOÛT ══ -->
+<div class="month-group" id="m-aout" data-month="aout">
+  <div class="month-head-row"><div class="month-head">📅 Août 2026<span class="month-count-badge" id="mc-aout"></span></div></div>
+  <div class="month-cards">
+
+    <div class="card" data-type="route marche" data-search="penguily 15 aout penguilais bourg">
+      <span class="date-badge ok">✅ Sam. 15 août 2026</span>
+      <div class="card-name">15 Août Penguilais</div>
+      <div class="card-loc">📍 Penguily (22) · Bourg · VTT 8h / Pédestre 8h15</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">90 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">8 · 13 · 17 km</span></div>
+      </div>
+      <div class="card-foot">
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/15-aout-penguilais-14064" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="vtt gravel marche trail" data-search="ploufragan haut champ vtt gravel trail pedestre">
+      <span class="date-badge ok">✅ Sam. 29 août (13h45) et Dim. 30 août (8h) 2026</span>
+      <div class="card-name">Rando Ploufragan VTT – Week-end 2 jours</div>
+      <div class="card-loc">📍 Ploufragan (22) · Site du Haut Champ</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">Sam. dès 13h45 · Dim. dès 8h</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">Sam. dès 13h45 · Dim. dès 8h</span></div>
+        <div class="dr"><span class="dl d-trail">Trail</span><span class="dkm">Sam. 19 km (18h) · 11 km (18h15)</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">Dim. dès 8h30</span></div>
+      </div>
+      <div class="card-foot">
+        <div class="links"><a class="bl bl-mail" href="mailto:philippelabbe@gmx.fr">✉ Contact</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route" data-search="saint brieuc rando agglo">
+      <span class="date-badge tbc">📌 Août 2026 – date à confirmer</span>
+      <div class="card-name">La Rando de l'Agglo</div>
+      <div class="card-loc">📍 Saint-Brieuc (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">70 · 90 km</span></div>
+      </div>
+      <div class="card-foot">
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/la-rando-de-lagglo-11626" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route" data-search="saint brieuc rando agglo tour">
+      <span class="date-badge tbc">📌 Août 2026 – date à confirmer</span>
+      <div class="card-name">Rando Agglo Tour</div>
+      <div class="card-loc">📍 Saint-Brieuc (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">60 · 80 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">À partir de 8 €</span>
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/rando-agglo-tour-14524" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ SEPTEMBRE ══ -->
+<div class="month-group" id="m-septembre" data-month="septembre">
+  <div class="month-head-row"><div class="month-head">📅 Septembre 2026<span class="month-count-badge" id="mc-septembre"></span></div></div>
+  <div class="month-cards">
+
+    <div class="card" data-type="marche" data-search="plevin hentou ar mein glaz canal nantes brest mucoviscidose pierre le bigot">
+      <span class="date-badge ok">✅ Dim. 6 septembre 2026 – 7h30 / 12h30</span>
+      <div class="card-name">Rando Hentou Ar Mein Glaz – Plévin</div>
+      <div class="card-loc">📍 Plévin (22) · Salle des fêtes, Place de la mairie</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">5 · 6 · 11 · 13 · 18 · 27 · 33 km – Canal de Nantes à Brest</span></div>
+      </div>
+      <div class="card-info">Vue minez Cliguéric (304m) · centrale solaire · partie reversée à l'asso Pierre Le Bigot</div>
+      <div class="card-foot">
+        <span class="ptag">6 € · gratuit -12 ans</span>
+        <div class="links"><a class="bl bl-mail" href="mailto:poher.guy@orange.fr">✉ Contact</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route vtt gravel marche" data-search="lamballe armor ectl entente cyclo lamballaise salle polyvalente">
+      <span class="date-badge ok">✅ Dim. 6 septembre 2026 – 7h30–10h</span>
+      <div class="card-name">Randonnée ECTL – Lamballe-Armor</div>
+      <div class="card-loc">📍 Lamballe-Armor (22) · Salle polyvalente</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">62 km (+492m) · 89 km (+753m)</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">60 km (+355m) · 78 km (+515m) · 100 km (+753m)</span></div>
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">25 km (+193m) · 41 km (+274m) · 54 km (+355m) · 62 km (+524m)</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">5 · 9 · 15 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">9 €</span>
+        <div class="links">
+          <a class="bl bl-asso" href="https://www.ectlamballe.fr/" target="_blank">🌐 Site ECTL</a>
+          <a class="bl bl-miles" href="https://fr.milesrepublic.com/event/randonnee-ectl-11724" target="_blank">↗ Détails</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route marche" data-search="ploubezre andre paugam cyclosportive">
+      <span class="date-badge ok">✅ Mar. 8 septembre 2026 – 8h30</span>
+      <div class="card-name">La André Paugam</div>
+      <div class="card-loc">📍 Ploubezre (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">30 · 50 · 70 · 95 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">8 · 10 · 15 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">À partir de 9 €</span>
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/la-andre-paugam-11787" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="vtt marche" data-search="henon armel cyclo vtt salle omnisports defi">
+      <span class="date-badge ok">✅ Dim. 13 septembre 2026 – 7h30</span>
+      <div class="card-name">Rando VTT Armel – Hénon</div>
+      <div class="card-loc">📍 Hénon (22) · Salle omnisports</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">20 · 30 · 40 · 50 km (6€) · Défi 60 km (7€)</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">8 · 12 km (3€ – Marche Hénonnaise)</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">6 € ou 7 € (défi)</span>
+      </div>
+    </div>
+
+    <div class="card" data-type="vtt gravel marche" data-search="plerin arvtt leclerc centre autumn automne">
+      <span class="date-badge ok">✅ Dim. 20 septembre 2026 – 8h–9h30</span>
+      <div class="card-name">Rando ARVTT Plérin (automne)</div>
+      <div class="card-loc">📍 Plérin (22) · Parking Centre Leclerc</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">20 km (+300m) · 30 km (+600m) · 40 km (+800m) · 50 km (+990m) · 60 km (+1300m)</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">55 · 60 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">8 · 11 · 17 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">10 €</span>
+        <div class="links"><a class="bl bl-asso" href="https://arvtt.com" target="_blank">🌐 ARVTT</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route marche" data-search="ploumagoar randonnee cyclotouriste">
+      <span class="date-badge tbc">📌 Septembre 2026 – date à confirmer</span>
+      <div class="card-name">Randonnée Cyclotouriste</div>
+      <div class="card-loc">📍 Ploumagoar (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">30 · 80 · 100 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">À partir de 9 €</span>
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/randonnee-cyclotouriste-14609" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route marche" data-search="plerin plerinaise automne septembre">
+      <span class="date-badge tbc">📌 Septembre 2026 – date à confirmer</span>
+      <div class="card-name">Rando La Plérinaise (automne)</div>
+      <div class="card-loc">📍 Plérin (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">30 · 45 · 60 · 80 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">8 · 12 · 15 · 17 · 25 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">À partir de 10 €</span>
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/rando-la-plerinaise-14711" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route marche" data-search="erquy virades espoir mucoviscidose">
+      <span class="date-badge tbc">📌 Septembre 2026 – date à confirmer</span>
+      <div class="card-name">Les Virades de l'Espoir</div>
+      <div class="card-loc">📍 Erquy (22) · solidarité mucoviscidose</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">50 · 70 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">5 · 8 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">À partir de 8 €</span>
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/les-virades-de-l-espoir-14754" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ OCTOBRE ══ -->
+<div class="month-group" id="m-octobre" data-month="octobre">
+  <div class="month-head-row"><div class="month-head">📅 Octobre 2026<span class="month-count-badge" id="mc-octobre"></span></div></div>
+  <div class="month-cards">
+
+    <div class="card" data-type="vtt gravel marche" data-search="landehen club vtt land salle des fetes">
+      <span class="date-badge ok">✅ Dim. 4 octobre 2026 – 8h–9h30</span>
+      <div class="card-name">Rando Club VTT Land' – Landéhen</div>
+      <div class="card-loc">📍 Landéhen (22) · Salle des fêtes</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">20 · 34 · 45 · 55 km</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">45 · 90 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">8 · 14 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">6 € VTT · 4 € pédestre</span>
+        <div class="links"><a class="bl bl-mail" href="mailto:club.vttland@hotmail.fr">✉ Contact</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route vtt gravel marche" data-search="pleslin trigavou cyclo club armor salle omnisport chataignes">
+      <span class="date-badge ok">✅ Dim. 11 octobre 2026 – 8h–10h</span>
+      <div class="card-name">Rando Cyclo Club d'Armor</div>
+      <div class="card-loc">📍 Pleslin-Trigavou (22) · Salle omnisports</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">55 · 75 km</span></div>
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">25 · 50 km</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">60 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">8 · 10 · 12 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">9 €</span>
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/randonnee-des-chataignes-12140" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route vtt marche" data-search="pleumeur bodou cyclos vtt pleumeurois pole phenix kids enfants">
+      <span class="date-badge ok">✅ Dim. 18 octobre 2026 – 8h45</span>
+      <div class="card-name">Rando Cyclos et VTT Pleumeurois</div>
+      <div class="card-loc">📍 Pleumeur-Bodou (22) · Pôle Phénix</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">60 · 80 km</span></div>
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">25 · 35 · 45 · 65 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">5 · 10 · 15 km + rando kids encadrée</span></div>
+      </div>
+      <div class="card-foot">
+        <div class="links"><a class="bl bl-mail" href="mailto:cyclo.vtt.pb@gmail.com">✉ Contact</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="vtt" data-search="hillion 6 heures vtt cre equipe">
+      <span class="date-badge tbc">📌 Octobre 2026 – date à confirmer</span>
+      <div class="card-name">6 Heures VTT du Cré</div>
+      <div class="card-loc">📍 Hillion (22) · épreuve par équipe</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">6h chrono en équipe</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">À partir de 64 €</span>
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/6-heures-vtt-du-cre-12172" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route" data-search="goudelin gentleman michel etiemble duo">
+      <span class="date-badge tbc">📌 Octobre 2026 – date à confirmer</span>
+      <div class="card-name">Gentleman Michel Etiemble</div>
+      <div class="card-loc">📍 Goudelin (22) · course par duo</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">26 km (en équipe de 2)</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">À partir de 20 €</span>
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/gentelman-michel-etiemble-11997" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route" data-search="chatelaudren plouagat rando 3 chateaux">
+      <span class="date-badge tbc">📌 Octobre 2026 – date à confirmer</span>
+      <div class="card-name">Rando des 3 Châteaux</div>
+      <div class="card-loc">📍 Châtelaudren-Plouagat (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">distances à confirmer</span></div>
+      </div>
+      <div class="card-foot">
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/rando-des-3-chateaux-12318" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route" data-search="saint cast guildo octobre rose">
+      <span class="date-badge tbc">📌 Octobre 2026 – date à confirmer</span>
+      <div class="card-name">Octobre Rose Saint-Cast-le-Guildo</div>
+      <div class="card-loc">📍 Saint-Cast-le-Guildo (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">distances à confirmer</span></div>
+      </div>
+      <div class="card-foot">
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/octobre-rose-saint-cast-le-guildo-12313" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+    <div class="card" data-type="route" data-search="plumieux cardon ragot">
+      <span class="date-badge tbc">📌 Octobre 2026 – date à confirmer</span>
+      <div class="card-name">La Cardon-Ragot</div>
+      <div class="card-loc">📍 Plumieux (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-route">Route</span><span class="dkm">distances à confirmer</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">À partir de 15 €</span>
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/la-cardon-ragot-12275" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ NOVEMBRE ══ -->
+<div class="month-group" id="m-novembre" data-month="novembre">
+  <div class="month-head-row"><div class="month-head">📅 Novembre 2026<span class="month-count-badge" id="mc-novembre"></span></div></div>
+  <div class="month-cards">
+
+    <div class="card" data-type="vtt gravel marche" data-search="yffiniac ac yffiniac chocards">
+      <span class="date-badge ok">✅ Dim. 22 novembre 2026 – 8h–9h45</span>
+      <div class="card-name">Randonnée des Chocards – AC Yffiniac</div>
+      <div class="card-loc">📍 Yffiniac (22)</div>
+      <div class="discips">
+        <div class="dr"><span class="dl d-vtt">VTT</span><span class="dkm">12 · 22 · 35 · 50 km</span></div>
+        <div class="dr"><span class="dl d-gravel">Gravel</span><span class="dkm">65 km</span></div>
+        <div class="dr"><span class="dl d-marche">Marche</span><span class="dkm">10 · 14 km</span></div>
+      </div>
+      <div class="card-foot">
+        <span class="ptag">9 €</span>
+        <div class="links"><a class="bl bl-miles" href="https://fr.milesrepublic.com/event/randonnees-des-chocards-14900" target="_blank">↗ Détails</a></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /all-groups -->
+
+<div class="no-results" id="no-results">
+  <div class="no-results-icon">🔍</div>
+  <p>Aucun événement ne correspond à votre recherche.</p>
+</div>
+
+<a class="btn-flottant" href="index.html" title="Retour à l'accueil">← Accueil</a>
+<button id="btt" title="Haut de page" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<footer>
+  📋 Sources : <a href="https://www.vtt.bzh" target="_blank">vtt.bzh</a> · <a href="https://fr.milesrepublic.com/velo/cotes-d-armor" target="_blank">milesrepublic.com</a> · sites officiels des clubs<br>
+  Calendrier compilé en mars 2026 — certaines dates restent à confirmer par les organisateurs.<br><br>
+  Page réalisée par l'<strong>Entente Cyclotouriste Albanaise</strong> – Saint-Alban (22) – <a href="mailto:ectastalban@gmail.com">ectastalban@gmail.com</a>
+</footer>
+
+<script>
+  function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+  function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobileMenu');
+    const burger = document.querySelector('.burger');
+    if (menu && burger && !menu.contains(e.target) && !burger.contains(e.target)) {
+      closeMenu();
+    }
+  });
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 1024) closeMenu();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeMenu();
+  });
+
+  const allTypes=['route','vtt','gravel','marche'];
+  const allMonths=['mars','avril','mai','juin','juillet','aout','septembre','octobre','novembre'];
+  let selectedTypes=new Set();
+  let selectedMonths=new Set();
+
+  /* ── Stats initiales ── */
+  function buildStats(){
+    const cards = document.querySelectorAll('.card');
+    let route=0,vtt=0,gravel=0,marche=0,ok=0,tbc=0;
+    cards.forEach(c=>{
+      const t=c.dataset.type||'';
+      if(t.includes('route')) route++;
+      if(t.includes('vtt')) vtt++;
+      if(t.includes('gravel')) gravel++;
+      if(t.includes('marche')) marche++;
+      if(c.querySelector('.date-badge.ok')) ok++;
+      if(c.querySelector('.date-badge.tbc')) tbc++;
+    });
+    document.getElementById('s-route').textContent=route;
+    document.getElementById('s-vtt').textContent=vtt;
+    document.getElementById('s-gravel').textContent=gravel;
+    document.getElementById('s-marche').textContent=marche;
+    document.getElementById('s-ok').textContent=ok;
+    document.getElementById('s-tbc').textContent=tbc;
+    document.getElementById('total-pill').textContent='📋 '+cards.length+' événements';
+  }
+
+  /* ── Compteurs par mois ── */
+  function updateMonthCounts(){
+    document.querySelectorAll('.month-group').forEach(grp=>{
+      const month=grp.dataset.month;
+      const visible=[...grp.querySelectorAll('.card')].filter(c=>!c.classList.contains('hidden')).length;
+      const badge=document.getElementById('mc-'+month);
+      if(badge) badge.textContent=visible>0?visible:'';
+    });
+  }
+
+  /* ── Filtres ── */
+  function syncFilterButtons(){
+    const allTypeOn = selectedTypes.size===0;
+    document.querySelectorAll('#ftype .chip').forEach(chip=>{
+      const val=chip.dataset.value;
+      if(val==='all'){
+        chip.classList.toggle('on',allTypeOn);
+      }else{
+        chip.classList.toggle('on',selectedTypes.has(val));
+      }
+    });
+
+    const allMonthOn = selectedMonths.size===0;
+    document.querySelectorAll('#fmonth .chip').forEach(chip=>{
+      const val=chip.dataset.value;
+      if(val==='all'){
+        chip.classList.toggle('on',allMonthOn);
+        chip.classList.toggle('rose-chip',allMonthOn);
+      }else{
+        const isOn = selectedMonths.has(val);
+        chip.classList.toggle('on',isOn);
+        chip.classList.toggle('rose-chip',isOn);
+      }
+    });
+  }
+
+  function setF(kind,val,btn){
+    if(kind==='type'){
+      if(val==='all'){
+        selectedTypes.clear();
+      }else{
+        if(selectedTypes.has(val)) selectedTypes.delete(val);
+        else selectedTypes.add(val);
+      }
+    }
+
+    if(kind==='month'){
+      if(val==='all'){
+        selectedMonths.clear();
+      }else{
+        if(selectedMonths.has(val)) selectedMonths.delete(val);
+        else selectedMonths.add(val);
+      }
+    }
+
+    syncFilterButtons();
+    applyFilters();
+  }
+
+  function applyFilters(){
+    const q=(document.getElementById('search').value||'').toLowerCase().trim();
+    let count=0;
+    document.querySelectorAll('.month-group').forEach(grp=>{
+      const month=grp.dataset.month;
+      const mOK=selectedMonths.size===0||selectedMonths.has(month);
+      let vis=false;
+      grp.querySelectorAll('.card').forEach(card=>{
+        const types=card.dataset.type||'';
+        const search=(card.dataset.search||'')+' '+(card.querySelector('.card-name')?.textContent||'')+' '+(card.querySelector('.card-loc')?.textContent||'');
+        const typeList=types.split(/\s+/).filter(Boolean);
+        const tOK=selectedTypes.size===0||typeList.some(t=>selectedTypes.has(t));
+        const qOK=!q||search.toLowerCase().includes(q);
+        const show=mOK&&tOK&&qOK;
+        card.classList.toggle('hidden',!show);
+        if(show){vis=true;count++;}
+      });
+      grp.classList.toggle('hidden',!vis);
+    });
+    document.getElementById('cnt').textContent=count;
+    document.getElementById('no-results').style.display=count===0?'block':'none';
+    updateMonthCounts();
+  }
+
+  /* ── Nav mois scroll ── */
+  function scrollToMonth(m,btn){
+    document.querySelectorAll('.mnav-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    if(m==='all'){window.scrollTo({top:0,behavior:'smooth'});return;}
+    const el=document.getElementById('m-'+m);
+    if(el){const y=el.getBoundingClientRect().top+window.scrollY-90;window.scrollTo({top:y,behavior:'smooth'});}
+  }
+
+  /* ── Back to top ── */
+  window.addEventListener('scroll',()=>{
+    document.getElementById('btt').classList.toggle('show',window.scrollY>400);
+  });
+
+  /* ── Init ── */
+  buildStats();
+  syncFilterButtons();
+  applyFilters();
+</script>
+</body>
+</html>
