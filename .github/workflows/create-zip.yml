@@ -1,0 +1,31 @@
+name: Créer le ZIP du site
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-zip:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Récupération du code source
+        uses: actions/checkout@v4
+
+      - name: Création du ZIP du site
+        run: |
+          zip -r site-du-club.zip . \
+            --exclude "*.git*" \
+            --exclude ".github/*" \
+            --exclude "*.zip"
+
+      - name: Upload du ZIP en tant qu'artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-du-club
+          path: site-du-club.zip
+          retention-days: 90
