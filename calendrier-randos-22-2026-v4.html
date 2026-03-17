@@ -1277,8 +1277,35 @@
 
   /* ── Back to top ── */
   window.addEventListener('scroll',()=>{
+
     document.getElementById('btt').classList.toggle('show',window.scrollY>400);
   });
+
+  // ── Masquage automatique du bandeau header-badge ──
+  (function() {
+    const badge = document.querySelector('.header-badge');
+    if (!badge) return;
+    let hidden = false;
+    function hideBadge() {
+      if (hidden) return;
+      badge.style.transition = 'opacity 0.5s';
+      badge.style.opacity = '0';
+      setTimeout(()=>{ badge.style.display = 'none'; }, 500);
+      hidden = true;
+      removeListeners();
+    }
+    function removeListeners() {
+      window.removeEventListener('scroll', hideBadge);
+      window.removeEventListener('mousemove', hideBadge);
+      window.removeEventListener('keydown', hideBadge);
+      window.removeEventListener('touchstart', hideBadge);
+    }
+    setTimeout(hideBadge, 2500);
+    window.addEventListener('scroll', hideBadge, {once:true});
+    window.addEventListener('mousemove', hideBadge, {once:true});
+    window.addEventListener('keydown', hideBadge, {once:true});
+    window.addEventListener('touchstart', hideBadge, {once:true});
+  })();
 
   /* ── Init ── */
   buildStats();
