@@ -1285,6 +1285,10 @@
   (function() {
     const badge = document.querySelector('.header-badge');
     if (!badge) return;
+    // Affichage initial forcé
+    badge.style.display = '';
+    badge.style.opacity = '1';
+    badge.style.transition = '';
     let hidden = false;
     function hideBadge() {
       if (hidden) return;
