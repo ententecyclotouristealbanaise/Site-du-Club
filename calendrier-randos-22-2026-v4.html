@@ -195,6 +195,7 @@
 <!-- ════ HEADER ════ -->
 <header class="site-header">
   <div class="header-badge">🚴 Entente Cyclotouriste Albanaise · Saint-Alban (22)</div>
+  <button id="hideBadgeBtn" style="margin:10px auto;display:block;padding:6px 18px;border-radius:16px;background:#e8357a;color:#fff;font-weight:700;border:none;font-size:14px;">Masquer le bandeau</button>
   <h1 class="header-title">Randonnées <em>2026</em><br>Côtes-d'Armor</h1>
   <p class="header-sub">Tous les événements Route · VTT · Gravel · Marche de l'année, avec dates, disciplines et liens officiels</p>
   <div class="header-pills">
@@ -1289,6 +1290,7 @@
 
   function runBadgeScript() {
     const badge = document.querySelector('.header-badge');
+    const btn = document.getElementById('hideBadgeBtn');
     if (!badge) { console.log('header-badge introuvable'); return; }
     // Affichage initial forcé
     badge.style.display = '';
@@ -1302,6 +1304,7 @@
       setTimeout(()=>{ badge.style.display = 'none'; }, 500);
       hidden = true;
       removeListeners();
+      if(btn) btn.style.display = 'none';
       console.log('Bandeau masqué');
     }
     function removeListeners() {
@@ -1315,6 +1318,7 @@
     window.addEventListener('mousemove', hideBadge, {once:true});
     window.addEventListener('keydown', hideBadge, {once:true});
     window.addEventListener('touchstart', hideBadge, {once:true});
+    if(btn) btn.addEventListener('click', hideBadge);
     console.log('Bandeau script lancé');
   }
 
