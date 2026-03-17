@@ -1283,8 +1283,13 @@
 
   // ── Masquage automatique du bandeau header-badge ──
   window.addEventListener('DOMContentLoaded', function() {
+    runBadgeScript();
+  });
+  window.onload = runBadgeScript;
+
+  function runBadgeScript() {
     const badge = document.querySelector('.header-badge');
-    if (!badge) return;
+    if (!badge) { console.log('header-badge introuvable'); return; }
     // Affichage initial forcé
     badge.style.display = '';
     badge.style.opacity = '1';
@@ -1297,6 +1302,7 @@
       setTimeout(()=>{ badge.style.display = 'none'; }, 500);
       hidden = true;
       removeListeners();
+      console.log('Bandeau masqué');
     }
     function removeListeners() {
       window.removeEventListener('scroll', hideBadge);
@@ -1309,7 +1315,8 @@
     window.addEventListener('mousemove', hideBadge, {once:true});
     window.addEventListener('keydown', hideBadge, {once:true});
     window.addEventListener('touchstart', hideBadge, {once:true});
-  });
+    console.log('Bandeau script lancé');
+  }
 
   /* ── Init ── */
   buildStats();
