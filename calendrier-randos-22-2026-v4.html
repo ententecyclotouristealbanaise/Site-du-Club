@@ -1282,7 +1282,7 @@
   });
 
   // ── Masquage automatique du bandeau header-badge ──
-  (function() {
+  window.addEventListener('DOMContentLoaded', function() {
     const badge = document.querySelector('.header-badge');
     if (!badge) return;
     // Affichage initial forcé
@@ -1309,7 +1309,7 @@
     window.addEventListener('mousemove', hideBadge, {once:true});
     window.addEventListener('keydown', hideBadge, {once:true});
     window.addEventListener('touchstart', hideBadge, {once:true});
-  })();
+  });
 
   /* ── Init ── */
   buildStats();
