@@ -280,55 +280,60 @@
 <!-- ============================================================ -->
 <script>
 const ECTA_DATA = {
-
-  // Actualités
-  actualites: [
+  "actualites": [
     {
-      date: "Dimanche 15 Mars 2026",
-      titre: "Sortie du dimanche",
-      texte: "Rendez-vous à 08h15 devant le Stade de foot. 2 Parcours : 88 et 78 kms",
-      tag: "Sortie",
-      image: ""
+      "date": "Dimanche 29 Mars 2026",
+      "titre": "Sortie du Dimanche",
+      "texte": "Rendez-vous à 08h00 devant le Stade de foot. 2 Parcours : 90 et 76 Kms",
+      "tag": "Sortie",
+      "image": ""
     },
     {
-      date: "Dimanche 22 Mars 2026",
-      titre: "Sortie du dimanche",
-      texte: "Rendez-vous à 08h15 devant le Stade de foot. 2 Parcours : 91 et 74 kms",
-      tag: "Sortie",
-      image: ""
+      "date": "Dimanche 22 Mars 2026",
+      "titre": "Sortie du dimanche",
+      "texte": "Rendez-vous à 08h15 devant le Stade de foot. 2 Parcours : 91 et 74 kms",
+      "tag": "Sortie",
+      "image": ""
     }
   ],
-
-  // Agenda - chaque sortie peut avoir plusieurs parcours
-  agenda: [
+  "agenda": [
     {
-      date: "Dim. 15 mars.",
-      titre: "Circuit D62",
-      parcours: [
-        { distance: "88 Kms", lien: "https://www.openrunner.com/route-details/23224349" },
-        { distance: "78 Kms", lien: "https://www.openrunner.com/route-details/23224493" }
+      "date": "Dim. 22 mars.",
+      "titre": "Circuit D25",
+      "locked": true,
+      "parcours": [
+        {
+          "distance": "91 Kms",
+          "lien": "https://www.openrunner.com/route-details/22909749"
+        },
+        {
+          "distance": "74 Kms",
+          "lien": "https://www.openrunner.com/route-details/17092617"
+        }
       ]
     },
     {
-      date: "Dim. 22 mars.",
-      titre: "Circuit D25",
-      locked: true,
-      parcours: [
-        { distance: "91 Kms", lien: "https://www.openrunner.com/route-details/22909749" },
-        { distance: "74 Kms", lien: "https://www.openrunner.com/route-details/17092617" }
+      "date": "Dim. 29 mars",
+      "titre": "Circuit D 53",
+      "locked": true,
+      "parcours": [
+        {
+          "distance": "90 Kms",
+          "lien": "https://www.openrunner.com/route-details/20357096"
+        },
+        {
+          "distance": "76 Kms",
+          "lien": "https://www.openrunner.com/route-details/20357361"
+        }
       ]
     }
   ],
-
-  // Mot de passe licenciés
-  motDePasse: "ZWN0YTE5ODU=",
-
-  // Galerie photos
-  galerie: [
+  "motDePasse": "ZWN0YTE5ODU=",
+  "galerie": [
     {
-      titre: "Galette des Rois 2026",
-      couverture: "images/Galette des Rois 2026/photo_09.jpg",
-      photos: [
+      "titre": "Galette des Rois 2026",
+      "couverture": "images/Galette des Rois 2026/photo_09.jpg",
+      "photos": [
         "images/Galette des Rois 2026/photo_01.jpg",
         "images/Galette des Rois 2026/photo_02.jpg",
         "images/Galette des Rois 2026/photo_03.jpg",
@@ -347,9 +352,9 @@ const ECTA_DATA = {
       ]
     },
     {
-      titre: "Brevet des 50 Kms",
-      couverture: "images/Brevet des 50 Kms/brevet 50_01.jpg",
-      photos: [
+      "titre": "Brevet des 50 Kms",
+      "couverture": "images/Brevet des 50 Kms/brevet 50_01.jpg",
+      "photos": [
         "images/Brevet des 50 Kms/brevet 50_01.jpg",
         "images/Brevet des 50 Kms/brevet 50_02.jpg",
         "images/Brevet des 50 Kms/brevet 50_03.jpg",
@@ -361,13 +366,12 @@ const ECTA_DATA = {
       ]
     },
     {
-      titre: "",
-      couverture: "",
-      aVenir: true,
-      photos: []
+      "titre": "",
+      "couverture": "",
+      "aVenir": true,
+      "photos": []
     }
   ]
-
 };
 </script>
 <!-- ============================================================ -->
