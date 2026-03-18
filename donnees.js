@@ -1,10 +1,18 @@
-var ECTA_DATA = {
+const ECTA_DATA = {
   "actualites": [
     {
       "date": "Dimanche 22 Mars 2026",
       "titre": "Sortie du dimanche",
       "texte": "Rendez-vous à 08h15 devant le Stade de foot. 2 Parcours : 91 et 74 kms",
       "tag": "Sortie",
+      "image": ""
+    },
+    {
+      "date": "Dimanche 22 Mars 2026",
+      "dateSort": "2026-03-22",
+      "titre": " Rando Amicale Cyclotourisme Broonaise ",
+      "texte": "L'Amicale Cyclotourisme Broonaise organise, le dimanche 22 mars 2026 (en matinée), une randonnée cyclotouriste et pédestre.\n\nLes cyclistes et marcheurs ont le choix entre plusieurs parcours avec ravitaillements.\nSur la route, qui conduira les cyclistes vers le Morbihan. 2 parcours de 57 km et 71 km sont proposés.\nLes 4 circuits VTT (25 km, 35 km, 40 km et 45 km) et la randonnée pédestre (7 km, 10 km et 14 km) empruntent principalement des chemins d’exploitation et sentiers du Bois de Broons.",
+      "tag": "Rando extérieure",
       "image": ""
     },
     {
