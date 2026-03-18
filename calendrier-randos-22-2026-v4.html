@@ -7,11 +7,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --navy:#e8357a; --navy-d:#c9295e; --navy-m:#00b4d8;
-      --rose:#e8357a; --rose-s:#fde8f1;
-      --bg:#f4f4f6; --bg2:#eef3f8; --white:#ffffff;
-      --border:#e8e4ed; --border-l:#f0edf4;
-      --txt:#1c1c2e; --muted:#6b7280;
+      --rose:#e8357a; --rose-clair:#f06fa0; --rose-pale:#fde8f1;
+      --cyan:#00b4d8; --cyan-pale:#e0f7fa;
+      --blanc:#f4f4f6; --card:#fff;
+      --texte:#1c1c2e; --gris:#6b7280; --gris-clair:#e8e4ed;
+      --radius:10px;
+      --navy:var(--rose); --navy-d:var(--rose-clair); --navy-m:var(--cyan);
+      --bg:var(--blanc); --bg2:#eef3f8; --white:#ffffff;
+      --border:var(--gris-clair); --border-l:#f0edf4;
+      --txt:var(--texte); --muted:var(--gris);
       --green:#1d7a3a; --green-s:#e5f4eb;
       --amber:#b45309; --amber-s:#fef3c7;
       --r:10px; --r-sm:6px;
@@ -39,14 +43,21 @@
 
     /* ──── HEADER ──── */
     .site-header{
-      background:linear-gradient(140deg,var(--navy-d) 0%,var(--navy) 50%,var(--navy-m) 100%);
-      color:#fff;padding:44px 24px 36px;text-align:center;position:relative;overflow:hidden;
+      background:linear-gradient(150deg,var(--rose) 0%,var(--rose-clair) 48%,var(--cyan) 100%);
+      color:#fff;padding:3rem 2rem 6rem;text-align:center;position:relative;overflow:hidden;
     }
-    .site-header::before{content:'';position:absolute;top:-100px;right:-100px;width:340px;height:340px;border-radius:50%;background:rgba(214,50,94,.12);}
-    .site-header::after{content:'';position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);}
-    .header-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:5px 16px;border-radius:20px;margin-bottom:18px;backdrop-filter:blur(4px);}
-    .header-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(26px,5.5vw,44px);font-weight:800;line-height:1.1;margin-bottom:10px;letter-spacing:.3px;text-transform:uppercase;}
-    .header-title em{color:#f9b8cc;font-style:normal;}
+
+    .site-header::after{
+      content:'';position:absolute;bottom:-2px;left:0;width:100%;height:64px;
+      background:var(--white);clip-path:ellipse(56% 100% at 50% 100%);
+    }
+    .header-badge{
+      display:inline-block;background:rgba(255,255,255,.92);color:var(--rose);
+      font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;
+      letter-spacing:.18em;text-transform:uppercase;padding:.28rem 1.1rem;border-radius:2rem;margin-bottom:.9rem;
+    }
+    .header-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.9rem,5.5vw,3.5rem);font-weight:800;color:white;text-transform:uppercase;letter-spacing:.03em;line-height:1.05;margin-bottom:.5rem}
+    .header-title em{color:#b3f0ff;font-style:normal;}
     .header-sub{font-size:15px;opacity:.85;max-width:560px;margin:0 auto 24px;line-height:1.55;}
     .header-pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
     .hpill{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:12px;font-weight:500;padding:4px 12px;border-radius:16px;}
@@ -140,12 +151,11 @@
     .no-results-icon{font-size:48px;margin-bottom:12px;}
 
     /* ──── BACK TO TOP ──── */
-    #btt{position:fixed;bottom:24px;right:24px;width:42px;height:42px;background:var(--navy);color:#fff;border:none;border-radius:50%;font-size:18px;cursor:pointer;box-shadow:var(--sh-h);display:none;align-items:center;justify-content:center;transition:all .2s;z-index:999;}
+    #btt{position:fixed;bottom:1.25rem;right:1.25rem;width:44px;height:44px;background:var(--navy);color:#fff;border:none;border-radius:50%;font-size:1.3rem;cursor:pointer;box-shadow:var(--sh-h);display:none;align-items:center;justify-content:center;transition:all .2s;z-index:999;}
     #btt:hover{background:var(--rose);transform:translateY(-2px);}
     #btt.show{display:flex;}
 
-    .btn-flottant{position:fixed;bottom:24px;left:24px;z-index:900;background:var(--rose);color:var(--white);border:none;padding:.55rem 1rem;border-radius:2rem;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 3px 14px rgba(232,53,122,.35);display:flex;align-items:center;gap:.4rem;transition:all .2s;text-decoration:none;white-space:nowrap;}
-    .btn-flottant:hover{opacity:1;transform:translateY(-2px);background:#c9295e;}
+
 
     /* ──── FOOTER ──── */
     footer{background:var(--white);border-top:1px solid var(--border);padding:24px 20px;text-align:center;font-size:12px;color:var(--muted);margin-top:24px;}
@@ -155,7 +165,7 @@
 
     .hidden{display:none!important;}
     @media(max-width:1024px){.top-nav{padding:0 .9rem}.top-nav .nav-links{display:none}.burger{display:flex}}
-    @media(max-width:640px){.month-cards{grid-template-columns:1fr;}.stats-bar{display:none;}.filter-section{gap:10px;}.fsep{display:none;}#btt{bottom:80px;right:14px}.btn-flottant{left:14px;bottom:14px;font-size:.72rem;padding:.45rem .8rem;}.nav-title{font-size:1rem}}
+    @media(max-width:640px){.month-cards{grid-template-columns:1fr;}.stats-bar{display:none;}.filter-section{gap:10px;}.fsep{display:none;}#btt{bottom:1.25rem;right:1.25rem;}.nav-title{font-size:1rem}}
   </style>
 </head>
 <body>
@@ -173,8 +183,8 @@
     <li><a href="index.html#galerie">Galerie</a></li>
     <li><a href="index.html#contact">Contact</a></li>
     <li><a href="documents.html">WT2026</a></li>
-    <li><a href="news.html" style="color:#b3f0ff">📰 Actu vélo</a></li>
-    <li><a href="calendrier-randos-22-2026-v4.html" class="active">📅 Agenda Randos 2026</a></li>
+    <li><a href="news.html">Actu vélo</a></li>
+    <li><a href="calendrier-randos-22-2026-v4.html" class="active">Agenda Randos 2026</a></li>
     <li><a href="Flora 2026.html">Flora 2026</a></li>
   </ul>
   <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
@@ -187,8 +197,8 @@
   <a href="index.html#galerie" onclick="closeMenu()">Galerie</a>
   <a href="index.html#contact" onclick="closeMenu()">Contact</a>
   <a href="documents.html" onclick="closeMenu()">WT2026</a>
-  <a href="news.html" style="color:#b3f0ff" onclick="closeMenu()">📰 Actu vélo</a>
-  <a href="calendrier-randos-22-2026-v4.html" onclick="closeMenu()">📅 Agenda Randos 2026</a>
+  <a href="news.html" onclick="closeMenu()">Actu vélo</a>
+  <a href="calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
   <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
 </div>
 
@@ -1132,7 +1142,6 @@
   <p>Aucun événement ne correspond à votre recherche.</p>
 </div>
 
-<a class="btn-flottant" href="index.html" title="Retour à l'accueil">← Accueil</a>
 <button id="btt" title="Haut de page" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <footer>

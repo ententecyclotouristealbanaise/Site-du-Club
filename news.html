@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
@@ -198,13 +198,11 @@
 
     @keyframes fadeUp{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
 
-    /* ── BOUTONS FLOTTANTS VERS L'ACCUEIL ── */
-    .btn-flottant{position:fixed;bottom:2rem;z-index:900;background:var(--rose);color:var(--blanc);border:none;padding:.65rem 1.1rem;border-radius:2rem;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 16px rgba(232,53,122,.35);display:flex;align-items:center;gap:.5rem;transition:transform .2s,background .2s;text-decoration:none}
-    .btn-flottant:hover{transform:translateY(-3px);background:#c9295e}
-    #btnRetourLeft{left:1.25rem}
+
 
     /* BOUTON DE REMONTÉE */
-    #btnToTop{position:fixed;bottom:2rem;right:5.5rem;z-index:900;background:var(--cyan);color:var(--blanc);border:none;width:52px;height:52px;border-radius:50%;font-size:1.5rem;cursor:pointer;box-shadow:0 4px 16px rgba(0,180,216,.4);transition:transform .2s,opacity .2s;display:none;align-items:center;justify-content:center}
+    #btnToTop{position:fixed;bottom:1.5rem;right:1.25rem;z-index:900;background:var(--cyan);color:var(--blanc);border:none;width:44px;height:44px;border-radius:50%;font-size:1.3rem;cursor:pointer;box-shadow:0 4px 16px rgba(0,180,216,.4);transition:transform .2s,opacity .2s;display:none;align-items:center;justify-content:center}
+    #btnToTop.visible{display:flex}
     #btnToTop:hover{transform:translateY(-3px)}
 
     @media(max-width:1024px){
@@ -246,8 +244,8 @@
       <li><a href="index.html#galerie">Galerie</a></li>
       <li><a href="index.html#contact">Contact</a></li>
       <li><a href="documents.html">WT2026</a></li>
-      <li><a href="news.html" class="active">📰 Actu vélo</a></li>
-      <li><a href="calendrier-randos-22-2026-v4.html">📅 Agenda Randos 2026</a></li>
+      <li><a href="news.html" class="active">Actu vélo</a></li>
+      <li><a href="calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
       <li><a href="Flora 2026.html">Flora 2026</a></li>
     </ul>
   </div>
@@ -261,8 +259,8 @@
   <a href="index.html#galerie" onclick="closeMenu()">Galerie</a>
   <a href="index.html#contact" onclick="closeMenu()">Contact</a>
   <a href="documents.html" onclick="closeMenu()">WT2026</a>
-  <a href="news.html" style="color:#b3f0ff" onclick="closeMenu()">📰 Actu vélo</a>
-  <a href="calendrier-randos-22-2026-v4.html" onclick="closeMenu()">📅 Agenda Randos 2026</a>
+  <a href="news.html" onclick="closeMenu()">Actu vélo</a>
+  <a href="calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
   <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
   <a href="#" onclick="loadAll(); closeMenu(); return false;">↻ Actualiser</a>
 </div>
@@ -311,7 +309,7 @@
     <div id="src-pills"></div>
   </div>
 
-  <div class="sh"><span class="sp">📰 Toute l'actualité cyclisme en français</span><div class="sr"></div></div>
+  <div class="sh"><span class="sp">Toute l'actualité cyclisme en français</span><div class="sr"></div></div>
 
   <div id="grid">
     <div class="state">
@@ -340,7 +338,6 @@
 </footer>
 
 <!-- boutons flottants vers l'accueil -->
-<a id="btnRetourLeft" class="btn-flottant" href="index.html" title="Accueil">← Accueil</a>
 <button id="btnToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">↑</button>
 
 
@@ -813,6 +810,12 @@ setInterval(loadAll, 6 * 60 * 60 * 1000);
    DÉMARRAGE
    ════════════════════════════════════════════════════════════ */
 window.addEventListener('load', loadAll);
+// Retour en haut
+window.addEventListener('scroll', () => {
+  const b = document.getElementById('btnToTop');
+  if(window.scrollY > 400) b.classList.add('visible');
+  else b.classList.remove('visible');
+});
 </script>
 </body>
 </html>

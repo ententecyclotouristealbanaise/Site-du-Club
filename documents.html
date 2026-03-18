@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -84,26 +84,93 @@
       box-shadow:0 8px 22px rgba(0,0,0,.12);
       background:#fff;
     }
-    .pdf-overlay-nav{display:none;position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:15;align-items:center;gap:.55rem;background:rgba(255,255,255,.93);border:1px solid #ddd6e4;border-radius:999px;padding:.35rem .5rem;box-shadow:0 4px 16px rgba(0,0,0,.16)}
-    .pdf-overlay-btn{border:none;background:#fff;color:#2c2c43;padding:.35rem .68rem;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;box-shadow:0 2px 9px rgba(0,0,0,.12)}
-    .pdf-overlay-btn:disabled{opacity:.45;cursor:not-allowed}
-    .pdf-overlay-info{font-family:'Barlow Condensed',sans-serif;font-size:.76rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#3d3d59;padding:0 .2rem;min-width:90px;text-align:center}
+    /* ── CADRE IMAGE PDF ─────────────────────────────── */
     .pdf-frame{position:absolute;inset:0;overflow:auto;padding:.7rem;background:#f8f8fb;display:flex;justify-content:center;align-items:flex-start}
     .pdf-inline-iframe{display:none;width:100%;height:100%;border:0;background:#fff;border-radius:8px}
     .pdf-page{display:block;max-width:100%;height:auto;margin:0 auto;border:1px solid #dfd8e5;border-radius:8px;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.08)}
     .pdf-canvas{display:none;max-width:100%;height:auto;margin:0 auto;border:1px solid #dfd8e5;border-radius:8px;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.08)}
     #pdfStatus{text-align:center;font-size:.92rem;color:#6b7280;padding:.8rem .9rem}
-    .pdf-container:fullscreen{width:100vw;height:100vh;max-width:none;margin:0;border-radius:0}
 
-    /* Edge: document en mode image plus large */
-    body.edge-mode .pdf-container{width:100%;max-width:1400px}
-    body.edge-mode .pdf-frame{padding:0}
-    body.edge-mode .pdf-page{width:100%;max-width:none;border-radius:0}
-    body.edge-mode .pdf-overlay-nav{display:flex}
-
-    /* En plein ecran, occuper toute la largeur sans marge */
-    body.edge-mode .pdf-container:fullscreen .pdf-frame{padding:0}
-    body.edge-mode .pdf-container:fullscreen .pdf-page{width:100%;max-width:none;border:0;border-radius:0;box-shadow:none}
+    /* ── BOUTONS FLOTTANTS PLEIN ÉCRAN ─────────────── */
+    /* Cachés par défaut, visibles seulement en fullscreen via la classe .is-fullscreen */
+    .pdf-overlay-nav{display:none}
+    .pdf-fs-prev,
+    .pdf-fs-next{
+      display:none;
+      position:fixed;
+      top:50%;
+      transform:translateY(-50%);
+      z-index:9999;
+      width:54px;height:54px;
+      border-radius:50%;
+      border:none;
+      background:rgba(255,255,255,.92);
+      color:#2c2c43;
+      font-size:1.6rem;
+      cursor:pointer;
+      box-shadow:0 4px 18px rgba(0,0,0,.22);
+      transition:background .18s,transform .18s;
+      align-items:center;
+      justify-content:center;
+    }
+    .pdf-fs-prev:hover,.pdf-fs-next:hover{background:rgba(255,255,255,1);transform:translateY(-50%) scale(1.08)}
+    .pdf-fs-prev:disabled,.pdf-fs-next:disabled{opacity:.35;cursor:not-allowed}
+    .pdf-fs-prev{left:1.1rem}
+    .pdf-fs-next{right:1.1rem}
+    .pdf-fs-close {
+      display:none;
+      position:fixed;
+      top:1.2rem;
+      right:1.2rem;
+      z-index:9999;
+      width:48px;height:48px;
+      border-radius:50%;
+      border:none;
+      background:rgba(255,100,100,.9); /* Couleur un peu plus marquée */
+      color:#fff;
+      font-size:1.4rem;
+      cursor:pointer;
+      box-shadow:0 4px 18px rgba(0,0,0,.28);
+      transition:background .18s,transform .18s;
+      align-items:center;
+      justify-content:center;
+      font-weight:bold;
+    }
+    .pdf-fs-close:hover { background:rgba(255,50,50,1); transform:scale(1.1); }
+    .pdf-fs-info{
+      display:none;
+      position:fixed;
+      bottom:1.2rem;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:9999;
+      background:rgba(28,28,46,.82);
+      color:#fff;
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:.88rem;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      padding:.35rem 1.1rem;
+      border-radius:2rem;
+      backdrop-filter:blur(6px);
+      pointer-events:none;
+    }
+    /* Activation en plein écran */
+    .pdf-container:fullscreen,.pdf-container:-webkit-full-screen{
+      width:100vw;height:100vh;max-width:none;margin:0;border-radius:0;
+    }
+    .pdf-container:fullscreen .pdf-frame,.pdf-container:-webkit-full-screen .pdf-frame{padding:.5rem;background:#1c1c2e}
+    .pdf-container:fullscreen .pdf-page,.pdf-container:-webkit-full-screen .pdf-page{max-height:calc(100vh - 1rem);width:auto;max-width:100%;border:0;border-radius:0;box-shadow:none;object-fit:contain}
+    /* Boutons flottants visibles en fullscreen */
+    #pdfContainer:fullscreen .pdf-fs-prev,
+    #pdfContainer:fullscreen .pdf-fs-next,
+    #pdfContainer:fullscreen .pdf-fs-info,
+    #pdfContainer:fullscreen .pdf-fs-close,
+    #pdfContainer:-webkit-full-screen .pdf-fs-prev,
+    #pdfContainer:-webkit-full-screen .pdf-fs-next,
+    #pdfContainer:-webkit-full-screen .pdf-fs-info,
+    #pdfContainer:-webkit-full-screen .pdf-fs-close { display: flex; }
 
     @media(max-width:900px){
       .pdf-container{height:72vh;min-height:460px}
@@ -113,18 +180,28 @@
       .nav-title{font-size:1rem}
       #documents .container{padding:1rem .6rem}
     }
-
+    
     /* Lecteur PDF OneDrive */
     #pdfControls{display:none}
+    /* ── HERO ── */
+    .hero{
+      background:linear-gradient(150deg,var(--rose) 0%,var(--rose-clair) 48%,var(--cyan) 100%);
+      padding:6rem 2rem 7rem;text-align:center;position:relative;overflow:hidden;
+      width:100%;
+    }
+    .hero::after{
+      content:'';position:absolute;bottom:-2px;left:0;width:100%;height:64px;
+      background:var(--blanc);clip-path:ellipse(56% 100% at 50% 100%);
+    }
+    .hero-badge{
+      display:inline-block;background:rgba(255,255,255,.92);color:var(--rose);
+      font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;
+      letter-spacing:.18em;text-transform:uppercase;padding:.28rem 1.1rem;border-radius:2rem;margin-bottom:.9rem;
+    }
+    .hero h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.9rem,5.5vw,3.5rem);font-weight:800;color:white;text-transform:uppercase;letter-spacing:.03em;line-height:1.05;margin-bottom:.5rem}
+    .hero h1 span{color:#b3f0ff}
+    .hero>p{color:rgba(255,255,255,.9);font-size:.97rem;font-weight:300;max-width:540px;margin:0 auto 1.2rem}
 
-    /* BOUTONS FLOTTANTS VERS L'ACCUEIL */
-    .btn-flottant{position:fixed;bottom:2rem;z-index:900;background:var(--rose);color:var(--blanc);border:none;padding:.65rem 1.1rem;border-radius:2rem;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 16px rgba(232,53,122,.35);display:flex;align-items:center;gap:.5rem;transition:transform .2s,background .2s;text-decoration:none}
-    .btn-flottant:hover{transform:translateY(-3px);background:#c9295e}
-    #btnRetourLeft{left:1.25rem}
-
-    /* BOUTON FLOTTANT VERS LE HAUT (optionnel) */
-    #btnToTop{position:fixed;bottom:2rem;right:5.5rem;z-index:900;background:var(--cyan);color:var(--blanc);border:none;width:52px;height:52px;border-radius:50%;font-size:1.5rem;cursor:pointer;box-shadow:0 4px 16px rgba(0,180,216,.4);transition:transform .2s,opacity .2s;display:none;align-items:center;justify-content:center}
-    #btnToTop.visible{display:flex}
     #btnToTop:hover{transform:translateY(-3px)}
   </style>
 </head>
@@ -143,8 +220,8 @@
     <li><a href="index.html#galerie">Galerie</a></li>
     <li><a href="index.html#contact">Contact</a></li>
     <li><a href="documents.html" class="active">WT2026</a></li>
-    <li><a href="news.html" style="color:#b3f0ff">📰 Actu vélo</a></li>
-    <li><a href="calendrier-randos-22-2026-v4.html">📅 Agenda Randos 2026</a></li>
+    <li><a href="news.html">Actu vélo</a></li>
+    <li><a href="calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
     <li><a href="Flora 2026.html">Flora 2026</a></li>
   </ul>
   <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
@@ -157,22 +234,22 @@
   <a href="index.html#galerie" onclick="closeMenu()">Galerie</a>
   <a href="index.html#contact" onclick="closeMenu()">Contact</a>
   <a href="documents.html" onclick="closeMenu()">WT2026</a>
-  <a href="news.html" style="color:#b3f0ff" onclick="closeMenu()">📰 Actu vélo</a>
-  <a href="calendrier-randos-22-2026-v4.html" onclick="closeMenu()">📅 Agenda Randos 2026</a>
+  <a href="news.html" onclick="closeMenu()">Actu vélo</a>
+  <a href="calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
   <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
 </div>
+<header class="hero">
+  <div class="hero-badge">Dossier Officiel · ECTA Saint-Alban</div>
+  <h1>World Tour <span>2026</span></h1>
+
+</header>
+
 <section id="documents">
   <div class="container">
-    <div class="tour-card">
-      <div class="section-header">
-        <div class="section-label">🌍 World Tour 2026</div>
-        <h2><span>World Tour 2026</span></h2>
-      </div>
-      <p>Retrouvez ici la version complète du dossier, consultable en ligne.</p>
-    </div>
-    <div class="tour-divider"></div>
+
     <div class="viewer-actions">
       <button class="viewer-btn" id="openFullscreenBtn" type="button">Ouvrir en plein ecran</button>
+      <a class="viewer-btn" href="pdf/WT2026.pdf" download="WT2026.pdf" style="text-decoration:none;">⬇ Télécharger le PDF</a>
     </div>
     <div class="doc-nav" aria-label="Navigation du document">
       <button class="doc-nav-btn" id="prevPageBtn" type="button">Page precedente</button>
@@ -185,20 +262,20 @@
         <img id="docPageImage" class="pdf-page" src="pdf/wt2026-pages/page-001.png" alt="Page 1 du document WT2026" loading="eager" />
         <canvas id="pdfCanvas" class="pdf-canvas" aria-label="Lecteur PDF WT2026"></canvas>
       </div>
-      <div class="pdf-overlay-nav" id="pdfOverlayNav" aria-label="Navigation plein ecran">
-        <button class="pdf-overlay-btn" id="overlayPrevBtn" type="button">Precedente</button>
-        <span class="pdf-overlay-info" id="overlayPageInfo">Page 1 / 85</span>
-        <button class="pdf-overlay-btn" id="overlayNextBtn" type="button">Prochaine</button>
-      </div>
       <p id="pdfStatus"></p>
+
+      <!-- Boutons flottants plein écran (déplacés ici pour être visibles en fullscreen) -->
+      <button class="pdf-fs-prev" id="fsPrevBtn" type="button" aria-label="Page précédente">‹</button>
+      <div class="pdf-fs-info" id="fsPageInfo">Page 1 / 85</div>
+      <button class="pdf-fs-next" id="fsNextBtn" type="button" aria-label="Page suivante">›</button>
+      <button class="pdf-fs-close" id="fsCloseBtn" type="button" aria-label="Quitter le plein écran">✕</button>
     </div>
     <p style="text-align:center;color:#6b7280;font-size:.9rem;margin-top:-1rem;">PDF Élaboré par VELOFUTE.COM</p>
     <!-- lien déplacé après le footer pour plus de clarté -->
   </div>
 </section>
 
-<a id="btnRetourLeft" class="btn-flottant" href="index.html" title="Accueil">← Accueil</a>
-<button id="btnToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">↑</button>
+
 
 <script>
   // Scripts pour le menu mobile
@@ -218,7 +295,8 @@
     if (e.key === 'Escape') closeMenu();
   });
 
-  // Chrome: PDF inline. Edge/autres: viewer image robuste.
+  // Visualiseur image-par-image (PNG prérendus) — fonctionne sur tous les navigateurs
+  // sans déclencher de téléchargement. Un bouton "Télécharger" donne accès au PDF complet.
   (function initDocViewer(){
     const pdfStatus = document.getElementById('pdfStatus');
     const openFullscreenBtn = document.getElementById('openFullscreenBtn');
@@ -229,37 +307,28 @@
     const prevPageBtn = document.getElementById('prevPageBtn');
     const nextPageBtn = document.getElementById('nextPageBtn');
     const pageInfo = document.getElementById('pageInfo');
-    const overlayPrevBtn = document.getElementById('overlayPrevBtn');
-    const overlayNextBtn = document.getElementById('overlayNextBtn');
-    const overlayPageInfo = document.getElementById('overlayPageInfo');
     const docNav = document.querySelector('.doc-nav');
+    // Boutons flottants plein écran
+    const fsPrevBtn = document.getElementById('fsPrevBtn');
+    const fsNextBtn = document.getElementById('fsNextBtn');
+    const fsPageInfo = document.getElementById('fsPageInfo');
+    const fsCloseBtn = document.getElementById('fsCloseBtn');
     const totalPages = 85;
     let currentPage = 1;
-    let effectiveTotalPages = totalPages;
-    const ua = navigator.userAgent;
-    const isEdge = /Edg\//.test(ua);
-    const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
-    const pdfRelativeUrl = 'pdf/WT2026.pdf#view=FitH';
-    const pdfAbsoluteUrl = new URL('pdf/WT2026.pdf', window.location.href).href;
-    const pdfMobileViewerUrl = 'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(pdfAbsoluteUrl);
-    // Lecteur type PC sur mobile/desktop, fallback image reserve a Edge.
-    const useInlinePdf = !isEdge;
-
-    if (isEdge) {
-      document.body.classList.add('edge-mode');
-    }
+    const effectiveTotalPages = totalPages;
 
     function pageSrc(pageNum) {
       return `pdf/wt2026-pages/page-${String(pageNum).padStart(3, '0')}.png`;
     }
 
     function updatePageUi() {
-      pageInfo.textContent = `Page ${currentPage} / ${effectiveTotalPages}`;
-      overlayPageInfo.textContent = `Page ${currentPage} / ${effectiveTotalPages}`;
+      const label = `Page ${currentPage} / ${effectiveTotalPages}`;
+      pageInfo.textContent = label;
+      if (fsPageInfo) fsPageInfo.textContent = label;
       prevPageBtn.disabled = currentPage <= 1;
       nextPageBtn.disabled = currentPage >= effectiveTotalPages;
-      overlayPrevBtn.disabled = currentPage <= 1;
-      overlayNextBtn.disabled = currentPage >= effectiveTotalPages;
+      if (fsPrevBtn) fsPrevBtn.disabled = currentPage <= 1;
+      if (fsNextBtn) fsNextBtn.disabled = currentPage >= effectiveTotalPages;
     }
 
     function renderPageImage(pageNum) {
@@ -276,47 +345,61 @@
       pdfStatus.textContent = '';
     });
 
+    // Navigation normale (barre au-dessus du viewer)
     prevPageBtn.addEventListener('click', () => renderPageImage(currentPage - 1));
     nextPageBtn.addEventListener('click', () => renderPageImage(currentPage + 1));
-    overlayPrevBtn.addEventListener('click', () => renderPageImage(currentPage - 1));
-    overlayNextBtn.addEventListener('click', () => renderPageImage(currentPage + 1));
 
-    if (useInlinePdf) {
-      docNav.style.display = 'none';
-      docImg.style.display = 'none';
-      pdfCanvas.style.display = 'none';
-      pdfInlineFrame.style.display = 'block';
-      pdfInlineFrame.src = isMobile ? pdfMobileViewerUrl : pdfRelativeUrl;
-      pdfStatus.textContent = '';
-    } else {
-      pdfCanvas.style.display = 'none';
-      pdfInlineFrame.style.display = 'none';
-      docImg.style.display = 'block';
-      docNav.style.display = 'flex';
-      renderPageImage(1);
-      pdfStatus.textContent = '';
+    // Navigation flottante (visible uniquement en plein écran)
+    if (fsPrevBtn) fsPrevBtn.addEventListener('click', () => renderPageImage(currentPage - 1));
+    if (fsNextBtn) fsNextBtn.addEventListener('click', () => renderPageImage(currentPage + 1));
+
+    // Bouton de fermeture
+    if (fsCloseBtn) {
+      fsCloseBtn.addEventListener('click', () => {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      });
     }
+
+    // Flèches clavier
+    document.addEventListener('keydown', (e) => {
+      if (document.fullscreenElement) {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp')   renderPageImage(currentPage - 1);
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') renderPageImage(currentPage + 1);
+      }
+    });
+
+    // Activation du mode plein écran → affiche les boutons flottants
+    function onFullscreenChange() {
+      if (document.fullscreenElement) {
+        document.body.classList.add('pdf-fullscreen');
+      } else {
+        document.body.classList.remove('pdf-fullscreen');
+      }
+    }
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+
+    // Mode image uniquement — fonctionne sur tous les navigateurs
+    pdfCanvas.style.display = 'none';
+    renderPageImage(1);
+    pdfStatus.textContent = '';
 
     openFullscreenBtn.addEventListener('click', async () => {
       try {
         if (pdfContainer.requestFullscreen) {
           await pdfContainer.requestFullscreen();
+        } else if (pdfContainer.webkitRequestFullscreen) {
+          pdfContainer.webkitRequestFullscreen();
         }
       } catch (e) {
-        pdfStatus.textContent = 'Le mode plein ecran n\'est pas disponible sur ce navigateur.';
+        pdfStatus.textContent = 'Le mode plein écran n\'est pas disponible sur ce navigateur.';
       }
     });
   })();
-
-  // Afficher/masquer le bouton "vers le haut"
-  window.addEventListener('scroll', () => {
-    const btnToTop = document.getElementById('btnToTop');
-    if(window.scrollY > 300) {
-      btnToTop.classList.add('visible');
-    } else {
-      btnToTop.classList.remove('visible');
-    }
-  });
 </script>
 
 </body>
