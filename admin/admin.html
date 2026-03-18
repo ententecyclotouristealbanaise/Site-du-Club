@@ -472,8 +472,8 @@
 
     function renderLists() {
         // Tri automatique avant affichage
-        // Actualités : Les plus récentes en premier (Décroissant)
-        localData.actualites.sort((a, b) => (b.dateSort || "").localeCompare(a.dateSort || ""));
+        // Actualités : Par ordre chronologique (Croissant)
+        localData.actualites.sort((a, b) => (a.dateSort || "").localeCompare(b.dateSort || ""));
         // Agenda : Les plus proches en premier (Croissant)
         localData.agenda.sort((a, b) => (a.dateSort || "").localeCompare(b.dateSort || ""));
 
