@@ -472,8 +472,10 @@
 
     function renderLists() {
         // Tri automatique avant affichage
-        localData.actualites.sort((a, b) => (b.dateSort || "") > (a.dateSort || "") ? -1 : 1);
-        localData.agenda.sort((a, b) => (a.dateSort || "") > (b.dateSort || "") ? 1 : -1);
+        // Actualités : Les plus récentes en premier (Décroissant)
+        localData.actualites.sort((a, b) => (b.dateSort || "").localeCompare(a.dateSort || ""));
+        // Agenda : Les plus proches en premier (Croissant)
+        localData.agenda.sort((a, b) => (a.dateSort || "").localeCompare(b.dateSort || ""));
 
         // Liste Actu
         const listActu = document.getElementById('list-actu');

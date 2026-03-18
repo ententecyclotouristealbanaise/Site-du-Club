@@ -2,6 +2,7 @@ const ECTA_DATA = {
   "actualites": [
     {
       "date": "Dimanche 22 Mars 2026",
+      "dateSort": "2026-03-22",
       "titre": "Sortie du dimanche",
       "texte": "Rendez-vous à 08h15 devant le Stade de foot. 2 Parcours : 91 et 74 kms",
       "tag": "Sortie",
@@ -43,6 +44,7 @@ const ECTA_DATA = {
   "agenda": [
     {
       "date": "Dim. 22 mars.",
+      "dateSort": "2026-03-22",
       "titre": "Circuit D25",
       "locked": true,
       "parcours": [
