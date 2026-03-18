@@ -43,22 +43,6 @@ const ECTA_DATA = {
   ],
   "agenda": [
     {
-      "date": "Jeu. 5 mars.",
-      "dateSort": "2026-03-05",
-      "titre": "Circuit D63",
-      "locked": true,
-      "parcours": [
-        {
-          "distance": "83 Kms",
-          "lien": "https://www.openrunner.com/route-details/23225098"
-        },
-        {
-          "distance": "70 Kms",
-          "lien": "https://www.openrunner.com/route-details/23225269"
-        }
-      ]
-    },
-    {
       "date": "Dim. 22 mars.",
       "dateSort": "2026-03-22",
       "titre": "Circuit D25",
@@ -87,6 +71,22 @@ const ECTA_DATA = {
         {
           "distance": "76 Kms",
           "lien": "https://www.openrunner.com/route-details/20357361"
+        }
+      ]
+    },
+    {
+      "date": "Dim. 5 avr..",
+      "dateSort": "2026-04-05",
+      "titre": "Circuit D63",
+      "locked": true,
+      "parcours": [
+        {
+          "distance": "83 Kms",
+          "lien": "https://www.openrunner.com/route-details/23225098"
+        },
+        {
+          "distance": "70 Kms",
+          "lien": "https://www.openrunner.com/route-details/23225269"
         }
       ]
     }
