@@ -236,10 +236,158 @@
   <main class="panel" style="position: relative; z-index: 10;">
     <figure class="banner-wrap">
       <img src="images/banderole_rando_de_la_Flora_2026.webp" alt="Banderole officielle Randonnee de la Flora 2026" loading="eager" />
-      <figcaption class="banner-caption">Randonnee de la Flora - Saint-Alban - Dimanche 17 mai</figcaption>
+      <figcaption class="banner-caption">Le grand rendez-vous du Dimanche 17 mai · Saint-Alban (22)</figcaption>
     </figure>
-    <p class="subtitle">Infos à venir</p>
+
+    <div class="event-details">
+      <div class="calendar-card">
+        <div class="calendar-icon">📅</div>
+        <h3>Notez la date !</h3>
+        <p><strong>Dimanche 17 mai 2026</strong><br>Dès 07h30 (Inscriptions)</p>
+        <p>📍 Salle des Fêtes, 22400 Saint-Alban</p>
+        
+        <div class="agenda-buttons">
+          <a href="https://www.google.com/calendar/render?action=TEMPLATE&text=Randonn%C3%A9e%20de%20la%20Flora%202026&details=VTT%20(20%2C%2035%2C%2045%2C%2050%2C%2060%20km)%2C%20Route%20(51%2C%2078%2C%20108%20km)%2C%20Marche%20(5%2C%2010%2C%2015%2C%2020%20km)%2C%20Gravel%20(53%2C%2085%20km).%20Inscriptions%20d%C3%A8s%2007h30.&location=Salle%20des%20F%C3%AAtes%2C%2022400%20Saint-Alban&dates=20260517T073000/20260517T150000" target="_blank" class="btn-agenda google">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg" width="18" alt="">
+            Ajouter à Google
+          </a>
+          <button onclick="downloadICS()" class="btn-agenda apple">
+            <svg viewBox="0 0 384 512" width="16" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c2.1-34.6 15-70.4 46.5-94.7C283.4 1.4 245.7 13 218 53.6c-11.8 17.1-22.1 36.7-22.1 63.8z"/></svg>
+            Ajouter à mon iPhone
+          </button>
+        </div>
+      </div>
+
+      <div class="circuits-grid">
+        <div class="circuit-category vtt">
+          <h4>🏔️ VTT</h4>
+          <p><strong>5 circuits</strong> : 20 · 35 · 45 · 50 · 60 km</p>
+        </div>
+        <div class="circuit-category route">
+          <h4>🚴 ROUTE</h4>
+          <p><strong>3 circuits</strong> : 51 · 78 · 108 km</p>
+        </div>
+        <div class="circuit-category gravel">
+          <h4>🪨 GRAVEL</h4>
+          <p><strong>2 circuits</strong> : 53 · 85 km</p>
+        </div>
+        <div class="circuit-category marche">
+          <h4>🚶 MARCHE</h4>
+          <p><strong>4 circuits</strong> : 5 · 10 · 15 · 20 km</p>
+        </div>
+      </div>
+    </div>
   </main>
+
+  <style>
+    .event-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      margin-top: 1.5rem;
+    }
+    .calendar-card {
+      background: #fdf2f7;
+      border: 1px solid #f06fa033;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+    .calendar-card:hover { transform: translateY(-3px); }
+    .calendar-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .calendar-card h3 { font-family: 'Barlow Condensed', sans-serif; color: var(--rose); font-size: 1.5rem; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .calendar-card p { font-size: 1rem; color: #444; margin-bottom: 0.3rem;}
+
+    .agenda-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .btn-agenda {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .btn-agenda.google { background: #fff; color: #444; border: 1px solid #ddd; }
+    .btn-agenda.apple { background: #1c1c2e; color: #fff; }
+    .btn-agenda:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: scale(1.03); }
+
+    .circuits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .circuit-category {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 1.2rem 1rem;
+      text-align: left;
+    }
+    .circuit-category h4 { 
+      font-family: 'Barlow Condensed', sans-serif; 
+      font-size: 1.25rem; 
+      margin-bottom: 0.6rem; 
+      letter-spacing: 0.05em;
+    }
+    .circuit-category p { font-size: 0.9rem; color: #666; line-height: 1.4; }
+    
+    .circuit-category.vtt { border-left: 4px solid #4CAF50; }
+    .circuit-category.route { border-left: 4px solid #2196F3; }
+    .circuit-category.gravel { border-left: 4px solid #FF9800; }
+    .circuit-category.marche { border-left: 4px solid #E91E63; }
+
+    @media (max-width: 600px) {
+      .agenda-buttons { flex-direction: column; align-items: stretch; }
+      .btn-agenda { justify-content: center; }
+    }
+  </style>
+
+  <script>
+    function downloadICS() {
+      const event = {
+        title: "Randonnée de la Flora 2026",
+        start: "20260517T073000",
+        end: "20260517T150000",
+        location: "Salle des Fêtes, 22400 Saint-Alban",
+        description: "VTT (20, 35, 45, 50, 60 km), Route (51, 78, 108 km), Marche (5, 10, 15, 20 km), Gravel (53, 85 km). Inscriptions dès 07h30. 🚴‍♂️"
+      };
+
+      const icsData = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "BEGIN:VEVENT",
+        "DTSTART:" + event.start,
+        "DTEND:" + event.end,
+        "SUMMARY:" + event.title,
+        "DESCRIPTION:" + event.description,
+        "LOCATION:" + event.location,
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\\n");
+
+      const blob = new Blob([icsData], { type: "text/calendar" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Flora-2026.ics";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  </script>
 
 
   <script>
