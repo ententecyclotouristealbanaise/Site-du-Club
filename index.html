@@ -84,119 +84,19 @@
     .section-header{text-align:center;margin-bottom:3rem}
     .section-label{display:inline-block;background:var(--rose-pale);color:var(--rose);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:.3rem 1rem;border-radius:2rem;margin-bottom:.75rem}
     .section-header h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;color:var(--texte);text-transform:uppercase;letter-spacing:.03em}
-    .section-header h2 span{color:var(--rose)}
-    .section-header p{color:var(--gris);margin-top:.5rem;font-size:1rem}
-
-    /* --- LE CLUB --- */
-    #leclub{background:var(--blanc)}
-    .club-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
-    .club-text{width:100%;text-align:left}
-    .club-text p{color:var(--gris);font-size:1rem;line-height:1.8;margin-bottom:1.25rem}
-    .club-photo-wrap{border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(232,53,122,.2);position:relative;justify-self:end;align-self:start;width:min(100%,360px);transform:translateX(40px)}
-    .club-photo-wrap img{width:100%;height:320px;object-fit:cover;display:block;object-position:center 40%}
-    .club-photo-caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(28,28,46,.75));color:#fff;padding:1.25rem 1.5rem;font-size:.88rem;font-weight:600}
-    .bienvenue-box{background:linear-gradient(135deg,var(--rose-pale),#e0f7fa);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-top:1.5rem;border-left:4px solid var(--rose)}
-    .bienvenue-box p{color:var(--texte) !important;font-size:.95rem !important;margin-bottom:0 !important}
-    .bienvenue-box strong{color:var(--rose)}
-    .club-stats{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1.5rem;justify-content:center;width:calc(200% + 3rem)}
-    @media(max-width:900px){.club-grid{grid-template-columns:1fr}.club-text{text-align:center}.club-stats{justify-content:center;width:100%}.club-photo-wrap{justify-self:center;width:min(100%,520px);transform:none}}
-    .stat-card{background:var(--blanc);border-radius:var(--radius);padding:1.5rem 2.5rem;text-align:center;flex:0 0 250px;min-width:250px;border:2px solid var(--rose);box-shadow:0 4px 18px rgba(232,53,122,.15)}
-    .stat-card .stat-num{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--rose);line-height:1}
-    .stat-card .stat-label{font-size:.78rem;font-weight:700;color:var(--gris);letter-spacing:.08em;text-transform:uppercase;margin-top:.3rem}
-    /* --- SÉPARATEURS --- */
-    #leclub{position:relative}
-    #leclub::after{content:'';position:absolute;bottom:-2px;left:0;width:100%;height:60px;background:var(--gris-clair);clip-path:ellipse(55% 100% at 50% 100%);z-index:1}
-    #actualites{position:relative}
-    #actualites::after{content:'';position:absolute;bottom:-2px;left:0;width:100%;height:60px;background:var(--blanc);clip-path:ellipse(55% 100% at 50% 100%);z-index:1}
-    #galerie{position:relative}
-    #galerie::after{content:'';position:absolute;bottom:-2px;left:0;width:100%;height:60px;background:var(--blanc);clip-path:ellipse(55% 100% at 50% 100%);z-index:1}
-    /* --- ACTUALITÉS --- */
-    #actualites{background:var(--gris-clair)}
-    .actu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
-    .actu-card{background:var(--blanc);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);transition:transform .2s,box-shadow .2s}
-    .actu-card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(0,0,0,.12)}
-    .actu-card-top{background:linear-gradient(90deg,var(--rose),var(--cyan));height:6px}
-    .actu-card-img{width:100%;height:110px;object-fit:cover}
-    .actu-card-body{padding:1.5rem}
-    .actu-date{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--rose);margin-bottom:.5rem}
-    .actu-card h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem}
-    .actu-card p{font-size:.9rem;color:var(--gris);line-height:1.6}
-    .actu-tag{display:inline-block;margin-top:.75rem;background:var(--rose-pale);color:var(--rose);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .7rem;border-radius:2rem}
-
-    /* --- MÉTÉO --- */
-    .meteo-widget{background:linear-gradient(135deg,#e0f7fa,var(--rose-pale));border-radius:16px;padding:2rem;margin-bottom:2.5rem;box-shadow:0 4px 24px rgba(0,180,216,.12);border:1px solid rgba(0,180,216,.15)}
-    .meteo-title{font-family:'Barlow Condensed',sans-serif;font-size:1.25rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--texte);margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem}
-    .meteo-days{display:flex;gap:1rem;flex-wrap:wrap}
-    .meteo-day{background:var(--blanc);border-radius:var(--radius);padding:1rem;flex:1;min-width:120px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-    .meteo-day.is-sunday{border:2px solid var(--rose)}
-    .meteo-day .m-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gris)}
-    .meteo-day.is-sunday .m-label{color:var(--rose)}
-    .meteo-day .m-icon{font-size:2rem;margin:.4rem 0}
-    .meteo-day .m-temps{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;color:var(--texte)}
-    .meteo-day .m-pluie{font-size:.75rem;color:var(--gris);margin-top:.2rem}
-    .meteo-day .m-vent{font-size:.72rem;color:var(--gris)}
-    .meteo-loading{text-align:center;color:var(--gris);font-size:.9rem;padding:1rem}
-
-    /* --- COMPTEUR AGENDA --- */
-    .agenda-countdown{display:flex;align-items:center;justify-content:center;gap:1.25rem;background:var(--blanc);border-top:3px solid var(--rose);border-radius:var(--radius);padding:1rem 2rem;margin-bottom:1.5rem;box-shadow:0 2px 12px rgba(232,53,122,.1)}
-    .cd-num{font-family:'Barlow Condensed',sans-serif;font-size:2.8rem;font-weight:800;color:var(--rose);line-height:1}
-    .cd-divider{width:1px;height:36px;background:var(--gris-clair)}
-    .cd-label{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--gris);line-height:1.5}
-
-    /* --- AGENDA --- */
-    #agenda{background:var(--blanc)}
-    .agenda-list{display:flex;flex-direction:column;gap:1.25rem}
-    .agenda-item{background:var(--blanc);border-radius:var(--radius);box-shadow:0 2px 16px rgba(0,0,0,.07);overflow:hidden;border-left:5px solid var(--rose)}
-    .agenda-item-header{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.5rem;cursor:pointer;gap:1rem;flex-wrap:wrap}
-    .agenda-item-header:hover{background:var(--rose-pale)}
-    .agenda-meta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
-    .agenda-date{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--rose);min-width:90px}
-    .agenda-titre{font-weight:700;font-size:1rem}
-    .badge-dist{background:#e8f5e9;color:#2e7d32;font-size:.72rem;font-weight:700;padding:.2rem .65rem;border-radius:2rem}
-    .agenda-toggle{color:var(--rose);font-size:1.2rem;transition:transform .3s;flex-shrink:0}
-    .agenda-item.open .agenda-toggle{transform:rotate(180deg)}
-    .agenda-body{display:none;padding:0 1.5rem 1.5rem;border-top:1px solid var(--rose-pale)}
-    .agenda-item.open .agenda-body{display:block}
-    .circuit-lock{background:var(--blanc);border:2px solid var(--rose-pale);border-radius:var(--radius);padding:2rem;text-align:center;margin-top:1rem;box-shadow:0 4px 18px rgba(232,53,122,.1)}
-    .circuit-lock .lock-icon{font-size:2.5rem;margin-bottom:.75rem}
-    .circuit-lock h4{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;text-transform:uppercase;color:var(--texte);margin-bottom:.4rem}
-    .circuit-lock p{color:var(--gris);font-size:.88rem;margin-bottom:1.25rem}
-    .lock-form{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
-    .lock-input{padding:.6rem 1rem;border:2px solid #e8d0e0;border-radius:var(--radius);font-family:'Nunito',sans-serif;font-size:.95rem;outline:none;transition:border-color .2s;width:200px}
-    .lock-input:focus{border-color:var(--rose)}
-    .lock-btn{background:var(--rose);color:var(--blanc);border:none;padding:.6rem 1.5rem;border-radius:var(--radius);font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:background .2s}
-    .lock-btn:hover{background:#c9295e}
-    .lock-error{color:var(--rose);font-size:.82rem;font-weight:700;margin-top:.6rem;display:none}
-    .circuit-unlocked{background:var(--blanc);border:2px solid #a5d6a7;border-radius:var(--radius);padding:1.5rem;margin-top:1rem;text-align:center;box-shadow:0 4px 18px rgba(46,125,50,.1)}
-    .circuit-unlocked-badge{display:inline-flex;align-items:center;gap:.4rem;background:#e8f5e9;color:#2e7d32;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .8rem;border-radius:2rem}
-    .circuit-link{display:inline-flex;align-items:center;gap:.6rem;margin-top:1rem;background:var(--rose);color:var(--blanc);padding:.75rem 2rem;border-radius:var(--radius);font-weight:700;font-size:.95rem;transition:background .2s,transform .15s}
-    .circuit-link:hover{background:#c9295e;transform:translateY(-2px)}
-    .lock-logout-btn{background:none;border:none;color:var(--gris);font-size:.78rem;cursor:pointer;text-decoration:underline;margin-top:.75rem;display:block}
-
-
-    /* --- GALERIE --- */
-    #galerie{background:var(--gris-clair)}
-    .albums-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
-    .album-card{background:var(--blanc);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);cursor:pointer;transition:transform .2s,box-shadow .2s}
-    .album-card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(0,0,0,.14)}
-    .album-cover{position:relative;height:200px;background:linear-gradient(135deg,var(--rose-pale),#e0f7fa);display:flex;align-items:center;justify-content:center;font-size:4rem;overflow:hidden}
-    .album-cover img{width:100%;height:100%;object-fit:cover}
-    .album-count{position:absolute;bottom:.75rem;right:.75rem;background:rgba(0,0,0,.55);color:var(--blanc);font-size:.75rem;font-weight:700;padding:.2rem .6rem;border-radius:2rem}
-    .album-title{padding:1rem 1.25rem;font-weight:700;font-size:.95rem}
-    .lightbox-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:2000;flex-direction:column}
-    .lightbox-overlay.open{display:flex}
-    .lightbox-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem}
-    .lightbox-header h3{color:var(--blanc);font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;text-transform:uppercase}
-    .lightbox-close{background:none;border:none;color:var(--blanc);font-size:1.8rem;cursor:pointer}
-    .lightbox-main{flex:1;display:flex;align-items:center;justify-content:center;padding:1rem;position:relative;user-select:none}
-    .lightbox-img{max-height:65vh;max-width:100%;border-radius:var(--radius);object-fit:contain}
-    .lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(232,53,122,.8);border:none;color:var(--blanc);font-size:1.5rem;width:44px;height:44px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
-    .lightbox-prev{left:1rem}
-    .lightbox-next{right:1rem}
-    .lightbox-thumbs{display:flex;gap:.5rem;padding:.75rem 1.5rem;overflow-x:auto;justify-content:center}
-    .lightbox-thumb{width:60px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;opacity:.55;transition:opacity .2s;flex-shrink:0}
-    .lightbox-thumb.active{opacity:1;outline:3px solid var(--rose)}
-    .lightbox-counter{color:rgba(255,255,255,.7);font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.1em;padding:.25rem .75rem;background:rgba(255,255,255,.1);border-radius:2rem}
+    <!-- Bannière cookies simplifiée -->
+    <div id="cookie-banner" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #e8357a;padding:1rem;text-align:center;z-index:9999;box-shadow:0 -2px 12px rgba(0,0,0,0.08);transition:transform 0.5s;">
+      <span>
+      Ce site utilise des cookies strictement nécessaires à la mesure d’audience (Google Analytics 4). 
+      <a href="mentions-legales.html" target="_blank">En savoir plus</a>.
+      </span>
+    </div>
+    <script>
+      setTimeout(function() {
+      var banner = document.getElementById('cookie-banner');
+      if(banner) banner.style.transform = 'translateY(100%)';
+      }, 5000);
+    </script>
 
     /* --- CONTACT --- */
     #contact{background:var(--blanc)}
