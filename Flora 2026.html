@@ -373,12 +373,14 @@
 <!-- ============================================================ -->
 <style>
     #cookie-banner {
-        position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 1000px; margin: 0 auto;
-        background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px);
-        border: 1px solid rgba(232, 53, 122, 0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        border-radius: 12px; padding: 1.5rem; z-index: 9999;
-        transform: translateY(150%); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        display: flex; align-items: center; justify-content: space-between; gap: 2rem;
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: #fff;
+        border-top: 2px solid #e8357a;
+        padding: 1rem;
+        text-align: center;
+        z-index: 9999;
+        box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+        transition: transform 0.5s;
     }
     #cookie-banner.visible { transform: translateY(0); }
     .cookie-text { flex: 1; text-align: left; }
