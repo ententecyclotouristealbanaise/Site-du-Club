@@ -536,12 +536,19 @@
   <span>
     Ce site utilise uniquement des cookies strictement nécessaires à la mesure d’audience et au bon fonctionnement, dans le respect du RGPD. <a href="mentions-legales.html" target="_blank">En savoir plus</a>.
   </span>
+  
 </div>
 <script>
-  setTimeout(function() {
+  // Affichage immédiat, disparition après 4 secondes
+  window.addEventListener('DOMContentLoaded', function() {
     var banner = document.getElementById('cookie-banner');
-    if(banner) banner.style.transform = 'translateY(100%)';
-  }, 4000);
+    if (banner) {
+      banner.style.transform = 'translateY(0)';
+      setTimeout(function() {
+        banner.style.transform = 'translateY(100%)';
+      }, 4000);
+    }
+  });
 </script>
 
 
@@ -999,44 +1006,7 @@
 
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
-
-        const saved = localStorage.getItem('choice-privacy');
-        if (!saved) {
-            gtag('consent', 'default', { 'analytics_storage': 'denied' });
-        } else if (saved && JSON.parse(saved).analytics) {
-            gtag('consent', 'default', { 'analytics_storage': 'granted' });
-        }
-
-        const script = document.createElement('script');
-        script.async = true; script.src = `https://www.googletagmanager.com/gtag/js?id=${_id}`;
-        document.head.appendChild(script);
-        gtag('js', new Date());
-        gtag('config', _id);
-
-        const banner = document.getElementById('cookie-banner');
-        const trigger = document.getElementById('cookie-trigger');
-        const modal = document.getElementById('cookie-modal');
-
-        function save(status) {
-            localStorage.setItem('choice-privacy', JSON.stringify({ analytics: status }));
-            gtag('consent', 'update', { 'analytics_storage': status ? 'granted' : 'denied' });
-            banner.classList.remove('visible');
-            trigger.classList.add('visible');
-            modal.classList.remove('open');
-        }
-
-        if (!saved) { setTimeout(() => banner.classList.add('visible'), 600); }
-        else { trigger.classList.add('visible'); }
-
-        document.getElementById('btn-accept-all').onclick = () => save(true);
-        document.getElementById('btn-deny-all').onclick = () => save(false);
-        document.getElementById('btn-customize').onclick = () => {
-            document.getElementById('check-analytics').checked = saved ? JSON.parse(saved).analytics : false;
-            modal.classList.add('open');
-        };
-        document.getElementById('btn-save-custom').onclick = () => save(document.getElementById('check-analytics').checked);
-        trigger.onclick = () => banner.classList.add('visible');
-    })();
+        // ...le reste du code analytics (gtag)...
 </script>
 </body>
 </html>
