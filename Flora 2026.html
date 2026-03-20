@@ -371,14 +371,13 @@
 <!-- Bannière cookies simplifiée -->
 <div id="cookie-banner" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #e8357a;padding:1rem;text-align:center;z-index:9999;box-shadow:0 -2px 12px rgba(0,0,0,0.08);transition:transform 0.5s;">
   <span>
-  Ce site utilise des cookies strictement nécessaires à la mesure d’audience (Google Analytics 4). 
-  <a href="mentions-legales.html" target="_blank">En savoir plus</a>.
+    Ce site utilise uniquement des cookies strictement nécessaires à la mesure d’audience et au bon fonctionnement, dans le respect du RGPD. <a href="mentions-legales.html" target="_blank">En savoir plus</a>.
   </span>
 </div>
 <script>
   setTimeout(function() {
-  var banner = document.getElementById('cookie-banner');
-  if(banner) banner.style.transform = 'translateY(100%)';
+    var banner = document.getElementById('cookie-banner');
+    if(banner) banner.style.transform = 'translateY(100%)';
   }, 5000);
 </script>
 </body>
