@@ -26,15 +26,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
 
-  <!-- Google Analytics 4 (toujours actif) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX');
-  </script>
-
   <style>
     :root{--rose:#e8357a;--rose-clair:#f06fa0;--rose-pale:#fde8f1;--cyan:#00b4d8;--blanc:#f4f4f6;--texte:#1c1c2e;--gris:#6b7280;--gris-clair:#e8e4ed;--radius:10px;--card-bg:#f4f4f6;--input-bg:#f4f4f6}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -84,18 +75,119 @@
     .section-header{text-align:center;margin-bottom:3rem}
     .section-label{display:inline-block;background:var(--rose-pale);color:var(--rose);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:.3rem 1rem;border-radius:2rem;margin-bottom:.75rem}
     .section-header h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;color:var(--texte);text-transform:uppercase;letter-spacing:.03em}
-    <!-- Bannière cookies simplifiée -->
-    <div id="cookie-banner" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #e8357a;padding:1rem;text-align:center;z-index:9999;box-shadow:0 -2px 12px rgba(0,0,0,0.08);transition:transform 0.5s;">
-      <span>
-        Ce site utilise uniquement des cookies strictement nécessaires à la mesure d’audience et au bon fonctionnement, dans le respect du RGPD. <a href="mentions-legales.html" target="_blank">En savoir plus</a>.
-      </span>
-    </div>
-    <script>
-      setTimeout(function() {
-      var banner = document.getElementById('cookie-banner');
-      if(banner) banner.style.transform = 'translateY(100%)';
-      }, 5000);
-    </script>
+    .section-header h2 span{color:var(--rose)}
+    .section-header p{color:var(--gris);margin-top:.5rem;font-size:1rem}
+
+    /* --- LE CLUB --- */
+    #leclub{background:var(--blanc)}
+    .club-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+    .club-text{width:100%;text-align:left}
+    .club-text p{color:var(--gris);font-size:1rem;line-height:1.8;margin-bottom:1.25rem}
+    .club-photo-wrap{border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(232,53,122,.2);position:relative;justify-self:end;align-self:start;width:min(100%,360px);transform:translateX(40px)}
+    .club-photo-wrap img{width:100%;height:320px;object-fit:cover;display:block;object-position:center 40%}
+    .club-photo-caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(28,28,46,.75));color:#fff;padding:1.25rem 1.5rem;font-size:.88rem;font-weight:600}
+    .bienvenue-box{background:linear-gradient(135deg,var(--rose-pale),#e0f7fa);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-top:1.5rem;border-left:4px solid var(--rose)}
+    .bienvenue-box p{color:var(--texte) !important;font-size:.95rem !important;margin-bottom:0 !important}
+    .bienvenue-box strong{color:var(--rose)}
+    .club-stats{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1.5rem;justify-content:center;width:calc(200% + 3rem)}
+    @media(max-width:900px){.club-grid{grid-template-columns:1fr}.club-text{text-align:center}.club-stats{justify-content:center;width:100%}.club-photo-wrap{justify-self:center;width:min(100%,520px);transform:none}}
+    .stat-card{background:var(--blanc);border-radius:var(--radius);padding:1.5rem 2.5rem;text-align:center;flex:0 0 250px;min-width:250px;border:2px solid var(--rose);box-shadow:0 4px 18px rgba(232,53,122,.15)}
+    .stat-card .stat-num{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;font-weight:800;color:var(--rose);line-height:1}
+    .stat-card .stat-label{font-size:.78rem;font-weight:700;color:var(--gris);letter-spacing:.08em;text-transform:uppercase;margin-top:.3rem}
+    /* --- SÉPARATEURS --- */
+    #leclub{position:relative}
+    #leclub::after{content:'';position:absolute;bottom:-2px;left:0;width:100%;height:60px;background:var(--gris-clair);clip-path:ellipse(55% 100% at 50% 100%);z-index:1}
+    #actualites{position:relative}
+    #actualites::after{content:'';position:absolute;bottom:-2px;left:0;width:100%;height:60px;background:var(--blanc);clip-path:ellipse(55% 100% at 50% 100%);z-index:1}
+    #galerie{position:relative}
+    #galerie::after{content:'';position:absolute;bottom:-2px;left:0;width:100%;height:60px;background:var(--blanc);clip-path:ellipse(55% 100% at 50% 100%);z-index:1}
+    /* --- ACTUALITÉS --- */
+    #actualites{background:var(--gris-clair)}
+    .actu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
+    .actu-card{background:var(--blanc);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);transition:transform .2s,box-shadow .2s}
+    .actu-card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(0,0,0,.12)}
+    .actu-card-top{background:linear-gradient(90deg,var(--rose),var(--cyan));height:6px}
+    .actu-card-img{width:100%;height:110px;object-fit:cover}
+    .actu-card-body{padding:1.5rem}
+    .actu-date{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--rose);margin-bottom:.5rem}
+    .actu-card h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem}
+    .actu-card p{font-size:.9rem;color:var(--gris);line-height:1.6}
+    .actu-tag{display:inline-block;margin-top:.75rem;background:var(--rose-pale);color:var(--rose);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .7rem;border-radius:2rem}
+
+    /* --- MÉTÉO --- */
+    .meteo-widget{background:linear-gradient(135deg,#e0f7fa,var(--rose-pale));border-radius:16px;padding:2rem;margin-bottom:2.5rem;box-shadow:0 4px 24px rgba(0,180,216,.12);border:1px solid rgba(0,180,216,.15)}
+    .meteo-title{font-family:'Barlow Condensed',sans-serif;font-size:1.25rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--texte);margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem}
+    .meteo-days{display:flex;gap:1rem;flex-wrap:wrap}
+    .meteo-day{background:var(--blanc);border-radius:var(--radius);padding:1rem;flex:1;min-width:120px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .meteo-day.is-sunday{border:2px solid var(--rose)}
+    .meteo-day .m-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gris)}
+    .meteo-day.is-sunday .m-label{color:var(--rose)}
+    .meteo-day .m-icon{font-size:2rem;margin:.4rem 0}
+    .meteo-day .m-temps{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;color:var(--texte)}
+    .meteo-day .m-pluie{font-size:.75rem;color:var(--gris);margin-top:.2rem}
+    .meteo-day .m-vent{font-size:.72rem;color:var(--gris)}
+    .meteo-loading{text-align:center;color:var(--gris);font-size:.9rem;padding:1rem}
+
+    /* --- COMPTEUR AGENDA --- */
+    .agenda-countdown{display:flex;align-items:center;justify-content:center;gap:1.25rem;background:var(--blanc);border-top:3px solid var(--rose);border-radius:var(--radius);padding:1rem 2rem;margin-bottom:1.5rem;box-shadow:0 2px 12px rgba(232,53,122,.1)}
+    .cd-num{font-family:'Barlow Condensed',sans-serif;font-size:2.8rem;font-weight:800;color:var(--rose);line-height:1}
+    .cd-divider{width:1px;height:36px;background:var(--gris-clair)}
+    .cd-label{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--gris);line-height:1.5}
+
+    /* --- AGENDA --- */
+    #agenda{background:var(--blanc)}
+    .agenda-list{display:flex;flex-direction:column;gap:1.25rem}
+    .agenda-item{background:var(--blanc);border-radius:var(--radius);box-shadow:0 2px 16px rgba(0,0,0,.07);overflow:hidden;border-left:5px solid var(--rose)}
+    .agenda-item-header{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.5rem;cursor:pointer;gap:1rem;flex-wrap:wrap}
+    .agenda-item-header:hover{background:var(--rose-pale)}
+    .agenda-meta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+    .agenda-date{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--rose);min-width:90px}
+    .agenda-titre{font-weight:700;font-size:1rem}
+    .badge-dist{background:#e8f5e9;color:#2e7d32;font-size:.72rem;font-weight:700;padding:.2rem .65rem;border-radius:2rem}
+    .agenda-toggle{color:var(--rose);font-size:1.2rem;transition:transform .3s;flex-shrink:0}
+    .agenda-item.open .agenda-toggle{transform:rotate(180deg)}
+    .agenda-body{display:none;padding:0 1.5rem 1.5rem;border-top:1px solid var(--rose-pale)}
+    .agenda-item.open .agenda-body{display:block}
+    .circuit-lock{background:var(--blanc);border:2px solid var(--rose-pale);border-radius:var(--radius);padding:2rem;text-align:center;margin-top:1rem;box-shadow:0 4px 18px rgba(232,53,122,.1)}
+    .circuit-lock .lock-icon{font-size:2.5rem;margin-bottom:.75rem}
+    .circuit-lock h4{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;text-transform:uppercase;color:var(--texte);margin-bottom:.4rem}
+    .circuit-lock p{color:var(--gris);font-size:.88rem;margin-bottom:1.25rem}
+    .lock-form{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+    .lock-input{padding:.6rem 1rem;border:2px solid #e8d0e0;border-radius:var(--radius);font-family:'Nunito',sans-serif;font-size:.95rem;outline:none;transition:border-color .2s;width:200px}
+    .lock-input:focus{border-color:var(--rose)}
+    .lock-btn{background:var(--rose);color:var(--blanc);border:none;padding:.6rem 1.5rem;border-radius:var(--radius);font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:background .2s}
+    .lock-btn:hover{background:#c9295e}
+    .lock-error{color:var(--rose);font-size:.82rem;font-weight:700;margin-top:.6rem;display:none}
+    .circuit-unlocked{background:var(--blanc);border:2px solid #a5d6a7;border-radius:var(--radius);padding:1.5rem;margin-top:1rem;text-align:center;box-shadow:0 4px 18px rgba(46,125,50,.1)}
+    .circuit-unlocked-badge{display:inline-flex;align-items:center;gap:.4rem;background:#e8f5e9;color:#2e7d32;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .8rem;border-radius:2rem}
+    .circuit-link{display:inline-flex;align-items:center;gap:.6rem;margin-top:1rem;background:var(--rose);color:var(--blanc);padding:.75rem 2rem;border-radius:var(--radius);font-weight:700;font-size:.95rem;transition:background .2s,transform .15s}
+    .circuit-link:hover{background:#c9295e;transform:translateY(-2px)}
+    .lock-logout-btn{background:none;border:none;color:var(--gris);font-size:.78rem;cursor:pointer;text-decoration:underline;margin-top:.75rem;display:block}
+
+
+    /* --- GALERIE --- */
+    #galerie{background:var(--gris-clair)}
+    .albums-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
+    .album-card{background:var(--blanc);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);cursor:pointer;transition:transform .2s,box-shadow .2s}
+    .album-card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(0,0,0,.14)}
+    .album-cover{position:relative;height:200px;background:linear-gradient(135deg,var(--rose-pale),#e0f7fa);display:flex;align-items:center;justify-content:center;font-size:4rem;overflow:hidden}
+    .album-cover img{width:100%;height:100%;object-fit:cover}
+    .album-count{position:absolute;bottom:.75rem;right:.75rem;background:rgba(0,0,0,.55);color:var(--blanc);font-size:.75rem;font-weight:700;padding:.2rem .6rem;border-radius:2rem}
+    .album-title{padding:1rem 1.25rem;font-weight:700;font-size:.95rem}
+    .lightbox-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:2000;flex-direction:column}
+    .lightbox-overlay.open{display:flex}
+    .lightbox-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem}
+    .lightbox-header h3{color:var(--blanc);font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;text-transform:uppercase}
+    .lightbox-close{background:none;border:none;color:var(--blanc);font-size:1.8rem;cursor:pointer}
+    .lightbox-main{flex:1;display:flex;align-items:center;justify-content:center;padding:1rem;position:relative;user-select:none}
+    .lightbox-img{max-height:65vh;max-width:100%;border-radius:var(--radius);object-fit:contain}
+    .lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(232,53,122,.8);border:none;color:var(--blanc);font-size:1.5rem;width:44px;height:44px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .lightbox-prev{left:1rem}
+    .lightbox-next{right:1rem}
+    .lightbox-thumbs{display:flex;gap:.5rem;padding:.75rem 1.5rem;overflow-x:auto;justify-content:center}
+    .lightbox-thumb{width:60px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;opacity:.55;transition:opacity .2s;flex-shrink:0}
+    .lightbox-thumb.active{opacity:1;outline:3px solid var(--rose)}
+    .lightbox-counter{color:rgba(255,255,255,.7);font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.1em;padding:.25rem .75rem;background:rgba(255,255,255,.1);border-radius:2rem}
 
     /* --- CONTACT --- */
     #contact{background:var(--blanc)}
@@ -439,6 +531,18 @@
   </div>
 
 </footer>
+<!-- Bannière cookies simplifiée -->
+<div id="cookie-banner" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #e8357a;padding:1rem;text-align:center;z-index:9999;box-shadow:0 -2px 12px rgba(0,0,0,0.08);transition:transform 0.5s;">
+  <span>
+    Ce site utilise uniquement des cookies strictement nécessaires à la mesure d’audience et au bon fonctionnement, dans le respect du RGPD. <a href="mentions-legales.html" target="_blank">En savoir plus</a>.
+  </span>
+</div>
+<script>
+  setTimeout(function() {
+    var banner = document.getElementById('cookie-banner');
+    if(banner) banner.style.transform = 'translateY(100%)';
+  }, 5000);
+</script>
 
 
 
@@ -587,38 +691,7 @@
 
   // --- ACTUALITÉS ------------------------------------------------------------------------
   function renderActu() {
-    const fallback = `<div style="width:100%;height:110px;overflow:hidden;position:relative;background:#e8e0d8;border-bottom:1px solid #ddd;"> <svg viewBox="0 0 320 110" xmlns='http://www.w3.org/2000/svg' style="width:100%;height:100%;position:absolute;top:0;left:0;">  <!-- Fond terrain -->  <rect width="320" height="110" fill="#ede8df"/>
-  <!-- Zones vertes (nature) -->  <rect x="0" y="0" width="90" height="48" rx="0" fill="#d4e8c2"/>
-  <rect x="230" y="62" width="90" height="48" rx="0" fill="#d4e8c2"/>
-  <rect x="150" y="0" width="60" height="30" rx="0" fill="#c8ddb0"/>
-  <!-- Bloc bâti léger -->  <rect x="98" y="52" width="14" height="10" fill="#ccc4b8"/>
-  <rect x="116" y="55" width="10" height="8" fill="#ccc4b8"/>
-  <rect x="190" y="20" width="12" height="9" fill="#ccc4b8"/>
-  <rect x="206" y="22" width="9" height="7" fill="#ccc4b8"/>
-  <rect x="255" y="40" width="11" height="8" fill="#ccc4b8"/>
-  <!-- Route principale horizontale (blanc cassé, large) -->  <rect x="0" y="48" width="320" height="14" fill="#ffffff" opacity=".9"/>
-  <line x1="0" y1="55" x2="320" y2="55" stroke="#f5f0e8" stroke-width=".5"/>
-  <!-- Route principale verticale -->  <rect x="130" y="0" width="14" height="110" fill="#ffffff" opacity=".9"/>
-  <line x1="137" y1="0" x2="137" y2="110" stroke="#f5f0e8" stroke-width=".5"/>
-  <!-- Routes secondaires -->  <rect x="0" y="22" width="320" height="6" fill="#f8f4ee" opacity=".85"/>
-  <rect x="0" y="80" width="320" height="6" fill="#f8f4ee" opacity=".85"/>
-  <rect x="65" y="0" width="6" height="110" fill="#f8f4ee" opacity=".85"/>
-  <rect x="210" y="0" width="6" height="110" fill="#f8f4ee" opacity=".85"/>
-  <!-- Tracé cycliste ROSE sur la route principale -->  <path d="M 0,55 L 130,55 L 137,48 L 137,22 L 210,22 L 213,22 L 213,55 L 320,55" fill="none" stroke="#e8357a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>
-  <!-- Points intermédiaires du tracé -->  <circle cx="65" cy="55" r="3" fill="#e8357a" opacity=".7"/>
-  <circle cx="137" cy="25" r="3" fill="#e8357a" opacity=".7"/>
-  <circle cx="213" cy="55" r="3" fill="#e8357a" opacity=".7"/>
-  <!-- Marqueur GPS départ (Saint-Alban) -->  <ellipse cx="137" cy="60" rx="6" ry="3" fill="rgba(232,53,122,.25)"/>
-  <path d="M 137,48 Q 143,42 143,37 A 6,6 0 1 0 131,37 Q 131,42 137,48 Z" fill="#e8357a"/>
-  <circle cx="137" cy="37" r="2.5" fill="white"/>
-  <!-- Étiquette Saint-Alban -->  <rect x="146" y="32" width="52" height="13" rx="3" fill="white" opacity=".9"/>
-  <text x="172" y="42" text-anchor="middle" font-family="sans-serif" font-size="8" font-weight="700" fill="#333">Saint-Alban</text>
-  <!-- Petite boussole -->  <circle cx="298" cy="16" r="9" fill="white" opacity=".8"/>
-  <text x="298" y="13" text-anchor="middle" font-family="sans-serif" font-size="7" font-weight="700" fill="#e8357a">N</text>
-  <line x1="298" y1="14" x2="298" y2="8" stroke="#e8357a" stroke-width="1.2"/>
-  <line x1="298" y1="14" x2="298" y2="20" stroke="#999" stroke-width="1"/>
-  <line x1="295" y1="17" x2="301" y2="17" stroke="#999" stroke-width="1"/>
- </svg> <!-- Badge flottant --> <div style="position:absolute;bottom:7px;left:50%;transform:translateX(-50%);background:white;border-radius:2rem;padding:.2rem .85rem;box-shadow:0 2px 8px rgba(232,53,122,.25);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;color:#e8357a;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;">🗺 Circuit du dimanche</div></div>`;
+    const fallback = `<div style="width:100%;height:110px;overflow:hidden;position:relative;background:#e8e0d8;border-bottom:1px solid #ddd;"> <svg viewBox="0 0 320 110" xmlns='http://www.w3.org/2000/svg' style="width:100%;height:100%;position:absolute;top:0;left:0;">  <!-- Fond terrain -->  <rect width="320" height="110" fill="#ede8df"/>  <!-- Zones vertes (nature) -->  <rect x="0" y="0" width="90" height="48" rx="0" fill="#d4e8c2"/>  <rect x="230" y="62" width="90" height="48" rx="0" fill="#d4e8c2"/>  <rect x="150" y="0" width="60" height="30" rx="0" fill="#c8ddb0"/>  <!-- Bloc bâti léger -->  <rect x="98" y="52" width="14" height="10" fill="#ccc4b8"/>  <rect x="116" y="55" width="10" height="8" fill="#ccc4b8"/>  <rect x="190" y="20" width="12" height="9" fill="#ccc4b8"/>  <rect x="206" y="22" width="9" height="7" fill="#ccc4b8"/>  <rect x="255" y="40" width="11" height="8" fill="#ccc4b8"/>  <!-- Route principale horizontale (blanc cassé, large) -->  <rect x="0" y="48" width="320" height="14" fill="#ffffff" opacity=".9"/>  <line x1="0" y1="55" x2="320" y2="55" stroke="#f5f0e8" stroke-width=".5"/>  <!-- Route principale verticale -->  <rect x="130" y="0" width="14" height="110" fill="#ffffff" opacity=".9"/>  <line x1="137" y1="0" x2="137" y2="110" stroke="#f5f0e8" stroke-width=".5"/>  <!-- Routes secondaires -->  <rect x="0" y="22" width="320" height="6" fill="#f8f4ee" opacity=".85"/>  <rect x="0" y="80" width="320" height="6" fill="#f8f4ee" opacity=".85"/>  <rect x="65" y="0" width="6" height="110" fill="#f8f4ee" opacity=".85"/>  <rect x="210" y="0" width="6" height="110" fill="#f8f4ee" opacity=".85"/>  <!-- Tracé cycliste ROSE sur la route principale -->  <path d="M 0,55 L 130,55 L 137,48 L 137,22 L 210,22 L 213,22 L 213,55 L 320,55" fill="none" stroke="#e8357a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>  <!-- Points intermédiaires du tracé -->  <circle cx="65" cy="55" r="3" fill="#e8357a" opacity=".7"/>  <circle cx="137" cy="25" r="3" fill="#e8357a" opacity=".7"/>  <circle cx="213" cy="55" r="3" fill="#e8357a" opacity=".7"/>  <!-- Marqueur GPS départ (Saint-Alban) -->  <ellipse cx="137" cy="60" rx="6" ry="3" fill="rgba(232,53,122,.25)"/>  <path d="M 137,48 Q 143,42 143,37 A 6,6 0 1 0 131,37 Q 131,42 137,48 Z" fill="#e8357a"/>  <circle cx="137" cy="37" r="2.5" fill="white"/>  <!-- Étiquette Saint-Alban -->  <rect x="146" y="32" width="52" height="13" rx="3" fill="white" opacity=".9"/>  <text x="172" y="42" text-anchor="middle" font-family="sans-serif" font-size="8" font-weight="700" fill="#333">Saint-Alban</text>  <!-- Petite boussole -->  <circle cx="298" cy="16" r="9" fill="white" opacity=".8"/>  <text x="298" y="13" text-anchor="middle" font-family="sans-serif" font-size="7" font-weight="700" fill="#e8357a">N</text>  <line x1="298" y1="14" x2="298" y2="8" stroke="#e8357a" stroke-width="1.2"/>  <line x1="298" y1="14" x2="298" y2="20" stroke="#999" stroke-width="1"/>  <line x1="295" y1="17" x2="301" y2="17" stroke="#999" stroke-width="1"/> </svg> <!-- Badge flottant --> <div style="position:absolute;bottom:7px;left:50%;transform:translateX(-50%);background:white;border-radius:2rem;padding:.2rem .85rem;box-shadow:0 2px 8px rgba(232,53,122,.25);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;color:#e8357a;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;">🗺 Circuit du dimanche</div></div>`;
     document.getElementById('actuGrid').innerHTML = ECTA_DATA.actualites.map(a => `
       <div class="actu-card">
         <div class="actu-card-top"></div>
@@ -831,26 +904,140 @@
 <!--  BANNIÈRE COOKIES (VERSION ÉPURÉE / CONFORME RGPD)           -->
 <!-- ============================================================ -->
 <style>
-  #cookie-banner {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: #fff; border-top: 2px solid #e8357a; padding: 1rem; text-align: center;
-    z-index: 9999; box-shadow: 0 -2px 12px rgba(0,0,0,0.08); transition: transform 0.5s;
-  }
+    #cookie-banner {
+        position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 1000px; margin: 0 auto;
+        background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px);
+        border: 1px solid rgba(232, 53, 122, 0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        border-radius: 12px; padding: 1.5rem; z-index: 9999;
+        transform: translateY(150%); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex; align-items: center; justify-content: space-between; gap: 2rem;
+    }
+    #cookie-banner.visible { transform: translateY(0); }
+    .cookie-text { flex: 1; text-align: left; }
+    .cookie-text h3 { font-family: 'Barlow Condensed', sans-serif; margin: 0 0 0.4rem 0; color: #1c1c2e; font-size: 1.25rem; text-transform: uppercase; }
+    .cookie-text p { font-size: 0.9rem; color: #6b7280; line-height: 1.5; margin: 0; }
+    .cookie-text a { color: #e8357a; text-decoration: underline; font-weight: 700; }
+    .cookie-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .cb-btn { border: none; padding: 0.75rem 1.4rem; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-family: 'Nunito', sans-serif; }
+    .cb-btn-secondary { background: #fde8f1; color: #e8357a; }
+    .cb-btn-primary { background: #e8357a; color: white; }
+    .cb-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(232, 53, 122, 0.2); }
+    .cb-btn-outline { background: transparent; color: #6b7280; border: 1px solid #ddd; }
+
+    /* Modal */
+    #cookie-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 1rem; }
+    #cookie-modal.open { display: flex; }
+    .modal-content { background: white; border-radius: 12px; max-width: 480px; width: 100%; padding: 2.2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: modalFadeIn 0.3s ease-out; }
+    @keyframes modalFadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .modal-header h2 { font-family: 'Barlow Condensed', sans-serif; margin: 0; text-transform: uppercase; color: #e8357a; }
+    .opt-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.2rem 0; border-bottom: 1px solid #eee; text-align: left; }
+    .opt-info h4 { margin: 0 0 0.25rem 0; font-size: 1rem; color: #1c1c2e; }
+    .opt-info p { margin: 0; font-size: 0.82rem; color: #6b7280; }
+    
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #e8357a; }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Bouton flottant 🍪 */
+    #cookie-trigger {
+        position: fixed; bottom: 20px; left: 20px; width: 42px; height: 42px; background: white;
+        border: 1px solid #fde8f1; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 9998;
+        transition: all 0.3s; opacity: 0; visibility: hidden;
+    }
+    #cookie-trigger.visible { opacity: 1; visibility: visible; }
+    
+    @media (max-width: 768px) {
+        #cookie-banner { flex-direction: column; text-align: center; bottom: 0; left: 0; right: 0; border-radius: 20px 20px 0 0; gap: 1.2rem; }
+        .cookie-btns { width: 100%; justify-content: center; }
+        .cb-btn { flex: 1; padding: 0.7rem 0.5rem; }
+    }
 </style>
 
 <!-- Bannière -->
-
 <div id="cookie-banner">
-  <span>
-    Ce site utilise uniquement des cookies strictement nécessaires à la mesure d’audience et au bon fonctionnement, dans le respect du RGPD. <a href="mentions-legales.html" target="_blank">En savoir plus</a>.
-  </span>
+    <div class="cookie-text">
+        <h3>🍪 Respect de votre vie privée</h3>
+        <p>Nous utilisons des cookies de mesure d'audience pour améliorer votre expérience. <a href="mentions-legales.html">Consulter nos mentions légales</a></p>
+    </div>
+    <div class="cookie-btns">
+        <button class="cb-btn cb-btn-outline" id="btn-deny-all">Refuser Tout</button>
+        <button class="cb-btn cb-btn-secondary" id="btn-customize">Paramètres</button>
+        <button class="cb-btn cb-btn-primary" id="btn-accept-all">Tout Accepter</button>
+    </div>
 </div>
 
+<!-- Modal -->
+<div id="cookie-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Préférences de navigation</h2>
+            <button onclick="document.getElementById('cookie-modal').classList.remove('open')" style="background:none;border:none;font-size:1.8rem;cursor:pointer;">&times;</button>
+        </div>
+        <div class="opt-item">
+            <div class="opt-info"><h4>Cookies Essentiels</h4><p>Nécessaires au bon fonctionnement du site.</p></div>
+            <label class="switch"><input type="checkbox" checked disabled><span class="slider"></span></label>
+        </div>
+        <div class="opt-item">
+            <div class="opt-info"><h4>Mesure d'audience anonyme</h4><p>Statistiques de visites (sans suivi publicitaire).</p></div>
+            <label class="switch"><input type="checkbox" id="check-analytics"><span class="slider"></span></label>
+        </div>
+        <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+            <button class="cb-btn cb-btn-primary" id="btn-save-custom">Enregistrer mes choix</button>
+        </div>
+    </div>
+</div>
+
+<div id="cookie-trigger" title="Gérer mes consentements"><span style="font-size: 1.3rem;">🍪</span></div>
+
 <script>
-    setTimeout(function() {
-      var banner = document.getElementById('cookie-banner');
-      if(banner) banner.style.transform = 'translateY(100%)';
-    }, 5000);
+    (function() {
+        const _id = 'G-Q9TE2R3BER'; 
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+
+        const saved = localStorage.getItem('choice-privacy');
+        if (!saved) {
+            gtag('consent', 'default', { 'analytics_storage': 'denied' });
+        } else if (saved && JSON.parse(saved).analytics) {
+            gtag('consent', 'default', { 'analytics_storage': 'granted' });
+        }
+
+        const script = document.createElement('script');
+        script.async = true; script.src = `https://www.googletagmanager.com/gtag/js?id=${_id}`;
+        document.head.appendChild(script);
+        gtag('js', new Date());
+        gtag('config', _id);
+
+        const banner = document.getElementById('cookie-banner');
+        const trigger = document.getElementById('cookie-trigger');
+        const modal = document.getElementById('cookie-modal');
+
+        function save(status) {
+            localStorage.setItem('choice-privacy', JSON.stringify({ analytics: status }));
+            gtag('consent', 'update', { 'analytics_storage': status ? 'granted' : 'denied' });
+            banner.classList.remove('visible');
+            trigger.classList.add('visible');
+            modal.classList.remove('open');
+        }
+
+        if (!saved) { setTimeout(() => banner.classList.add('visible'), 600); }
+        else { trigger.classList.add('visible'); }
+
+        document.getElementById('btn-accept-all').onclick = () => save(true);
+        document.getElementById('btn-deny-all').onclick = () => save(false);
+        document.getElementById('btn-customize').onclick = () => {
+            document.getElementById('check-analytics').checked = saved ? JSON.parse(saved).analytics : false;
+            modal.classList.add('open');
+        };
+        document.getElementById('btn-save-custom').onclick = () => save(document.getElementById('check-analytics').checked);
+        trigger.onclick = () => banner.classList.add('visible');
+    })();
 </script>
 </body>
 </html>
