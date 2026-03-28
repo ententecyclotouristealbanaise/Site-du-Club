@@ -248,6 +248,7 @@ function lockCircuits() {
 /* --- GALERIE --- */
 let currentAlbum = null;
 let currentPhotoIndex = 0;
+let diaporamaInterval = null;
 
 function renderGalerie() {
   const grid = document.getElementById('albumsGrid');
@@ -274,6 +275,30 @@ function openAlbum(i) {
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
+  
+  // Arrêt du diaporama si on ferme
+  if (diaporamaInterval) {
+    clearInterval(diaporamaInterval);
+    diaporamaInterval = null;
+    const icon = document.getElementById('diaporamaIcon');
+    if(icon) icon.textContent = '▶️';
+  }
+}
+
+function toggleDiaporama() {
+  const icon = document.getElementById('diaporamaIcon');
+  if (diaporamaInterval) {
+    // Mode Pause
+    clearInterval(diaporamaInterval);
+    diaporamaInterval = null;
+    icon.textContent = '▶️';
+  } else {
+    // Mode Lecture
+    diaporamaInterval = setInterval(() => {
+      lightboxNav(1);
+    }, 2500); // Change la photo toutes les 2.5 secondes
+    icon.textContent = '⏸️';
+  }
 }
 
 function updateLightbox() {

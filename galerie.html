@@ -61,6 +61,9 @@
   <div class="lightbox-header">
     <h3 id="lightboxTitle"></h3>
     <div style="display:flex;align-items:center;gap:1rem">
+      <button id="btnDiaporama" onclick="toggleDiaporama()" style="background:var(--rose);color:white;border:none;padding:.4rem 1rem;border-radius:2rem;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;font-size:.9rem;display:flex;align-items:center;gap:5px;box-shadow:0 2px 8px rgba(232,53,122,.3);">
+        <span id="diaporamaIcon">▶️</span> Diaporama
+      </button>
       <span class="lightbox-counter" id="lightboxCounter"></span>
       <button class="lightbox-close" onclick="closeLightbox()">&#x2715;</button>
     </div>
