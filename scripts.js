@@ -154,7 +154,6 @@ function renderAgenda() {
           </div>
         </div>
         <div class="agenda-body">
-          ${s.videos ? `<div class="video-grid">${s.videos.map(v => `<div class="video-container"><iframe src="${v}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`).join('')}</div>` : ''}
           <div id="circuit${i}">${renderCircuit(s, i)}</div>
         </div>
       </div>
@@ -189,9 +188,15 @@ function circuitUnlocked(sortie) {
     `<a class="circuit-link" href="${p.lien}" target="_blank">🗺 Circuit ${p.distance} sur Openrunner</a>`
   ).join('<br/>');
   const contenu = liens || `<p style="color:var(--gris);font-size:.9rem;">🗺 Circuit Openrunner à venir - revenez bientôt !</p>`;
+  
+  const videosHtml = sortie.videos && sortie.videos.length > 0 
+    ? `<div class="video-grid" style="margin-bottom: 1.5rem; margin-top: 1.5rem;">${sortie.videos.map(v => `<div class="video-container"><iframe src="${v}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`).join('')}</div>` 
+    : '';
+
   return `<div class="circuit-unlocked">
     <span class="circuit-unlocked-badge">✅ Accès licencié</span>
     <br/>
+    ${videosHtml}
     <div style="display:flex;flex-wrap:wrap;gap:.75rem;justify-content:center;margin-top:1rem;">
       ${contenu}
     </div>
