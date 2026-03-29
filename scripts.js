@@ -42,32 +42,7 @@ document.addEventListener('keydown', function(e) {
 });
 
 // --- LOGIQUE SPÉCIALE : MENU AUTO (OUVRIR AU BAS / FERMER AU SCROLL UP) ---
-let lastScrollTop = 0;
-let menuAutoOpened = false;
-
-window.addEventListener('scroll', function() {
-  if (window.innerWidth <= 1024) {
-    const st = window.pageYOffset || document.documentElement.scrollTop;
-    const scrollPos = window.innerHeight + window.scrollY;
-    const threshold = document.documentElement.scrollHeight - 60; // Juste avant le bas
-
-    // 1. Ouvrir si on arrive au bas de la page
-    if (scrollPos >= threshold && !menuAutoOpened) {
-      document.getElementById('mobileMenu').classList.add('open');
-      menuAutoOpened = true;
-    } 
-    // 2. Fermer si on remonte (direction haut)
-    else if (st < lastScrollTop && menuAutoOpened) {
-      // On ferme si le mouvement est franc vers le haut
-      if (scrollPos < threshold - 50) {
-        document.getElementById('mobileMenu').classList.remove('open');
-        menuAutoOpened = false;
-      }
-    }
-    
-    lastScrollTop = Math.max(0, st);
-  }
-});
+// Désactivée à la demande : le menu burger ne s'ouvre plus automatiquement au scroll.
 
 // --- INITIALISATION COMMUNE ----------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
