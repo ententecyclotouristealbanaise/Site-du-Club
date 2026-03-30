@@ -1,7 +1,7 @@
 const ECTA_DATA = {
   "actualites": [
     {
-      "date": "Jeudi 5 Mars 2026",
+      "date": "Dimanche 5 Avril 2026",
       "dateSort": "2026-03-05",
       "titre": " Rando Presqu'île Castine – Pays de Matignon",
       "texte": "🚴 Rando Presqu'île Castine – Pays de Matignon\n📅 Dimanche 5 avril 2026\nLe club Cyclo-randonneur de la Presqu'île Castine organise une randonnée avec trois activités au choix.\n🛣️ ROUTE : 61 km (Openrunner 22813079) et 73 km (Openrunner 22812981)\n🌲 VTT : 35 km (Openrunner 22813355) et 45 km (Openrunner 22813580)\n🥾 MARCHE : 9 km (Openrunner 23180837) et 10 km (Openrunner 23174511)\n📍 Départ et inscriptions : Salle Yves du Manoir, Rue de St Eniguet, ND du Guildo, St Cast le Guildo.\n⚠️ Attention, nouveau lieu de départ cette année.\n💶 Tarifs : Route et VTT 6 euros – Marche 3 euros.\n\nPS: départ en covoiturage / RDV 07h30 du stade \n",
