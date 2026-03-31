@@ -24,7 +24,7 @@ nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232, 53,
 .mobile-menu a{color:var(--blanc);font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
 
 /* --- HERO ACCUEIL PLEIN ÉCRAN --- */
-#accueil{margin-top:0;background:linear-gradient(160deg,var(--rose) 0%,var(--rose-clair) 45%,var(--cyan) 100%);height:100vh;min-height:600px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;position:relative;overflow:hidden;isolation:isolate}
+#accueil{margin-top:0;background:linear-gradient(160deg,var(--rose) 0%,var(--rose-clair) 45%,var(--cyan) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 2rem 1.5rem 2rem;position:relative;overflow:hidden;isolation:isolate}
 #accueil::before{content:'';position:absolute;inset:0;background-image:linear-gradient(160deg,rgba(232,53,122,.6) 0%,rgba(240,111,160,.45) 42%,rgba(0,180,216,.5) 100%),url("images/Cap Frehel.jpg");background-size:cover;background-position:center;background-repeat:no-repeat;z-index:0}
 #accueil > *{position:relative;z-index:1}
 .hero-logo{width:160px;height:64px;border-radius:0;object-fit:contain;border:none;margin:0 auto 1.5rem}
