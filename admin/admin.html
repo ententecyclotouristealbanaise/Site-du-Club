@@ -298,6 +298,7 @@
                         <label>Étiquette (Tag)</label>
                         <select id="actu-tag">
                             <option>Sortie</option>
+                            <option>Brevet</option>
                             <option>Rando extérieure</option>
                             <option>Débroussaillage</option>
                             <option>Événement</option>
@@ -314,7 +315,7 @@
                     <label>Texte (Description)</label>
                     <textarea id="actu-text" rows="3" placeholder="Rendez-vous à 08h15..."></textarea>
                 </div>
-                <button class="btn-main" onclick="addActu()">Ajouter l'actualité</button>
+                <button class="btn-main" id="btn-add-actu" onclick="addActu()">Ajouter l'actualité</button>
             </div>
         </div>
 
@@ -360,7 +361,7 @@
                 </div>
                 <button class="btn-sub" onclick="addParcoursField()">+ Ajouter un parcours</button>
 
-                <button class="btn-main" onclick="addAgenda()">Ajouter à l'agenda</button>
+                <button class="btn-main" id="btn-add-agenda" onclick="addAgenda()">Ajouter à l'agenda</button>
             </div>
         </div>
 
@@ -386,7 +387,7 @@
                     <input type="checkbox" id="gal-future" style="width: auto;">
                     <label style="margin-bottom:0; cursor:pointer;" for="gal-future">⏳ "A Venir" (Album vide pour l'instant)</label>
                 </div>
-                <button class="btn-main" onclick="addGallery()">Ajouter l'album</button>
+                <button class="btn-main" id="btn-add-galerie" onclick="addGallery()">Ajouter l'album</button>
             </div>
         </div>
     </div>
@@ -500,6 +501,7 @@
                     </div>
                 </div>
                 <div class="item-actions">
+                    <button class="btn-icon" onclick="editActu(${i})" title="Modifier">✏️</button>
                     <button class="btn-icon delete" onclick="removeActu(${i})" title="Supprimer">🗑️</button>
                 </div>
             </div>
@@ -519,6 +521,7 @@
                     </div>
                 </div>
                 <div class="item-actions">
+                    <button class="btn-icon" onclick="editAgenda(${i})" title="Modifier">✏️</button>
                     <button class="btn-icon delete" onclick="removeAgenda(${i})" title="Supprimer">🗑️</button>
                 </div>
             </div>
@@ -536,6 +539,7 @@
                     </div>
                 </div>
                 <div class="item-actions">
+                    <button class="btn-icon" onclick="editGallery(${i})" title="Modifier">✏️</button>
                     <button class="btn-icon delete" onclick="removeGallery(${i})" title="Supprimer">🗑️</button>
                 </div>
             </div>
@@ -580,6 +584,19 @@
     }
 
     // --- ACTIONS ---
+    let editActuIndex = -1;
+    function editActu(i) {
+        const item = localData.actualites[i];
+        document.getElementById('actu-raw-date').value = item.dateSort || "";
+        document.getElementById('actu-tag').value = item.tag || "Sortie";
+        document.getElementById('actu-title').value = item.titre || "";
+        document.getElementById('actu-text').value = item.texte || "";
+        editActuIndex = i;
+        document.getElementById('btn-add-actu').textContent = "Mettre à jour l'actualité";
+        showTab('actu');
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
     function addActu() {
         const rawDate = document.getElementById('actu-raw-date').value;
         const tag = document.getElementById('actu-tag').value;
@@ -589,14 +606,16 @@
         if(!rawDate || !title || !text) return alert("Veuillez remplir la Date, le Titre et le Texte");
 
         const displayDate = formatDateLong(rawDate);
-        localData.actualites.unshift({ 
-            date: displayDate, 
-            dateSort: rawDate,
-            titre: title, 
-            texte: text, 
-            tag, 
-            image: "" 
-        });
+        if (editActuIndex > -1) {
+            localData.actualites[editActuIndex] = { ...localData.actualites[editActuIndex], date: displayDate, dateSort: rawDate, titre: title, texte: text, tag };
+            editActuIndex = -1;
+            document.getElementById('btn-add-actu').textContent = "Ajouter l'actualité";
+            toast("Actualité mise à jour !");
+        } else {
+            localData.actualites.unshift({ date: displayDate, dateSort: rawDate, titre: title, texte: text, tag, image: "" });
+            toast("Actualité ajoutée !");
+        }
+        
         renderLists();
         saveDraft();
         
@@ -604,7 +623,6 @@
         document.getElementById('actu-raw-date').value = "";
         document.getElementById('actu-title').value = "";
         document.getElementById('actu-text').value = "";
-        toast("Actualité ajoutée !");
     }
 
     function removeActu(i) {
@@ -615,11 +633,36 @@
         }
     }
 
-    function addParcoursField() {
+    function addParcoursField(dist = '', link = '') {
         const div = document.createElement('div');
         div.className = 'parcours-entry';
-        div.innerHTML = `<input type="text" placeholder="Ex: 88 Kms" class="p-dist"> <input type="url" placeholder="https://..." class="p-link">`;
+        div.innerHTML = `<input type="text" placeholder="Ex: 88 Kms" class="p-dist" value="${dist}"> <input type="url" placeholder="https://..." class="p-link" value="${link}">`;
         document.getElementById('parcours-container').appendChild(div);
+    }
+
+    let editAgendaIndex = -1;
+    function editAgenda(i) {
+        const item = localData.agenda[i];
+        document.getElementById('agen-raw-date').value = item.dateSort || "";
+        document.getElementById('agen-title').value = item.titre || "";
+        document.getElementById('agen-locked').checked = item.locked !== false; // Default true
+        
+        const v1 = item.videos && item.videos.length > 0 ? item.videos[0] : "https://www.youtube.com/embed/";
+        const v2 = item.videos && item.videos.length > 1 ? item.videos[1] : "https://www.youtube.com/embed/";
+        document.getElementById('agen-video1').value = v1;
+        document.getElementById('agen-video2').value = v2;
+        
+        document.getElementById('parcours-container').innerHTML = "";
+        if (item.parcours && item.parcours.length > 0) {
+            item.parcours.forEach(p => addParcoursField(p.distance || '', p.lien || ''));
+        } else {
+            addParcoursField();
+        }
+        
+        editAgendaIndex = i;
+        document.getElementById('btn-add-agenda').textContent = "Mettre à jour l'agenda";
+        showTab('agenda');
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
     function addAgenda() {
@@ -640,14 +683,18 @@
         if(!rawDate || !title || parcours.length === 0) return alert("Veuillez remplir la date, le titre et au moins un parcours");
 
         const displayDate = formatDateShort(rawDate);
-        localData.agenda.push({ 
-            date: displayDate, 
-            dateSort: rawDate,
-            titre: title, 
-            videos: [v1, v2].map(v => formatYoutubeLink(v)).filter(v => v !== ""),
-            locked, 
-            parcours 
-        });
+        const videos = [v1, v2].map(v => formatYoutubeLink(v)).filter(v => v !== "");
+
+        if (editAgendaIndex > -1) {
+            localData.agenda[editAgendaIndex] = { ...localData.agenda[editAgendaIndex], date: displayDate, dateSort: rawDate, titre: title, videos, locked, parcours };
+            editAgendaIndex = -1;
+            document.getElementById('btn-add-agenda').textContent = "Ajouter à l'agenda";
+            toast("Agenda mis à jour !");
+        } else {
+            localData.agenda.push({ date: displayDate, dateSort: rawDate, titre: title, videos, locked, parcours });
+            toast("Agenda ajouté !");
+        }
+
         renderLists();
         saveDraft();
 
@@ -658,7 +705,6 @@
         document.getElementById('agen-video2').value = "https://www.youtube.com/embed/";
         document.getElementById('agen-locked').checked = true;
         document.getElementById('parcours-container').innerHTML = `<div class="parcours-entry"><input type="text" placeholder="Ex: 88 Kms" class="p-dist"> <input type="url" placeholder="https://..." class="p-link"></div>`;
-        toast("Agenda mis à jour !");
     }
 
     function removeAgenda(i) {
@@ -670,6 +716,20 @@
     }
 
     // --- GALERIE ---
+    let editGalerieIndex = -1;
+    function editGallery(i) {
+        const item = localData.galerie[i];
+        document.getElementById('gal-title').value = item.titre || "";
+        document.getElementById('gal-cover').value = item.couverture || "";
+        document.getElementById('gal-photos').value = item.photos ? item.photos.join('\n') : "";
+        document.getElementById('gal-future').checked = item.aVenir || false;
+        
+        editGalerieIndex = i;
+        document.getElementById('btn-add-galerie').textContent = "Mettre à jour l'album";
+        showTab('galerie');
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
     function addGallery() {
         const title = document.getElementById('gal-title').value;
         const cover = document.getElementById('gal-cover').value;
@@ -680,18 +740,19 @@
 
         const photos = photosStr.split('\n').map(p => p.trim()).filter(p => p !== "");
 
-        const newGallery = {
-            titre: title,
-            couverture: cover,
-            aVenir: isFuture,
-            photos: photos
-        };
-
-        // Si c'est un "A venir", on le place à la fin, sinon au début
-        if(isFuture) {
-            localData.galerie.push(newGallery);
+        if (editGalerieIndex > -1) {
+            localData.galerie[editGalerieIndex] = { ...localData.galerie[editGalerieIndex], titre: title, couverture: cover, aVenir: isFuture, photos };
+            editGalerieIndex = -1;
+            document.getElementById('btn-add-galerie').textContent = "Ajouter l'album";
+            toast("Album photo mis à jour !");
         } else {
-            localData.galerie.unshift(newGallery);
+            const newGallery = { titre: title, couverture: cover, aVenir: isFuture, photos };
+            if (isFuture) {
+                localData.galerie.push(newGallery);
+            } else {
+                localData.galerie.unshift(newGallery);
+            }
+            toast("Album photo ajouté !");
         }
 
         renderLists();
@@ -702,7 +763,6 @@
         document.getElementById('gal-cover').value = "";
         document.getElementById('gal-photos').value = "";
         document.getElementById('gal-future').checked = false;
-        toast("Album photo ajouté !");
     }
 
     function removeGallery(i) {

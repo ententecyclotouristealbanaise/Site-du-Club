@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Randonnées 2026 – Côtes-d'Armor | ECTA Saint-Alban</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css">
   <style>
     :root {
       --rose:#e8357a; --rose-clair:#f06fa0; --rose-pale:#fde8f1;
@@ -25,9 +26,17 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     html{scroll-behavior:smooth;}
     body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;font-size:15px;line-height:1.45;padding-top:54px;}
+    .hero{padding:5.5rem 2rem 6.5rem!important}
+    .hero h1{font-size:3rem!important; margin-bottom:0.4rem!important}
+    .hero p{margin-bottom:1rem!important}
+    .header-pills{margin-top:1rem!important}
+
+
+
+
 
     /* ──── TOP NAV ──── */
-    .top-nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232,53,122,.96);display:flex;align-items:center;justify-content:space-between;padding:0 1rem;height:54px;box-shadow:0 3px 16px rgba(232,53,122,.35);gap:.75rem;backdrop-filter:saturate(1.1) blur(5px);border-bottom:1px solid rgba(255,255,255,.22)}
+    .top-nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232, 53, 122, 0.5);display:flex;align-items:center;justify-content:space-between;padding:0 1rem;height:54px;box-shadow:0 3px 16px rgba(232,53,122,0.2);gap:.75rem;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);transition:all .3s ease}
     .nav-brand{display:flex;align-items:center;gap:.75rem;min-width:0;overflow:hidden}
     .nav-logo-img{height:48px;width:124px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
     .nav-title{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:#f4f4f6;letter-spacing:.02em;line-height:1.05;min-width:0;white-space:normal}
@@ -37,30 +46,9 @@
     .top-nav .nav-links a:hover,.top-nav .nav-links a.active{border-color:#f4f4f6;background:rgba(255,255,255,.12)}
     .burger{display:none;flex-direction:column;gap:5px;cursor:pointer}
     .burger span{display:block;width:26px;height:3px;background:#f4f4f6;border-radius:2px}
-    .mobile-menu{display:none;position:fixed;top:54px;left:0;width:100%;z-index:999;background:var(--rose);padding:1rem 1.5rem 1.25rem;flex-direction:column;gap:1rem;box-shadow:0 8px 18px rgba(0,0,0,.18)}
+    .mobile-menu{display:none;position:fixed;top:54px;left:0;width:100%;z-index:999;background:rgba(232, 53, 122, 0.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:2rem 1.5rem;flex-direction:column;gap:1.5rem;box-shadow:0 10px 30px rgba(0,0,0,0.15);transition:all .3s ease}
     .mobile-menu.open{display:flex}
     .mobile-menu a{color:#f4f4f6;font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;text-decoration:none}
-
-    /* ──── HEADER ──── */
-    .site-header{
-      background:linear-gradient(150deg,var(--rose) 0%,var(--rose-clair) 48%,var(--cyan) 100%);
-      color:#fff;padding:3rem 2rem 6rem;text-align:center;position:relative;overflow:hidden;
-    }
-
-    .site-header::after{
-      content:'';position:absolute;bottom:-2px;left:0;width:100%;height:64px;
-      background:var(--white);clip-path:ellipse(56% 100% at 50% 100%);
-    }
-    .header-badge{
-      display:inline-block;background:rgba(255,255,255,.92);color:var(--rose);
-      font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;
-      letter-spacing:.18em;text-transform:uppercase;padding:.28rem 1.1rem;border-radius:2rem;margin-bottom:.9rem;
-    }
-    .header-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.9rem,5.5vw,3.5rem);font-weight:800;color:white;text-transform:uppercase;letter-spacing:.03em;line-height:1.05;margin-bottom:.5rem}
-    .header-title em{color:#b3f0ff;font-style:normal;}
-    .header-sub{font-size:15px;opacity:.85;max-width:560px;margin:0 auto 24px;line-height:1.55;}
-    .header-pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
-    .hpill{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:12px;font-weight:500;padding:4px 12px;border-radius:16px;}
 
     /* ──── STATS BAR ──── */
     .stats-bar{background:var(--white);border-bottom:2px solid var(--border);padding:0 20px;}
@@ -150,18 +138,11 @@
     .no-results{max-width:1160px;margin:20px auto;padding:50px 20px;text-align:center;color:var(--muted);font-size:15px;display:none;}
     .no-results-icon{font-size:48px;margin-bottom:12px;}
 
-    /* ──── BACK TO TOP ──── */
-    #btt{position:fixed;bottom:1.25rem;right:1.25rem;width:44px;height:44px;background:var(--navy);color:#fff;border:none;border-radius:50%;font-size:1.3rem;cursor:pointer;box-shadow:var(--sh-h);display:none;align-items:center;justify-content:center;transition:all .2s;z-index:999;}
-    #btt:hover{background:var(--rose);transform:translateY(-2px);}
-    #btt.show{display:flex;}
 
 
 
-    /* ──── FOOTER ──── */
-    footer{background:var(--white);border-top:1px solid var(--border);padding:24px 20px;text-align:center;font-size:12px;color:var(--muted);margin-top:24px;}
-    footer a{color:var(--navy);text-decoration:none;}
-    footer a:hover{text-decoration:underline;}
-    footer strong{color:var(--navy);}
+
+
 
     .hidden{display:none!important;}
     @media(max-width:1024px){.top-nav{padding:0 .9rem}.top-nav .nav-links{display:none}.burger{display:flex}}
@@ -177,12 +158,12 @@
   </div>
   <ul class="nav-links">
     <li><a href="index.html">Accueil</a></li>
-    <li><a href="index.html#leclub">Le Club</a></li>
-    <li><a href="index.html#actualites">Actualités</a></li>
-    <li><a href="index.html#agenda">Agenda</a></li>
-    <li><a href="index.html#galerie">Galerie</a></li>
-    <li><a href="index.html#contact">Contact</a></li>
-    <li><a href="documents.html">WT2026</a></li>
+    <li><a href="le-club.html">Le Club</a></li>
+    <li><a href="actualites.html">Activités</a></li>
+    <li><a href="agenda.html">Agenda</a></li>
+    <li><a href="galerie.html">Galerie</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="documents.html">WT 2026</a></li>
     <li><a href="news.html">Actu vélo</a></li>
     <li><a href="calendrier-randos-22-2026-v4.html" class="active">Agenda Randos 2026</a></li>
     <li><a href="Flora 2026.html">Flora 2026</a></li>
@@ -190,28 +171,26 @@
   <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
-  <a href="index.html#accueil" onclick="closeMenu()">Accueil</a>
-  <a href="index.html#leclub" onclick="closeMenu()">Le Club</a>
-  <a href="index.html#actualites" onclick="closeMenu()">Actualités</a>
-  <a href="index.html#agenda" onclick="closeMenu()">Agenda</a>
-  <a href="index.html#galerie" onclick="closeMenu()">Galerie</a>
-  <a href="index.html#contact" onclick="closeMenu()">Contact</a>
-  <a href="documents.html" onclick="closeMenu()">WT2026</a>
+  <a href="index.html" onclick="closeMenu()">Accueil</a>
+  <a href="le-club.html" onclick="closeMenu()">Le Club</a>
+  <a href="actualites.html" onclick="closeMenu()">Activités</a>
+  <a href="agenda.html" onclick="closeMenu()">Agenda</a>
+  <a href="galerie.html" onclick="closeMenu()">Galerie</a>
+  <a href="contact.html" onclick="closeMenu()">Contact</a>
+  <a href="documents.html" onclick="closeMenu()">WT 2026</a>
   <a href="news.html" onclick="closeMenu()">Actu vélo</a>
   <a href="calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
   <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
 </div>
 
-<!-- ════ HEADER ════ -->
-<header class="site-header">
-  <div class="header-badge">🚴 Entente Cyclotouriste Albanaise · Saint-Alban (22)</div>
-  <button id="hideBadgeBtn" style="margin:10px auto;display:block;padding:6px 18px;border-radius:16px;background:#e8357a;color:#fff;font-weight:700;border:none;font-size:14px;">Masquer le bandeau</button>
-  <h1 class="header-title">Randonnées <em>2026</em><br>Côtes-d'Armor</h1>
-  <p class="header-sub">Tous les événements Route · VTT · Gravel · Marche de l'année, avec dates, disciplines et liens officiels</p>
-  <div class="header-pills">
-    <span class="hpill">🗺️ Côtes-d'Armor</span>
-    <span class="hpill">📅 Mars → Novembre 2026</span>
-    <span class="hpill" id="total-pill">⏳ Chargement…</span>
+<header class="hero">
+  <div class="hero-badge">Calendrier des Randonnées · Saint-Alban 22</div>
+  <h1>Randonnées <span>2026</span></h1>
+  <p>Tous les événements Route · VTT · Gravel · Marche de l'année en Côtes-d'Armor.</p>
+  <div class="header-pills" style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:1rem;">
+    <span class="hpill" style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:12px;font-weight:500;padding:4px 12px;border-radius:16px;">🗺️ Côtes-d'Armor</span>
+    <span class="hpill" style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:12px;font-weight:500;padding:4px 12px;border-radius:16px;">📅 Mars → Novembre 2026</span>
+    <span class="hpill" id="total-pill" style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:12px;font-weight:500;padding:4px 12px;border-radius:16px;">⏳ Chargement…</span>
   </div>
 </header>
 
@@ -1142,300 +1121,146 @@
   <p>Aucun événement ne correspond à votre recherche.</p>
 </div>
 
-<button id="btt" title="Haut de page" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
+
+<!-- FOOTER -->
 <footer>
-  Calendrier compilé en mars 2026 — certaines dates restent à confirmer par les organisateurs.<br><br>
-  Page réalisée par l'<strong>Entente Cyclotouriste Albanaise</strong> – Saint-Alban (22) – <a href="mailto:ectastalban@gmail.com">ectastalban@gmail.com</a><br>
-  <a href="mentions-legales.html" style="color:var(--navy);text-decoration:underline;">Mentions légales</a>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA" class="footer-logo">
+      <h4>ECTA SAINT-ALBAN</h4>
+      <p>Entente Cyclotouriste Albanaise - club de cyclotourisme fondé en 1985 à Saint-Alban, Côtes-d'Armor.</p>
+    </div>
+    <div class="footer-col" style="grid-column: span 2;">
+      <h5>Navigation</h5>
+      <ul style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="le-club.html">Le Club</a></li>
+        <li><a href="actualites.html">Activités</a></li>
+        <li><a href="agenda.html">Agenda</a></li>
+        <li><a href="galerie.html">Galerie</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="documents.html">WT 2026</a></li>
+        <li><a href="news.html">Actu vélo</a></li>
+        <li><a href="calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
+        <li><a href="Flora 2026.html">Flora 2026</a></li>
+        <li><a href="https://ecta-saintalban.clubeo.com" target="_blank">Site Clubeo</a></li>
+        <li><a href="https://www.ffvelo.fr" target="_blank">FFVélo (FFCT)</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span id="footer-year">© 2026 Entente Cyclotouriste Albanaise · Saint-Alban 22</span>
+    <a href="mentions-legales.html" style="color:rgba(255,255,255,.7);text-decoration:underline;">Mentions légales</a>
+    <span class="ffct-badge">🚴 Affilié FFVélo / FFCT</span>
+  </div>
 </footer>
 
+
+
+
 <script>
+  // Mobile Menu Logic
   function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
   function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
   document.addEventListener('click', function(e) {
     const menu = document.getElementById('mobileMenu');
     const burger = document.querySelector('.burger');
-    if (menu && burger && !menu.contains(e.target) && !burger.contains(e.target)) {
-      closeMenu();
-    }
-  });
-  window.addEventListener('resize', function() {
-    if (window.innerWidth > 1024) closeMenu();
-  });
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeMenu();
+    if (menu && burger && !menu.contains(e.target) && !burger.contains(e.target)) closeMenu();
   });
 
-  const allTypes=['route','vtt','gravel','marche'];
-  const allMonths=['mars','avril','mai','juin','juillet','aout','septembre','octobre','novembre'];
-  let selectedTypes=new Set();
-  let selectedMonths=new Set();
-
-  /* ── Stats initiales ── */
-  function buildStats(){
-    const cards = document.querySelectorAll('.card');
-    let route=0,vtt=0,gravel=0,marche=0,ok=0,tbc=0;
-    cards.forEach(c=>{
-      const t=c.dataset.type||'';
-      if(t.includes('route')) route++;
-      if(t.includes('vtt')) vtt++;
-      if(t.includes('gravel')) gravel++;
-      if(t.includes('marche')) marche++;
-      if(c.querySelector('.date-badge.ok')) ok++;
-      if(c.querySelector('.date-badge.tbc')) tbc++;
-    });
-    document.getElementById('s-route').textContent=route;
-    document.getElementById('s-vtt').textContent=vtt;
-    document.getElementById('s-gravel').textContent=gravel;
-    document.getElementById('s-marche').textContent=marche;
-    document.getElementById('s-ok').textContent=ok;
-    document.getElementById('s-tbc').textContent=tbc;
-    document.getElementById('total-pill').textContent='📋 '+cards.length+' événements';
-  }
-
-  /* ── Compteurs par mois ── */
-  function updateMonthCounts(){
-    document.querySelectorAll('.month-group').forEach(grp=>{
-      const month=grp.dataset.month;
-      const visible=[...grp.querySelectorAll('.card')].filter(c=>!c.classList.contains('hidden')).length;
-      const badge=document.getElementById('mc-'+month);
-      if(badge) badge.textContent=visible>0?visible:'';
-    });
-  }
-
-  /* ── Filtres ── */
-  function syncFilterButtons(){
-    const allTypeOn = selectedTypes.size===0;
-    document.querySelectorAll('#ftype .chip').forEach(chip=>{
-      const val=chip.dataset.value;
-      if(val==='all'){
-        chip.classList.toggle('on',allTypeOn);
-      }else{
-        chip.classList.toggle('on',selectedTypes.has(val));
-      }
-    });
-
-    const allMonthOn = selectedMonths.size===0;
-    document.querySelectorAll('#fmonth .chip').forEach(chip=>{
-      const val=chip.dataset.value;
-      if(val==='all'){
-        chip.classList.toggle('on',allMonthOn);
-        chip.classList.toggle('rose-chip',allMonthOn);
-      }else{
-        const isOn = selectedMonths.has(val);
-        chip.classList.toggle('on',isOn);
-        chip.classList.toggle('rose-chip',isOn);
-      }
-    });
-  }
-
-  function setF(kind,val,btn){
-    if(kind==='type'){
-      if(val==='all'){
-        selectedTypes.clear();
-      }else{
-        if(selectedTypes.has(val)) selectedTypes.delete(val);
-        else selectedTypes.add(val);
-      }
+  // Filtering Logic
+  let currentF = { type: 'all', month: 'all' };
+  
+  function setF(key, val, el) {
+    currentF[key] = val;
+    if(el.parentNode) {
+      el.parentNode.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+      el.classList.add('on');
     }
-
-    if(kind==='month'){
-      if(val==='all'){
-        selectedMonths.clear();
-      }else{
-        if(selectedMonths.has(val)) selectedMonths.delete(val);
-        else selectedMonths.add(val);
-      }
-    }
-
-    syncFilterButtons();
     applyFilters();
   }
 
-  function applyFilters(){
-    const q=(document.getElementById('search').value||'').toLowerCase().trim();
-    let count=0;
-    document.querySelectorAll('.month-group').forEach(grp=>{
-      const month=grp.dataset.month;
-      const mOK=selectedMonths.size===0||selectedMonths.has(month);
-      let vis=false;
-      grp.querySelectorAll('.card').forEach(card=>{
-        const types=card.dataset.type||'';
-        const search=(card.dataset.search||'')+' '+(card.querySelector('.card-name')?.textContent||'')+' '+(card.querySelector('.card-loc')?.textContent||'');
-        const typeList=types.split(/\s+/).filter(Boolean);
-        const tOK=selectedTypes.size===0||typeList.some(t=>selectedTypes.has(t));
-        const qOK=!q||search.toLowerCase().includes(q);
-        const show=mOK&&tOK&&qOK;
-        card.classList.toggle('hidden',!show);
-        if(show){vis=true;count++;}
-      });
-      grp.classList.toggle('hidden',!vis);
+  function applyFilters() {
+    const searchEl = document.getElementById('search');
+    const query = searchEl ? searchEl.value.toLowerCase() : '';
+    const cards = document.querySelectorAll('.card');
+    let count = 0;
+    
+    cards.forEach(c => {
+      const searchTxt = (c.getAttribute('data-search') || '').toLowerCase();
+      const matchQuery = !query || searchTxt.includes(query);
+      const cType = c.getAttribute('data-type') || '';
+      const matchType = currentF.type === 'all' || cType.includes(currentF.type);
+      const mg = c.closest('.month-group');
+      if (!mg) return;
+      const mgId = mg.id.replace('m-', '');
+      const matchMonth = currentF.month === 'all' || mgId === currentF.month;
+      
+      if (matchQuery && matchType && matchMonth) {
+        c.style.display = 'flex';
+        count++;
+      } else {
+        c.style.display = 'none';
+      }
     });
-    document.getElementById('cnt').textContent=count;
-    document.getElementById('no-results').style.display=count===0?'block':'none';
-    updateMonthCounts();
+
+    document.querySelectorAll('.month-group').forEach(mg => {
+      const vis = mg.querySelectorAll('.card:not([style*="display: none"])').length;
+      mg.style.display = vis ? 'block' : 'none';
+      const badge = mg.querySelector('.month-count-badge');
+      if(badge) badge.textContent = vis;
+    });
+
+    const cntEl = document.getElementById('cnt');
+    if(cntEl) cntEl.textContent = count;
+    const noResEl = document.getElementById('no-results');
+    if(noResEl) noResEl.style.display = count ? 'none' : 'block';
+    
+    recalcStats();
   }
 
-  /* ── Nav mois scroll ── */
-  function scrollToMonth(m,btn){
-    document.querySelectorAll('.mnav-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    if(m==='all'){window.scrollTo({top:0,behavior:'smooth'});return;}
-    const el=document.getElementById('m-'+m);
-    if(el){const y=el.getBoundingClientRect().top+window.scrollY-90;window.scrollTo({top:y,behavior:'smooth'});}
-  }
-
-  /* ── Back to top ── */
-  window.addEventListener('scroll',()=>{
-
-    document.getElementById('btt').classList.toggle('show',window.scrollY>400);
-  });
-
-  // ── Masquage automatique du bandeau header-badge ──
-  window.addEventListener('DOMContentLoaded', function() {
-    runBadgeScript();
-  });
-  window.onload = runBadgeScript;
-
-  function runBadgeScript() {
-    const badge = document.querySelector('.header-badge');
-    const btn = document.getElementById('hideBadgeBtn');
-    if (!badge) { console.log('header-badge introuvable'); return; }
-    // Affichage initial forcé
-    badge.style.display = '';
-    badge.style.opacity = '1';
-    badge.style.transition = '';
-    let hidden = false;
-    function hideBadge() {
-      if (hidden) return;
-      badge.style.transition = 'opacity 0.5s';
-      badge.style.opacity = '0';
-      setTimeout(()=>{ badge.style.display = 'none'; }, 500);
-      hidden = true;
-      removeListeners();
-      if(btn) btn.style.display = 'none';
-      console.log('Bandeau masqué');
+  function recalcStats() {
+    const visibleCards = document.querySelectorAll('.card:not([style*="display: none"])');
+    const s = { route:0, vtt:0, gravel:0, marche:0, ok:0, tbc:0 };
+    visibleCards.forEach(c => {
+      const t = c.getAttribute('data-type') || '';
+      if(t.includes('route')) s.route++;
+      if(t.includes('vtt')) s.vtt++;
+      if(t.includes('gravel')) s.gravel++;
+      if(t.includes('marche')) s.marche++;
+      if(c.querySelector('.date-badge.ok')) s.ok++;
+      if(c.querySelector('.date-badge.tbc')) s.tbc++;
+    });
+    for(let k in s) {
+      const el = document.getElementById('s-'+k);
+      if(el) el.textContent = s[k];
     }
-    function removeListeners() {
-      window.removeEventListener('scroll', hideBadge);
-      window.removeEventListener('mousemove', hideBadge);
-      window.removeEventListener('keydown', hideBadge);
-      window.removeEventListener('touchstart', hideBadge);
-    }
-    setTimeout(hideBadge, 2500);
-    window.addEventListener('scroll', hideBadge, {once:true});
-    window.addEventListener('mousemove', hideBadge, {once:true});
-    window.addEventListener('keydown', hideBadge, {once:true});
-    window.addEventListener('touchstart', hideBadge, {once:true});
-    if(btn) btn.addEventListener('click', hideBadge);
-    console.log('Bandeau script lancé');
+    const totalPill = document.getElementById('total-pill');
+    if(totalPill) totalPill.textContent = visibleCards.length + ' événements';
   }
 
-  /* ── Init ── */
-  buildStats();
-  syncFilterButtons();
-  applyFilters();
-</script>
+  function scrollToMonth(id, el) {
+    document.querySelectorAll('.mnav-btn').forEach(b => b.classList.remove('active'));
+    if(el) el.classList.add('active');
+    if (id === 'all') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const target = document.getElementById('m-' + id);
+      if (target) {
+        const offset = 110;
+        window.scrollTo({ top: target.offsetTop - offset, behavior: 'smooth' });
+      }
+    }
+  }
 
-<!-- ============================================================ -->
-<!--  BANNIÈRE COOKIES (VERSION ÉPURÉE / CONFORME RGPD)           -->
-<!-- ============================================================ -->
-<style>
-    #cookie-banner { position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 1000px; margin: 0 auto; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); border: 1px solid rgba(232, 53, 122, 0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 12px; padding: 1.5rem; z-index: 9999; transform: translateY(150%); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
-    #cookie-banner.visible { transform: translateY(0); }
-    .cookie-text { flex: 1; text-align: left; }
-    .cookie-text h3 { font-family: 'Barlow Condensed', sans-serif; margin: 0 0 0.4rem 0; color: #1c1c2e; font-size: 1.25rem; text-transform: uppercase; }
-    .cookie-text p { font-size: 0.9rem; color: #6b7280; line-height: 1.5; margin: 0; }
-    .cookie-text a { color: #e8357a; text-decoration: underline; font-weight: 700; }
-    .cookie-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-    .cb-btn { border: none; padding: 0.75rem 1.4rem; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-family: 'Nunito', sans-serif; }
-    .cb-btn-secondary { background: #fde8f1; color: #e8357a; }
-    .cb-btn-primary { background: #e8357a; color: white; }
-    .cb-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(232, 53, 122, 0.2); }
-    .cb-btn-outline { background: transparent; color: #6b7280; border: 1px solid #ddd; }
-    #cookie-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 1rem; }
-    #cookie-modal.open { display: flex; }
-    .modal-content { background: white; border-radius: 12px; max-width: 480px; width: 100%; padding: 2.2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: modalFadeIn 0.3s ease-out; }
-    @keyframes modalFadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-    .modal-header h2 { font-family: 'Barlow Condensed', sans-serif; margin: 0; text-transform: uppercase; color: #e8357a; }
-    .opt-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.2rem 0; border-bottom: 1px solid #eee; text-align: left; }
-    .opt-info h4 { margin: 0 0 0.25rem 0; font-size: 1rem; color: #1c1c2e; }
-    .opt-info p { margin: 0; font-size: 0.82rem; color: #6b7280; }
-    .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
-    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-    input:checked + .slider { background-color: #e8357a; }
-    input:checked + .slider:before { transform: translateX(20px); }
-    #cookie-trigger { position: fixed; bottom: 20px; left: 20px; width: 42px; height: 42px; background: white; border: 1px solid #fde8f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 9998; transition: all 0.3s; opacity: 0; visibility: hidden; }
-    #cookie-trigger.visible { opacity: 1; visibility: visible; }
-    @media (max-width: 768px) { #cookie-banner { flex-direction: column; text-align: center; bottom: 0; left: 0; right: 0; border-radius: 20px 20px 0 0; gap: 1.2rem; } .cookie-btns { width: 100%; justify-content: center; } .cb-btn { flex: 1; padding: 0.7rem 0.5rem; } }
-</style>
-<div id="cookie-banner">
-    <div class="cookie-text">
-        <h3>🍪 Respect de votre vie privée</h3>
-        <p>Nous utilisons des cookies de mesure d'audience pour améliorer votre expérience. <a href="mentions-legales.html">Consulter nos mentions légales</a></p>
-    </div>
-    <div class="cookie-btns">
-        <button class="cb-btn cb-btn-outline" id="btn-deny-all">Refuser Tout</button>
-        <button class="cb-btn cb-btn-secondary" id="btn-customize">Paramètres</button>
-        <button class="cb-btn cb-btn-primary" id="btn-accept-all">Tout Accepter</button>
-    </div>
-</div>
-<div id="cookie-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Préférences de navigation</h2>
-            <button onclick="document.getElementById('cookie-modal').classList.remove('open')" style="background:none;border:none;font-size:1.8rem;cursor:pointer;">&times;</button>
-        </div>
-        <div class="opt-item">
-            <div class="opt-info"><h4>Cookies Essentiels</h4><p>Nécessaires au bon fonctionnement du site.</p></div>
-            <label class="switch"><input type="checkbox" checked disabled><span class="slider"></span></label>
-        </div>
-        <div class="opt-item">
-            <div class="opt-info"><h4>Mesure d'audience anonyme</h4><p>Statistiques de visites (sans suivi publicitaire).</p></div>
-            <label class="switch"><input type="checkbox" id="check-analytics"><span class="slider"></span></label>
-        </div>
-        <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
-            <button class="cb-btn cb-btn-primary" id="btn-save-custom">Enregistrer mes choix</button>
-        </div>
-    </div>
-</div>
-<script>
-    (function() {
-        const _id = 'G-Q9TE2R3BER'; 
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        const saved = localStorage.getItem('choice-privacy');
-        if (!saved) { gtag('consent', 'default', { 'analytics_storage': 'denied' }); }
-        else if (saved && JSON.parse(saved).analytics) { gtag('consent', 'default', { 'analytics_storage': 'granted' }); }
-        const script = document.createElement('script');
-        script.async = true; script.src = `https://www.googletagmanager.com/gtag/js?id=${_id}`;
-        document.head.appendChild(script);
-        gtag('js', new Date()); gtag('config', _id);
-        const banner = document.getElementById('cookie-banner');
-        const trigger = document.getElementById('cookie-trigger');
-        const modal = document.getElementById('cookie-modal');
-        function save(status) {
-            localStorage.setItem('choice-privacy', JSON.stringify({ analytics: status }));
-            gtag('consent', 'update', { 'analytics_storage': status ? 'granted' : 'denied' });
-            banner.classList.remove('visible');
-            trigger.classList.add('visible');
-            modal.classList.remove('open');
-        }
-        if (!saved) { setTimeout(() => banner.classList.add('visible'), 600); }
-        else { trigger.classList.add('visible'); }
-        document.getElementById('btn-accept-all').onclick = () => save(true);
-        document.getElementById('btn-deny-all').onclick = () => save(false);
-        document.getElementById('btn-customize').onclick = () => {
-            document.getElementById('check-analytics').checked = saved ? JSON.parse(saved).analytics : false;
-            modal.classList.add('open');
-        };
-        document.getElementById('btn-save-custom').onclick = () => save(document.getElementById('check-analytics').checked);
-        trigger.onclick = () => banner.classList.add('visible');
-    })();
+
+
+  document.addEventListener('DOMContentLoaded', () => {
+    applyFilters();
+  });
 </script>
+<script src="donnees.js" defer></script>
+<script src="scripts.js" defer></script>
 </body>
 </html>

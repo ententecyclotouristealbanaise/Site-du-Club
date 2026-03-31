@@ -3,32 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Entente Cyclotouriste Albanaise · Accueil</title>
-
-  <!-- SEO -->
-  <meta name="description" content="L'Entente Cyclotouriste Albanaise (ECTA) est un club de cyclotourisme fondé en 1985 à Saint-Alban (22)." />
-  <meta name="keywords" content="cyclotourisme, vélo, Saint-Alban, Côtes-d'Armor, FFCT, ECTA" />
-
+  <title>Galerie Photos · Entente Cyclotouriste Albanaise</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e8357a'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
-  
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <div class="nav-brand">
-    <img class="nav-logo-img" src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
+    <img class="nav-logo-img" src="images/logo_ECTA.png" alt="Logo ECTA" />
     <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban · Côtes-d'Armor</small></div>
   </div>
   <ul class="nav-links">
-    <li><a href="index.html" class="active">Accueil</a></li>
+    <li><a href="index.html">Accueil</a></li>
     <li><a href="le-club.html">Le Club</a></li>
     <li><a href="actualites.html">Activités</a></li>
     <li><a href="agenda.html">Agenda</a></li>
-    <li><a href="galerie.html">Galerie</a></li>
+    <li><a href="galerie.html" class="active">Galerie</a></li>
     <li><a href="contact.html">Contact</a></li>
     <li><a href="documents.html">WT 2026</a></li>
     <li><a href="news.html">Actu vélo</a></li>
@@ -37,6 +30,12 @@
   </ul>
   <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
 </nav>
+
+<header class="hero" style="background: linear-gradient(150deg, rgba(232, 53, 122, 0.75) 0%, rgba(240, 111, 160, 0.55) 48%, rgba(0, 161, 204, 0.75) 100%);">
+  <div class="hero-badge">Galerie · ECTA Saint-Alban</div>
+  <h1><span>Galerie</span></h1>
+  <p>Découvrez les meilleurs moments de nos sorties en images.</p>
+</header>
 
 <div class="mobile-menu" id="mobileMenu">
   <a href="index.html" onclick="closeMenu()">Accueil</a>
@@ -51,22 +50,31 @@
   <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
 </div>
 
-<!-- HERO -->
-<header id="accueil" class="hero" style="background: linear-gradient(150deg, rgba(232, 53, 122, 0.75) 0%, rgba(240, 111, 160, 0.55) 48%, rgba(0, 161, 204, 0.75) 100%), url('images/Cap%20Frehel.jpg') center/cover no-repeat; padding: 6rem 2rem 2rem 2rem;">
-  <div class="hero-badge">Club affilié FFCT · Saint-Alban 22</div>
-  <h1 style="font-size: clamp(3rem, 7vw, 5.5rem); line-height: 1; margin-bottom: 1rem;">Entente <span>Cyclotouriste</span> Albanaise</h1>
-  <p style="font-size: 1.3rem; max-width: 650px; line-height: 1.6; margin-bottom: 2.5rem;">Le club de cyclotourisme de Saint-Alban - sorties du dimanche, randonnées, brevets et convivialité en Côtes-d'Armor.</p>
-  <div class="hero-buttons">
-    <a href="le-club.html" class="hero-btn">Découvrir le club</a>
-    <a href="agenda.html" class="hero-btn" style="background: var(--cyan); color: var(--blanc); box-shadow: 0 6px 15px rgba(0, 180, 216, 0.4);">Agenda du club</a>
+<section id="galerie">
+  <div class="container">
+    <div class="albums-grid" id="albumsGrid"></div>
   </div>
-  <div class="hero-social">
-    <a href="https://www.facebook.com/ectalbanaise/" target="_blank" rel="noopener" class="hero-fb">
-      <svg role="img" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.248h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-      Suivez-nous sur Facebook
-    </a>
+</section>
+
+<!-- LIGHTBOX -->
+<div class="lightbox-overlay" id="lightbox">
+  <div class="lightbox-header">
+    <h3 id="lightboxTitle"></h3>
+    <div style="display:flex;align-items:center;gap:1rem">
+      <button id="btnDiaporama" onclick="toggleDiaporama()" style="background:var(--rose);color:white;border:none;padding:.4rem 1rem;border-radius:2rem;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;font-size:.9rem;display:flex;align-items:center;gap:5px;box-shadow:0 2px 8px rgba(232,53,122,.3);">
+        <span id="diaporamaIcon">▶️</span> Diaporama
+      </button>
+      <span class="lightbox-counter" id="lightboxCounter"></span>
+      <button class="lightbox-close" onclick="closeLightbox()">&#x2715;</button>
+    </div>
   </div>
-</header>
+  <div class="lightbox-main" id="lightboxMain">
+    <button class="lightbox-nav lightbox-prev" onclick="lightboxNav(-1)">&#8249;</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+    <button class="lightbox-nav lightbox-nav-next lightbox-next" onclick="lightboxNav(1)">&#8250;</button>
+  </div>
+  <div class="lightbox-thumbs" id="lightboxThumbs"></div>
+</div>
 
 <!-- FOOTER -->
 <footer>
@@ -103,5 +111,6 @@
 
 <script src="donnees.js" defer></script>
 <script src="scripts.js" defer></script>
+
 </body>
 </html>
