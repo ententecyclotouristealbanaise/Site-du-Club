@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Actu Vélo · En direct · ECTA Saint-Alban</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e8357a'/></svg>"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --rose:#e8357a; --rose-clair:#f06fa0; --rose-pale:#fde8f1;
+      --cyan:#00b4d8; --cyan-pale:#e0f7fa;
+      --blanc:#f4f4f6; --card:#fff;
+      --texte:#1c1c2e; --gris:#6b7280; --gris-clair:#e8e4ed;
+      --radius:10px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Nunito',sans-serif;color:var(--texte);background:radial-gradient(1000px 520px at 8% -10%, #fff 0%, transparent 62%),linear-gradient(180deg,#f7f6fa 0%,var(--blanc) 34%,#eef3f8 100%)}
+    a{text-decoration:none;color:inherit}
+
+    /* ── TOPBAR ── */
+    .topbar{
+      background:rgba(232,53,122,.96);height:54px;padding:0 1.5rem;
+      display:flex;align-items:center;justify-content:space-between;gap:.75rem;
+      box-shadow:0 3px 16px rgba(232,53,122,.35);
+      position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.22);backdrop-filter:saturate(1.1) blur(5px);
+    }
+    .tb-left{display:flex;align-items:center;gap:.9rem;min-width:0;overflow:hidden}
+    .tb-logo{height:48px;width:124px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
+    .btn-retour{
+      display:inline-flex;align-items:center;gap:5px;
+      background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.5);
+      color:white;padding:4px 12px;border-radius:2rem;cursor:pointer;
+      font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;
+      letter-spacing:.09em;text-transform:uppercase;transition:background .2s;
+      text-decoration:none;
+    }
+    .btn-retour:hover{background:rgba(255,255,255,.38)}
+    .tb-brand{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:white;letter-spacing:.02em;line-height:1.05;min-width:0;white-space:normal}
+    .tb-brand small{display:block;font-size:.73rem;font-weight:600;opacity:.95;margin-left:0;letter-spacing:.03em}
+    .tb-right{display:flex;align-items:center;gap:.7rem;flex-shrink:0;margin-left:auto}
+    /* centre colonne pour action refresh */
+    .tb-center{display:flex;align-items:center;justify-content:center;gap:.7rem;flex:1}
+
+    /* navigation dans la topbar */
+    .topbar .nav-links{display:flex;gap:1rem;list-style:none;margin-left:1.5rem}
+    .topbar .nav-links a{color:white;font-size:.75rem;font-weight:700;text-transform:uppercase;padding:.3rem .45rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:border-color .2s,background .2s}
+    .topbar .nav-links a:hover,.topbar .nav-links a.active{border-color:white;background:rgba(255,255,255,.12)}
+    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:transparent;border:none;padding:0;margin-left:auto}
+    .burger span{display:block;width:26px;height:3px;background:var(--blanc);border-radius:2px}
+    .mobile-menu{display:none;position:fixed;top:54px;left:0;width:100%;z-index:999;background:var(--rose);padding:1rem 1.5rem 1.25rem;flex-direction:column;gap:1rem;box-shadow:0 8px 18px rgba(0,0,0,.18)}
+    .mobile-menu.open{display:flex}
+    .mobile-menu a{color:var(--blanc);font-size:.9rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    #btn-refresh{
+      display:flex;align-items:center;gap:5px;
+      background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.5);
+      color:white;padding:4px 13px;border-radius:2rem;cursor:pointer;
+      font-family:'Barlow Condensed',sans-serif;font-size:.73rem;font-weight:700;
+      letter-spacing:.1em;text-transform:uppercase;transition:background .2s;
+    }
+    #btn-refresh:hover{background:rgba(255,255,255,.38)}
+    .ico{display:inline-block}
+    .spinning .ico{animation:tourne .7s linear infinite}
+    @keyframes tourne{to{transform:rotate(360deg)}}
+
+    /* ── HERO ── */
+    .hero{
+      background:linear-gradient(150deg,var(--rose) 0%,var(--rose-clair) 48%,var(--cyan) 100%);
+      padding:2.8rem 2rem 5rem;text-align:center;position:relative;overflow:hidden;
+    }
+    .hero::after{
+      content:'';position:absolute;bottom:-2px;left:0;width:100%;height:64px;
+      background:var(--blanc);clip-path:ellipse(56% 100% at 50% 100%);
+    }
+    .hero-badge{
+      display:inline-block;background:rgba(255,255,255,.92);color:var(--rose);
+      font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;
+      letter-spacing:.18em;text-transform:uppercase;padding:.28rem 1.1rem;border-radius:2rem;margin-bottom:.9rem;
+    }
+    .roue{width:72px;height:72px;margin:0 auto .8rem;display:block;animation:roue 18s linear infinite;filter:drop-shadow(0 0 14px rgba(255,255,255,.4))}
+    @keyframes roue{to{transform:rotate(360deg)}}
+    .hero h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.9rem,5.5vw,3.5rem);font-weight:800;color:white;text-transform:uppercase;letter-spacing:.03em;line-height:1.05;margin-bottom:.5rem}
+    .hero h1 span{color:#b3f0ff}
+    .hero>p{color:rgba(255,255,255,.9);font-size:.97rem;font-weight:300;max-width:540px;margin:0 auto 1.2rem}
+    .live-b{
+      display:inline-flex;align-items:center;gap:7px;
+      background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);
+      color:white;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;
+      font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 14px;border-radius:2rem;
+    }
+    .dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 1.4s ease-in-out infinite;flex-shrink:0}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+
+    /* ── FILTRES ── */
+    .filters{
+      background:var(--card);border-bottom:1px solid var(--gris-clair);
+      padding:.75rem 1.5rem;display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;
+    }
+    .fl{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gris);flex-shrink:0}
+    .fb{
+      font-family:'Barlow Condensed',sans-serif;font-size:.71rem;font-weight:700;
+      letter-spacing:.09em;text-transform:uppercase;padding:4px 12px;
+      border-radius:2rem;border:1px solid var(--gris-clair);
+      background:var(--blanc);color:var(--gris);cursor:pointer;transition:all .18s;
+    }
+    .fb:hover{border-color:var(--rose);color:var(--rose)}
+    .fb.active{background:var(--rose);color:white;border-color:var(--rose)}
+    .fsep{flex:1}
+    #last-upd{font-size:.73rem;color:var(--gris)}
+
+    /* ── GUIDE TV ── */
+    .tv-wrap{grid-column:1/-1;background:var(--card);border:1px solid var(--gris-clair);border-radius:var(--radius);box-shadow:0 4px 14px rgba(0,0,0,.06);padding:1rem}
+    .tv-note{font-size:.8rem;color:var(--gris);line-height:1.55;margin-bottom:.85rem}
+    .tv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.9rem}
+    .tv-card{border:1px solid var(--gris-clair);border-radius:10px;background:#fff;padding:.8rem .9rem;display:flex;flex-direction:column;gap:.35rem;transition:transform .18s,box-shadow .18s,border-color .18s}
+    .tv-card:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(232,53,122,.1);border-color:var(--rose-clair)}
+    .tv-card h3{font-family:'Barlow Condensed',sans-serif;font-size:.98rem;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--texte)}
+    .tv-line{font-size:.8rem;color:var(--gris)}
+    .tv-line b{color:var(--texte)}
+    .tv-link{margin-top:.2rem;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--rose)}
+
+    /* ── MAIN ── */
+    main{max-width:1100px;margin:0 auto;padding:2rem 1.5rem 5rem}
+
+    /* ── SECTION HEADER ── */
+    .sh{display:flex;align-items:center;gap:12px;margin-bottom:1.3rem}
+    .sp{
+      display:inline-block;background:var(--rose-pale);color:var(--rose);
+      font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;
+      letter-spacing:.18em;text-transform:uppercase;padding:.28rem 1rem;border-radius:2rem;white-space:nowrap;
+    }
+    .sr{flex:1;height:2px;background:linear-gradient(90deg,var(--rose-pale),transparent);border-radius:2px}
+
+    /* ── STATUS BAR ── */
+    #status-bar{
+      display:none;flex-wrap:wrap;align-items:center;gap:.75rem;
+      background:var(--card);border-radius:var(--radius);border:1px solid var(--gris-clair);
+      padding:.8rem 1.3rem;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);
+    }
+    .si{display:flex;flex-direction:column;gap:1px;min-width:75px}
+    .sn{font-family:'Barlow Condensed',sans-serif;font-size:1.45rem;font-weight:800;color:var(--rose);line-height:1}
+    .sl{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gris)}
+    #src-pills{display:flex;flex-wrap:wrap;gap:.35rem;margin-left:auto}
+    .pill{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:2rem}
+    .p-ok{background:#dcfce7;color:#166534}
+    .p-err{background:#fee2e2;color:#991b1b}
+    .p-wait{background:#fef9c3;color:#854d0e}
+
+    /* ── GRILLE ── */
+    #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.1rem}
+
+    /* ── CARTE ── */
+    .rc{
+      background:var(--card);border-radius:var(--radius);border:1px solid var(--gris-clair);
+      display:flex;flex-direction:column;overflow:hidden;
+      box-shadow:0 4px 14px rgba(0,0,0,.07);
+      transition:transform .22s,box-shadow .22s,border-color .22s;
+      animation:fadeUp .38s ease both;
+    }
+    .rc:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(232,53,122,.13);border-color:var(--rose-clair)}
+    .rc-bar{height:4px;background:linear-gradient(90deg,var(--rose),var(--cyan));opacity:.55;transition:opacity .22s}
+    .rc:hover .rc-bar{opacity:1}
+    .rc-head{padding:.85rem 1.1rem .2rem;display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .rc-th{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:2px 8px;border-radius:2rem;flex-shrink:0}
+    .rc-age{font-size:.7rem;color:var(--gris);flex-shrink:0}
+    .rc-body{padding:.3rem 1.1rem 1.2rem;flex:1;display:flex;flex-direction:column}
+    .rc-body h3{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;text-transform:uppercase;letter-spacing:.02em;line-height:1.22;color:var(--texte);margin-bottom:.4rem}
+    .rc-body p{font-size:.82rem;line-height:1.6;color:var(--gris);flex:1;display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .rc-via{margin-top:.4rem;font-size:.71rem;color:var(--gris);font-style:italic}
+    .rc-cta{margin-top:.6rem;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--rose);display:flex;align-items:center;gap:5px;transition:gap .18s}
+    .rc:hover .rc-cta{gap:9px}
+    .badge-new{display:inline-block;background:#dcfce7;color:#166534;font-family:'Barlow Condensed',sans-serif;font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:1px 6px;border-radius:2rem;margin-left:5px;vertical-align:middle}
+
+    .t1{background:#fde8f1;color:#c01860}
+    .t2{background:#e0f7fa;color:#006880}
+    .t3{background:#f0fdf4;color:#166534}
+    .t4{background:#fff7ed;color:#9a3412}
+    .t5{background:#f5f3ff;color:#5b21b6}
+
+    /* ── ÉTAT ── */
+    .state{grid-column:1/-1;text-align:center;padding:3rem 1rem;display:flex;flex-direction:column;align-items:center;gap:1rem}
+    .spinner{width:44px;height:44px;border:4px solid var(--gris-clair);border-top-color:var(--rose);border-radius:50%;animation:tourne .8s linear infinite}
+    .sm{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gris)}
+    .ss{font-size:.84rem;color:var(--gris);max-width:440px;line-height:1.6;text-align:center}
+    .retry{background:var(--rose);color:white;border:none;padding:.55rem 1.5rem;border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s}
+    .retry:hover{background:var(--rose-clair)}
+    #dbg{font-family:monospace;font-size:.7rem;color:#777;background:#f8f8f8;border:1px solid #e0e0e0;border-radius:6px;padding:.6rem .9rem;max-width:500px;text-align:left;white-space:pre-wrap;word-break:break-all}
+
+    /* ── FOOTER ── */
+    footer{background:var(--texte);color:rgba(255,255,255,.65);padding:2.2rem 2rem 1.5rem}
+    .fi{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;padding-bottom:1.2rem;border-bottom:1px solid rgba(255,255,255,.1)}
+    .fbr{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;color:white;text-transform:uppercase;margin-bottom:.25rem}
+    .fbr span{color:var(--rose-clair)}
+    .fs2{font-size:.82rem;line-height:1.6}
+    .fs2 a{color:var(--rose-clair)}.fs2 a:hover{color:white}
+    .fbot{max-width:1100px;margin:.9rem auto 0;font-size:.73rem;text-align:center;opacity:.38}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+
+
+
+    /* BOUTON DE REMONTÉE */
+    #btnToTop{position:fixed;bottom:1.5rem;right:1.25rem;z-index:900;background:var(--cyan);color:var(--blanc);border:none;width:44px;height:44px;border-radius:50%;font-size:1.3rem;cursor:pointer;box-shadow:0 4px 16px rgba(0,180,216,.4);transition:transform .2s,opacity .2s;display:none;align-items:center;justify-content:center}
+    #btnToTop.visible{display:flex}
+    #btnToTop:hover{transform:translateY(-3px)}
+
+    @media(max-width:1024px){
+      .topbar{padding:0 .9rem;height:54px;flex-wrap:nowrap}
+      .tb-center{display:none}
+      .tb-right{display:none}
+      .burger{display:flex}
+    }
+
+    @media(max-width:640px){
+      .tb-brand{font-size:1rem;line-height:1.05}
+      .filters{padding:.65rem 1rem}
+      main{padding:1.5rem 1rem 4rem}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ TOPBAR ══ -->
+<div class="topbar">
+  <div class="tb-left">
+    <!-- logo et nom du club -->
+    <img class="tb-logo" src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
+    <div class="tb-brand">Entente Cyclotouriste Albanaise <small>Saint-Alban - Côtes-d'Armor</small></div>
+  </div>
+  <div class="tb-center">
+    <button id="btn-refresh" onclick="loadAll()"><span class="ico">↻</span> Actualiser</button>
+  </div>
+  <button class="burger" aria-label="Ouvrir le menu" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="tb-right">
+    <!-- liens de navigation similaires à index -->
+    <ul class="nav-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="index.html#leclub">Le Club</a></li>
+      <li><a href="index.html#actualites">Actualités</a></li>
+      <li><a href="index.html#agenda">Agenda</a></li>
+      <li><a href="index.html#galerie">Galerie</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+      <li><a href="documents.html">WT2026</a></li>
+      <li><a href="news.html" class="active">Actu vélo</a></li>
+      <li><a href="calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
+      <li><a href="Flora 2026.html">Flora 2026</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" onclick="closeMenu()">Accueil</a>
+  <a href="index.html#leclub" onclick="closeMenu()">Le Club</a>
+  <a href="index.html#actualites" onclick="closeMenu()">Actualités</a>
+  <a href="index.html#agenda" onclick="closeMenu()">Agenda</a>
+  <a href="index.html#galerie" onclick="closeMenu()">Galerie</a>
+  <a href="index.html#contact" onclick="closeMenu()">Contact</a>
+  <a href="documents.html" onclick="closeMenu()">WT2026</a>
+  <a href="news.html" onclick="closeMenu()">Actu vélo</a>
+  <a href="calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
+  <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
+  <a href="#" onclick="loadAll(); closeMenu(); return false;">↻ Actualiser</a>
+</div>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="hero-badge">Actualité Cyclisme · ECTA Saint-Alban 22</div>
+  <svg class="roue" viewBox="0 0 100 100" fill="none">
+    <circle cx="50" cy="50" r="45" stroke="white" stroke-width="3"/>
+    <circle cx="50" cy="50" r="28" stroke="rgba(255,255,255,.35)" stroke-width="1.5" stroke-dasharray="5 5"/>
+    <circle cx="50" cy="50" r="7" fill="white"/>
+    <line x1="50" y1="5"  x2="50" y2="43" stroke="white" stroke-width="2"/>
+    <line x1="50" y1="57" x2="50" y2="95" stroke="white" stroke-width="2"/>
+    <line x1="5"  y1="50" x2="43" y2="50" stroke="white" stroke-width="2"/>
+    <line x1="57" y1="50" x2="95" y2="50" stroke="white" stroke-width="2"/>
+    <line x1="19" y1="19" x2="38" y2="38" stroke="white" stroke-width="2"/>
+    <line x1="62" y1="62" x2="81" y2="81" stroke="white" stroke-width="2"/>
+    <line x1="81" y1="19" x2="62" y2="38" stroke="white" stroke-width="2"/>
+    <line x1="38" y1="62" x2="19" y2="81" stroke="white" stroke-width="2"/>
+  </svg>
+  <h1>L'actu vélo <span>en direct</span></h1>
+  <p>Actualités cyclisme 100&nbsp;% en français — mise à jour automatique toutes les 6&nbsp;heures</p>
+  <div class="live-b"><span class="dot"></span><span id="hero-txt">Chargement…</span></div>
+</div>
+
+<!-- ══ FILTRES ══ -->
+<div class="filters">
+  <span class="fl">Thème :</span>
+  <button class="fb active" data-t="all" onclick="doFilter('all',this)">Tout afficher</button>
+  <button class="fb" data-t="t1" onclick="doFilter('t1',this)">🏆 Résultats &amp; courses</button>
+  <button class="fb" data-t="t2" onclick="doFilter('t2',this)">🚵 Grands Tours</button>
+  <button class="fb" data-t="t3" onclick="doFilter('t3',this)">🌸 Classiques</button>
+  <button class="fb" data-t="t4" onclick="doFilter('t4',this)">👥 Coureurs &amp; équipes</button>
+  <button class="fb" data-t="t5" onclick="doFilter('t5',this)">🇫🇷 Cyclisme français</button>
+  <button class="fb" data-t="t6" onclick="doFilter('t6',this)">📺 Courses à la TV</button>
+  <div class="fsep"></div>
+  <span id="last-upd"></span>
+</div>
+
+<!-- ══ MAIN ══ -->
+<main>
+  <div id="status-bar">
+    <div class="si"><div class="sn" id="sn-tot">—</div><div class="sl">Articles</div></div>
+    <div class="si"><div class="sn" id="sn-new">—</div><div class="sl">Du jour</div></div>
+    <div class="si"><div class="sn" id="sn-vis">—</div><div class="sl">Affichés</div></div>
+    <div id="src-pills"></div>
+  </div>
+
+  <div class="sh"><span class="sp">Toute l'actualité cyclisme en français</span><div class="sr"></div></div>
+
+  <div id="grid">
+    <div class="state">
+      <div class="spinner"></div>
+      <div class="sm">Chargement en cours…</div>
+      <div class="ss">Connexion aux flux d'actualité cyclisme</div>
+    </div>
+  </div>
+</main>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="fi">
+    <div>
+      <div class="fbr">ECTA <span>Saint-Alban</span></div>
+      <div class="fs2">Entente Cyclotouriste Albanaise · Fondée en 1985 · Saint-Alban 22<br/>
+        <a href="https://ecta-saintalban.clubeo.com/" target="_blank" rel="noopener">ecta-saintalban.clubeo.com</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.85)">Sources</div>
+      <div class="fs2" style="margin-top:.25rem">Google Actualités Cyclisme (5 thèmes en français)<br/>Mise à jour automatique toutes les 6 heures</div>
+    </div>
+  </div>
+  <div class="fbot">ECTA Saint-Alban · Club de cyclotourisme affilié FFCT · Saint-Alban 22400</div>
+</footer>
+
+<!-- boutons flottants vers l'accueil -->
+<button id="btnToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">↑</button>
+
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   CONFIGURATION : 5 thèmes Google News RSS en français
+   ════════════════════════════════════════════════════════════ */
+const THEMES = [
+  { id:'t1', label:'🏆 Résultats & courses', cls:'t1', max:15,
+    q:'résultats+cyclisme+victoire+course+pro+when:30d+-site:ouestfrance.com' },
+  { id:'t2', label:'🚵 Grands Tours',        cls:'t2', max:16,
+    q:'cyclisme+grand+tour+giro+tour+de+france+vuelta+paris+nice+dauphine+tirreno+adriatico+-site:ouestfrance.com' },
+  { id:'t3', label:'🌸 Classiques',          cls:'t3', max:12,
+    q:'classiques+cyclisme+flandres+roubaix+liège+strade+bianche+when:30d+-site:ouestfrance.com' },
+  { id:'t4', label:'👥 Coureurs & équipes',  cls:'t4', max:12,
+    q:'cyclisme+coureur+équipe+pro+tour+transfert+when:30d+-site:ouestfrance.com' },
+  { id:'t5', label:'🇫🇷 Cyclisme français',  cls:'t5', max:12,
+    q:'cyclisme+france+FDJ+TotalEnergies+coureur+français+when:30d+-site:ouestfrance.com' }
+];
+
+const TV_THEME = { id:'t6', label:'📺 Courses à la TV', cls:'t2' };
+
+// Donnees informatives relevees sur des pages programmes/sport en ligne.
+// Les diffuseurs/horaires peuvent evoluer : verifier le lien source le jour J.
+const TV_GUIDE = [
+  {
+    course:'Milan-San Remo',
+    jour:'Samedi 21 mars 2026',
+    heure:'14:30',
+    chaine:'Eurosport / Max',
+    source:'https://www.eurosport.fr/cyclisme/'
+  },
+  {
+    course:'E3 Classic',
+    jour:'Vendredi 27 mars 2026',
+    heure:'14:15',
+    chaine:'Eurosport / Max',
+    source:'https://www.programme-tv.net/programme/sport/r303-cyclisme/'
+  },
+  {
+    course:'Gent-Wevelgem',
+    jour:'Dimanche 29 mars 2026',
+    heure:'14:30',
+    chaine:'Eurosport / Max',
+    source:'https://www.eurosport.fr/cyclisme/'
+  },
+  {
+    course:'Tour des Flandres',
+    jour:'Dimanche 5 avril 2026',
+    heure:'13:30',
+    chaine:'Eurosport / Max',
+    source:'https://www.france.tv/sport/cyclisme/'
+  },
+  {
+    course:'Paris-Roubaix',
+    jour:'Dimanche 12 avril 2026',
+    heure:'13:30',
+    chaine:'Eurosport / Max',
+    source:'https://www.france.tv/sport/cyclisme/'
+  },
+  {
+    course:'Flèche Wallonne',
+    jour:'Mercredi 22 avril 2026',
+    heure:'14:00',
+    chaine:'Eurosport / Max',
+    source:'https://www.eurosport.fr/cyclisme/'
+  },
+  {
+    course:'Liège-Bastogne-Liège',
+    jour:'Dimanche 26 avril 2026',
+    heure:'13:30',
+    chaine:'Eurosport / Max',
+    source:'https://www.eurosport.fr/cyclisme/'
+  },
+  {
+    course:'Giro d\'Italia (Étape 1)',
+    jour:'Samedi 9 mai 2026',
+    heure:'14:00',
+    chaine:'Eurosport / Max',
+    source:'https://www.eurosport.fr/cyclisme/'
+  },
+  {
+    course:'Critérium du Dauphiné (Étape 1)',
+    jour:'Dimanche 7 juin 2026',
+    heure:'15:00',
+    chaine:'Eurosport / Max',
+    source:'https://www.france.tv/sport/cyclisme/'
+  },
+  {
+    course:'Tour de France (Étape 1)',
+    jour:'Samedi 4 juillet 2026',
+    heure:'14:00',
+    chaine:'France TV + Eurosport / Max',
+    source:'https://www.france.tv/sport/cyclisme/'
+  }
+];
+
+/* ════════════════════════════════════════════════════════════
+   FETCH RSS via proxy CORS
+   On essaie 3 proxies dans l'ordre — si l'un échoue, on passe au suivant
+   ════════════════════════════════════════════════════════════ */
+function gnRssUrl(q) {
+  return 'https://news.google.com/rss/search?q=' + q + '&hl=fr&gl=FR&ceid=FR:fr';
+}
+
+// affichage du bouton de retour en haut
+window.addEventListener('scroll', () => {
+  const btnToTop = document.getElementById('btnToTop');
+  if (window.scrollY > window.innerHeight / 2) {
+    btnToTop.style.display = 'flex';
+  } else {
+    btnToTop.style.display = 'none';
+  }
+});
+
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+function closeMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('mobileMenu');
+  const burger = document.querySelector('.burger');
+  if (!menu || !burger) return;
+  if (!menu.contains(e.target) && !burger.contains(e.target)) {
+    closeMenu();
+  }
+});
+
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 1024) closeMenu();
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeMenu();
+});
+
+const CACHE_KEY = 'ecta_news_cache_v1';
+
+const PROXIES = [
+  { name:'allorigins-raw', mode:'xml', build: feedUrl => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(feedUrl) },
+  { name:'corsproxy',      mode:'xml', build: feedUrl => 'https://corsproxy.io/?' + encodeURIComponent(feedUrl) },
+  { name:'allorigins-get', mode:'json-contents', build: feedUrl => 'https://api.allorigins.win/get?url=' + encodeURIComponent(feedUrl) },
+  { name:'codetabs',       mode:'xml', build: feedUrl => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(feedUrl) },
+  { name:'thingproxy',     mode:'xml', build: feedUrl => 'https://thingproxy.freeboard.io/fetch/' + feedUrl },
+  // Secours: transforme le flux RSS en JSON exploitable directement.
+  { name:'rss2json',       mode:'rss2json', build: feedUrl => 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feedUrl) },
+];
+
+function parseXmlItems(xmlStr){
+  const doc   = new DOMParser().parseFromString(xmlStr, 'text/xml');
+  const items = [...doc.querySelectorAll('item')];
+  if (items.length === 0) throw new Error('Aucun article dans le flux');
+
+  return items.map(el => {
+    const rawTitle = el.querySelector('title')?.textContent || '';
+    const m      = rawTitle.match(/^(.*?)\s+-\s+([^-]+)$/s);
+    const title  = m ? m[1].trim() : rawTitle.trim();
+    const via    = m ? m[2].trim() : '';
+    const link   = el.querySelector('link')?.textContent?.trim()
+                || el.querySelector('link')?.getAttribute('href') || '#';
+    const pubDate = el.querySelector('pubDate')?.textContent || '';
+    const desc    = stripHtml(el.querySelector('description')?.textContent || '');
+    return { title, via, link, pubDate, desc };
+  });
+}
+
+function parseRss2JsonItems(json){
+  const arr = Array.isArray(json?.items) ? json.items : [];
+  if (arr.length === 0) throw new Error('Aucun article dans le flux');
+
+  return arr.map(it => {
+    const rawTitle = (it?.title || '').trim();
+    const m      = rawTitle.match(/^(.*?)\s+-\s+([^-]+)$/s);
+    const title  = m ? m[1].trim() : rawTitle;
+    const via    = m ? m[2].trim() : (it?.author || '');
+    const link   = it?.link || '#';
+    const pubDate = it?.pubDate || '';
+    const desc    = stripHtml(it?.description || it?.content || '');
+    return { title, via, link, pubDate, desc };
+  });
+}
+
+function saveCache(items){
+  try {
+    if (!Array.isArray(items) || items.length === 0) return;
+    const payload = {
+      savedAt: Date.now(),
+      items
+    };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
+  } catch (_) {}
+}
+
+function loadCache(){
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !Array.isArray(parsed.items) || parsed.items.length === 0) return null;
+    return parsed;
+  } catch (_) {
+    return null;
+  }
+}
+
+async function fetchRss(feedUrl) {
+  let lastErr = null;
+  for (let i = 0; i < PROXIES.length; i++) {
+    try {
+      const proxy = PROXIES[i];
+      const proxyUrl = proxy.build(feedUrl);
+      const resp = await fetch(proxyUrl, { signal: AbortSignal.timeout(12000) });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+
+      if (proxy.mode === 'json-contents') {
+        const json = await resp.json();
+        const xmlStr = json?.contents || '';
+        if (!xmlStr || xmlStr.length < 100) throw new Error('Réponse vide');
+        return parseXmlItems(xmlStr);
+      }
+
+      if (proxy.mode === 'rss2json') {
+        const json = await resp.json();
+        return parseRss2JsonItems(json);
+      }
+
+      const xmlStr = await resp.text();
+      if (!xmlStr || xmlStr.length < 100) throw new Error('Réponse vide');
+      return parseXmlItems(xmlStr);
+
+    } catch (e) {
+      lastErr = new Error((PROXIES[i]?.name || 'proxy') + ' : ' + e.message);
+      // Passer au proxy suivant
+    }
+  }
+  throw lastErr || new Error('Tous les proxies ont échoué');
+}
+
+/* ════════════════════════════════════════════════════════════
+   UTILITAIRES
+   ════════════════════════════════════════════════════════════ */
+function stripHtml(html) {
+  if (!html) return '';
+  const d = document.createElement('div');
+  d.innerHTML = html;
+  return (d.textContent || d.innerText || '').replace(/\s+/g,' ').trim().substring(0, 200);
+}
+
+function relTime(ds) {
+  if (!ds) return '';
+  const diff = (Date.now() - new Date(ds)) / 1000;
+  if (isNaN(diff) || diff < 0) return '';
+  if (diff < 60)     return 'À l\'instant';
+  if (diff < 3600)   return 'Il y a ' + Math.floor(diff / 60) + ' min';
+  if (diff < 86400)  return 'Il y a ' + Math.floor(diff / 3600) + 'h';
+  if (diff < 172800) return 'Hier';
+  return new Date(ds).toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
+}
+
+function isToday(ds) {
+  return !!ds && (Date.now() - new Date(ds)) < 86400000;
+}
+
+/* ════════════════════════════════════════════════════════════
+   ÉTAT GLOBAL
+   ════════════════════════════════════════════════════════════ */
+let allItems    = [];        // [{ item, theme }]
+let thSt        = {};        // { themeId: 'wait'|'ok'|'err' }
+let activeTheme = 'all';
+let debugLines  = [];
+
+/* ════════════════════════════════════════════════════════════
+   RENDU CARTE
+   ════════════════════════════════════════════════════════════ */
+function mkCard(item, theme, idx) {
+  const delay = (idx % 20) * 0.033;
+  const nb    = isToday(item.pubDate) ? '<span class="badge-new">Nouveau</span>' : '';
+  const via   = item.via ? `<div class="rc-via">via ${item.via}</div>` : '';
+  return `<a class="rc" href="${item.link}" target="_blank" rel="noopener"
+             data-t="${theme.id}" style="animation-delay:${delay}s">
+    <div class="rc-bar"></div>
+    <div class="rc-head">
+      <span class="rc-th ${theme.cls}">${theme.label}</span>
+      <span class="rc-age">${relTime(item.pubDate)}</span>
+    </div>
+    <div class="rc-body">
+      <h3>${item.title || '—'}${nb}</h3>
+      ${item.desc ? `<p>${item.desc}…</p>` : ''}
+      ${via}
+      <div class="rc-cta">Lire l'article →</div>
+    </div>
+  </a>`;
+}
+
+function renderTvGuide() {
+  const updated = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' });
+  const cards = TV_GUIDE.map(x => `<a class="tv-card" href="${x.source}" target="_blank" rel="noopener">
+      <h3>${x.course}</h3>
+      <div class="tv-line"><b>Jour :</b> ${x.jour}</div>
+      <div class="tv-line"><b>Heure :</b> ${x.heure}</div>
+      <div class="tv-line"><b>Chaîne :</b> ${x.chaine}</div>
+      <span class="tv-link">Source programme ↗</span>
+    </a>`).join('');
+
+  return `<section class="tv-wrap">
+    <div class="tv-note">
+      Guide indicatif des retransmissions TV de grandes courses. Données collectées depuis des pages programmes sport en ligne.
+      Vérifiez toujours la source le jour même (horaires et diffuseurs pouvant changer). Mise à jour : ${updated}.
+    </div>
+    <div class="tv-grid">${cards}</div>
+  </section>`;
+}
+
+/* ════════════════════════════════════════════════════════════
+   DÉDUPLICATION
+   ════════════════════════════════════════════════════════════ */
+function dedup(list) {
+  const seen = new Set();
+  return list.filter(x => {
+    const k = x.item.title.substring(0, 55).toLowerCase();
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+}
+
+/* ════════════════════════════════════════════════════════════
+   RENDU GRILLE
+   ════════════════════════════════════════════════════════════ */
+function renderGrid() {
+  const grid = document.getElementById('grid');
+
+  if (activeTheme === TV_THEME.id) {
+    grid.innerHTML = renderTvGuide();
+    document.getElementById('status-bar').style.display = 'none';
+    return;
+  }
+
+  let list = allItems.filter(x => activeTheme === 'all' || x.theme.id === activeTheme);
+  list = dedup(list).sort((a,b) => new Date(b.item.pubDate||0) - new Date(a.item.pubDate||0));
+
+  const allFailed = Object.values(thSt).length > 0
+                 && Object.values(thSt).every(v => v === 'err');
+  const anyLoading = Object.values(thSt).some(v => v === 'wait');
+
+  if (list.length === 0) {
+    if (anyLoading) {
+      grid.innerHTML = `<div class="state"><div class="spinner"></div>
+        <div class="sm">Chargement en cours…</div></div>`;
+    } else if (allFailed) {
+      grid.innerHTML = `<div class="state">
+        <div style="font-size:2.5rem">⚠️</div>
+        <div class="sm">Flux inaccessibles</div>
+        <div class="ss">Les proxies CORS ne répondent pas. Cela arrive parfois —
+          attendez 30 secondes puis cliquez sur Réessayer.</div>
+        <button class="retry" onclick="loadAll()">↻ Réessayer</button>
+        <div id="dbg">${debugLines.slice(-5).join('\n')}</div>
+      </div>`;
+      document.getElementById('dbg').style.display = 'block';
+    } else {
+      grid.innerHTML = `<div class="state">
+        <div style="font-size:2rem">🔄</div>
+        <div class="sm">Aucun article pour ce filtre</div>
+        <div class="ss">Sélectionnez un autre thème.</div>
+      </div>`;
+    }
+    return;
+  }
+
+  grid.innerHTML = list.map((x, i) => mkCard(x.item, x.theme, i)).join('');
+  updateStatus(list);
+}
+
+/* ════════════════════════════════════════════════════════════
+   STATUS BAR
+   ════════════════════════════════════════════════════════════ */
+function updateStatus(visible) {
+  const tod = (visible || allItems).filter(x => isToday(x.item.pubDate)).length;
+  const okN  = Object.values(thSt).filter(v => v === 'ok').length;
+  const vis  = (visible || allItems).length;
+
+  document.getElementById('sn-tot').textContent = allItems.length;
+  document.getElementById('sn-new').textContent = tod;
+  document.getElementById('sn-vis').textContent = vis;
+  document.getElementById('status-bar').style.display = 'flex';
+
+  document.getElementById('src-pills').innerHTML = THEMES.map(t => {
+    const s   = thSt[t.id] || 'wait';
+    const cls = s === 'ok' ? 'p-ok' : s === 'err' ? 'p-err' : 'p-wait';
+    const ico = s === 'ok' ? '✓' : s === 'err' ? '✗' : '…';
+    return `<span class="pill ${cls}">${ico} ${t.label}</span>`;
+  }).join('');
+
+  document.getElementById('hero-txt').textContent =
+    allItems.length + ' articles · ' + okN + ' thème' + (okN > 1 ? 's' : '') + ' actif' + (okN > 1 ? 's' : '');
+}
+
+/* ════════════════════════════════════════════════════════════
+   FILTRE
+   ════════════════════════════════════════════════════════════ */
+function doFilter(id, btn) {
+  activeTheme = id;
+  document.querySelectorAll('.fb').forEach(b => b.classList.toggle('active', b.dataset.t === id));
+  renderGrid();
+}
+
+/* ════════════════════════════════════════════════════════════
+   CHARGEMENT PRINCIPAL
+   ════════════════════════════════════════════════════════════ */
+async function loadAll() {
+  const btn = document.getElementById('btn-refresh');
+  btn.classList.add('spinning');
+  allItems   = [];
+  thSt       = {};
+  debugLines = [];
+  THEMES.forEach(t => { thSt[t.id] = 'wait'; });
+
+  document.getElementById('status-bar').style.display = 'none';
+  document.getElementById('grid').innerHTML =
+    `<div class="state"><div class="spinner"></div>
+     <div class="sm">Chargement des actualités…</div>
+     <div class="ss">Connexion à Google Actualités Cyclisme (5 thèmes)</div></div>`;
+
+  // Charger tous les thèmes EN PARALLÈLE
+  // Affichage progressif dès qu'un thème répond
+  await Promise.allSettled(THEMES.map(async theme => {
+    try {
+      const url   = gnRssUrl(theme.q);
+      const items = await fetchRss(url);
+      items.slice(0, theme.max).forEach(item => allItems.push({ item, theme }));
+      thSt[theme.id] = 'ok';
+      debugLines.push('✓ ' + theme.id + ' : ' + items.length + ' articles');
+    } catch (e) {
+      thSt[theme.id] = 'err';
+      debugLines.push('✗ ' + theme.id + ' : ' + e.message);
+      console.warn('[ECTA RSS]', theme.id, e.message);
+    }
+    renderGrid();
+  }));
+
+  if (allItems.length > 0) {
+    saveCache(allItems);
+  } else {
+    const cache = loadCache();
+    if (cache && cache.items?.length) {
+      allItems = cache.items;
+      debugLines.push('ℹ mode cache : ' + cache.items.length + ' articles');
+      document.getElementById('last-upd').textContent =
+        'Mode cache · ' + new Date(cache.savedAt).toLocaleString('fr-FR');
+    }
+  }
+
+  // Rendu final
+  renderGrid();
+  btn.classList.remove('spinning');
+  document.getElementById('last-upd').textContent =
+    'Mis à jour à ' + new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+}
+
+/* ════════════════════════════════════════════════════════════
+  AUTO-REFRESH toutes les 6 heures
+   ════════════════════════════════════════════════════════════ */
+setInterval(loadAll, 6 * 60 * 60 * 1000);
+
+/* ════════════════════════════════════════════════════════════
+   DÉMARRAGE
+   ════════════════════════════════════════════════════════════ */
+window.addEventListener('load', loadAll);
+// Retour en haut
+window.addEventListener('scroll', () => {
+  const b = document.getElementById('btnToTop');
+  if(window.scrollY > 400) b.classList.add('visible');
+  else b.classList.remove('visible');
+});
+</script>
+
+<style>
+    #cookie-banner { position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 1000px; margin: 0 auto; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); border: 1px solid rgba(232, 53, 122, 0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 12px; padding: 1.5rem; z-index: 9999; transform: translateY(150%); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+    #cookie-banner.visible { transform: translateY(0); }
+    .cookie-text { flex: 1; text-align: left; }
+    .cookie-text h3 { font-family: 'Barlow Condensed', sans-serif; margin: 0 0 0.4rem 0; color: #1c1c2e; font-size: 1.25rem; text-transform: uppercase; }
+    .cookie-text p { font-size: 0.9rem; color: #6b7280; line-height: 1.5; margin: 0; }
+    .cookie-text a { color: #e8357a; text-decoration: underline; font-weight: 700; }
+    .cookie-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .cb-btn { border: none; padding: 0.75rem 1.4rem; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-family: 'Nunito', sans-serif; }
+    .cb-btn-secondary { background: #fde8f1; color: #e8357a; }
+    .cb-btn-primary { background: #e8357a; color: white; }
+    .cb-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(232, 53, 122, 0.2); }
+    .cb-btn-outline { background: transparent; color: #6b7280; border: 1px solid #ddd; }
+    #cookie-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 1rem; }
+    #cookie-modal.open { display: flex; }
+    .modal-content { background: white; border-radius: 12px; max-width: 480px; width: 100%; padding: 2.2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: modalFadeIn 0.3s ease-out; }
+    @keyframes modalFadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .modal-header h2 { font-family: 'Barlow Condensed', sans-serif; margin: 0; text-transform: uppercase; color: #e8357a; }
+    .opt-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.2rem 0; border-bottom: 1px solid #eee; text-align: left; }
+    .opt-info h4 { margin: 0 0 0.25rem 0; font-size: 1rem; color: #1c1c2e; }
+    .opt-info p { margin: 0; font-size: 0.82rem; color: #6b7280; }
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #e8357a; }
+    input:checked + .slider:before { transform: translateX(20px); }
+    #cookie-trigger { position: fixed; bottom: 20px; left: 20px; width: 42px; height: 42px; background: white; border: 1px solid #fde8f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 9998; transition: all 0.3s; opacity: 0; visibility: hidden; }
+    #cookie-trigger.visible { opacity: 1; visibility: visible; }
+    @media (max-width: 768px) { #cookie-banner { flex-direction: column; text-align: center; bottom: 0; left: 0; right: 0; border-radius: 20px 20px 0 0; gap: 1.2rem; } .cookie-btns { width: 100%; justify-content: center; } .cb-btn { flex: 1; padding: 0.7rem 0.5rem; } }
+</style>
+<div id="cookie-banner">
+    <div class="cookie-text">
+        <h3>🍪 Respect de votre vie privée</h3>
+        <p>Nous utilisons des cookies de mesure d'audience pour améliorer votre expérience. <a href="mentions-legales.html">Consulter nos mentions légales</a></p>
+    </div>
+    <div class="cookie-btns">
+        <button class="cb-btn cb-btn-outline" id="btn-deny-all">Refuser Tout</button>
+        <button class="cb-btn cb-btn-secondary" id="btn-customize">Paramètres</button>
+        <button class="cb-btn cb-btn-primary" id="btn-accept-all">Tout Accepter</button>
+    </div>
+</div>
+<div id="cookie-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Préférences de navigation</h2>
+            <button onclick="document.getElementById('cookie-modal').classList.remove('open')" style="background:none;border:none;font-size:1.8rem;cursor:pointer;">&times;</button>
+        </div>
+        <div class="opt-item">
+            <div class="opt-info"><h4>Cookies Essentiels</h4><p>Nécessaires au bon fonctionnement du site.</p></div>
+            <label class="switch"><input type="checkbox" checked disabled><span class="slider"></span></label>
+        </div>
+        <div class="opt-item">
+            <div class="opt-info"><h4>Mesure d'audience anonyme</h4><p>Statistiques de visites (sans suivi publicitaire).</p></div>
+            <label class="switch"><input type="checkbox" id="check-analytics"><span class="slider"></span></label>
+        </div>
+        <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+            <button class="cb-btn cb-btn-primary" id="btn-save-custom">Enregistrer mes choix</button>
+        </div>
+    </div>
+</div>
+<div id="cookie-trigger" title="Gérer mes consentements"><span style="font-size: 1.3rem;">🍪</span></div>
+<script>
+    (function() {
+        const _id = 'G-Q9TE2R3BER'; 
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        const saved = localStorage.getItem('choice-privacy');
+        if (!saved) { gtag('consent', 'default', { 'analytics_storage': 'denied' }); }
+        else if (saved && JSON.parse(saved).analytics) { gtag('consent', 'default', { 'analytics_storage': 'granted' }); }
+        const script = document.createElement('script');
+        script.async = true; script.src = `https://www.googletagmanager.com/gtag/js?id=${_id}`;
+        document.head.appendChild(script);
+        gtag('js', new Date()); gtag('config', _id);
+        const banner = document.getElementById('cookie-banner');
+        const trigger = document.getElementById('cookie-trigger');
+        const modal = document.getElementById('cookie-modal');
+        function save(status) {
+            localStorage.setItem('choice-privacy', JSON.stringify({ analytics: status }));
+            gtag('consent', 'update', { 'analytics_storage': status ? 'granted' : 'denied' });
+            banner.classList.remove('visible');
+            trigger.classList.add('visible');
+            modal.classList.remove('open');
+        }
+        if (!saved) { setTimeout(() => banner.classList.add('visible'), 600); }
+        else { trigger.classList.add('visible'); }
+        document.getElementById('btn-accept-all').onclick = () => save(true);
+        document.getElementById('btn-deny-all').onclick = () => save(false);
+        document.getElementById('btn-customize').onclick = () => {
+            document.getElementById('check-analytics').checked = saved ? JSON.parse(saved).analytics : false;
+            modal.classList.add('open');
+        };
+        document.getElementById('btn-save-custom').onclick = () => save(document.getElementById('check-analytics').checked);
+        trigger.onclick = () => banner.classList.add('visible');
+    })();
+</script>
+</body>
+</html>
