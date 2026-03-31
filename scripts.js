@@ -91,6 +91,16 @@ document.addEventListener('DOMContentLoaded', () => {
       banner.style.transform = 'translateY(100%)';
     }, 4000);
   }
+  
+  // Fermer le menu burger lors du clic sur un lien du menu
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (mobileMenu) {
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        closeMenu();
+      });
+    });
+  }
 });
 
 
