@@ -23,6 +23,7 @@ function initFooterYear() {
 
 // --- MENU BURGER ----------------------------------------------------------------------
 
+
 let burgerTimeout;
 function toggleMenu() {
   const menu = document.getElementById('mobileMenu');
@@ -30,9 +31,9 @@ function toggleMenu() {
   if (menu.classList.contains('open')) {
     clearTimeout(burgerTimeout);
     burgerTimeout = setTimeout(closeMenu, 5000);
-    // Ferme au scroll ou au touch
+    // Ferme au scroll ou au touch hors menu
     window.addEventListener('scroll', closeMenuOnce, { passive: true });
-    window.addEventListener('touchstart', closeMenuOnce, { passive: true });
+    window.addEventListener('touchstart', closeMenuTouch, { passive: true });
   }
 }
 function closeMenu() {
@@ -40,10 +41,14 @@ function closeMenu() {
   menu.classList.remove('open');
   clearTimeout(burgerTimeout);
   window.removeEventListener('scroll', closeMenuOnce);
-  window.removeEventListener('touchstart', closeMenuOnce);
+  window.removeEventListener('touchstart', closeMenuTouch);
 }
 function closeMenuOnce() {
   closeMenu();
+}
+function closeMenuTouch(e) {
+  const menu = document.getElementById('mobileMenu');
+  if (!menu.contains(e.target)) closeMenu();
 }
 
 document.addEventListener('click', function(e) {
