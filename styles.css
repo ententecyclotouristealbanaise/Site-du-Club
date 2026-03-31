@@ -177,7 +177,12 @@ section{padding:5rem 1.5rem}
 @media (max-width: 600px) {
   .video-grid {
     justify-items: center;
+    max-width: 100vw;
+    overflow-x: hidden;
+    margin-left: 0;
+    margin-right: 0;
   }
+<<<<<<< HEAD
     .video-container {
       max-width: 480px;
       width: 100%;
@@ -215,7 +220,55 @@ section{padding:5rem 1.5rem}
       text-align: center;
     }
 }
+=======
+  .video-container {
+    max-width: 320px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .video-container iframe {
+    max-height: 220px;
+    height: 45vw;
+    min-height: 140px;
+    width: 100%;
+    display: block;
+    min-width: 0;
+  }
+  /* Empêche le débordement horizontal du lecteur vidéo */
+  body, html {
+    overflow-x: hidden;
+  }
+>>>>>>> aa268e9 (Fix: vidéos YouTube responsives sur mobile, restauration du style météo)
 
+  /* --- Correction widget météo mobile --- */
+  .meteo-widget {
+      /* --- Retour au style d'origine pour le widget météo --- */
+      .meteo-widget {
+        background: linear-gradient(135deg,#e0f7fa,var(--rose-pale));
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2.5rem;
+        box-shadow: 0 4px 24px rgba(0,180,216,.12);
+        border: 1px solid rgba(0,180,216,.15);
+      }
+      .meteo-days {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .meteo-day {
+        background: var(--blanc);
+        border-radius: var(--radius);
+        padding: 1rem;
+        flex: 1;
+        min-width: 120px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      }
 /* --- GALERIE --- */
 #galerie{background:var(--gris-clair)}
 .albums-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
