@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flora 2026 · ECTA Saint-Alban 22</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e8357a'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root{--rose:#e8357a;--rose-clair:#f06fa0;--cyan:#00b4d8;--blanc:#f4f4f6;--texte:#1c1c2e;--gris-clair:#e8e4ed;--radius:12px}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{font-family:'Nunito',sans-serif;color:var(--texte);background:#fff;padding-top:54px}
+    .topbar{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232, 53, 122, 0.5);height:54px;box-shadow:0 3px 16px rgba(232,53,122,0.2);display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:0 1rem;border-bottom:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:all .3s ease}
+    .tb-left{display:flex;align-items:center;gap:.8rem;min-width:0}
+    .tb-logo{height:48px;width:124px;border-radius:0;object-fit:contain}
+    .tb-brand{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:#fff;letter-spacing:.02em;line-height:1.05}
+    .tb-brand small{display:block;font-size:.73rem;font-weight:600;letter-spacing:.03em;opacity:.95}
+    .nav-links{display:flex;gap:1.2rem;list-style:none;margin-left:auto}
+    .nav-links a{color:var(--blanc);font-size:.78rem;font-weight:700;text-transform:uppercase;padding:.3rem .5rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+    .nav-links a:hover,.nav-links a.active{border-color:var(--blanc);background:rgba(255,255,255,.12)}
+    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;margin-left:.6rem}
+    .burger span{display:block;width:26px;height:3px;background:var(--blanc);border-radius:2px}
+    .mobile-menu{display:none;position:fixed;top:54px;left:0;width:100%;z-index:999;background:rgba(232, 53, 122, 0.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:2rem 1.5rem;flex-direction:column;gap:1.5rem;box-shadow:0 10px 30px rgba(0,0,0,0.15);transition:all .3s ease}
+    .mobile-menu.open{display:flex}
+    .mobile-menu a{color:white;font-size:.9rem;font-weight:700;text-transform:uppercase}
+    @media(max-width:1120px){.nav-links{display:none} .burger{display:flex}}
+    .panel{width:min(900px,92vw);background:#fff;border:1px solid var(--gris-clair);border-radius:var(--radius);box-shadow:0 14px 36px rgba(0,0,0,.08);padding:2.2rem 1.4rem;text-align:center;margin:1.5rem auto 4rem}
+    .banner-wrap{margin:0 auto 1.15rem;background:#fff;border:1px solid #e2dbe8;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+    .banner-wrap img{display:block;width:100%;height:auto}
+    .banner-caption{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;color:#3d3d59;background:linear-gradient(90deg,rgba(232,53,122,.09),rgba(0,180,216,.09));padding:.5rem .7rem;font-size:.9rem}
+    .event-details{display:flex;flex-direction:column;gap:2rem;margin-top:1.5rem}
+    .calendar-card{background:#fdf2f7;border:1px solid #f06fa033;border-radius:12px;padding:1.5rem;text-align:center}
+    .calendar-card h3{font-family:'Barlow Condensed',sans-serif;color:var(--rose);font-size:1.5rem;text-transform:uppercase;margin-bottom:0.5rem}
+    .agenda-buttons{display:flex;gap:10px;justify-content:center;margin-top:1.2rem;flex-wrap:wrap}
+    .btn-agenda{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:30px;font-weight:700;font-size:0.85rem;text-decoration:none;transition:all 0.2s}
+    .btn-agenda.google{background:#fff;color:#444;border:1px solid #ddd}
+    .btn-agenda.apple{background:#1c1c2e;color:#fff}
+    .circuits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem}
+    .circuit-category{background:#fff;border:1px solid #eee;border-radius:10px;padding:1.2rem 1rem;text-align:left}
+    .circuit-category.vtt{border-left:4px solid #4CAF50}
+    .circuit-category.route{border-left:4px solid #2196F3}
+    .circuit-category.gravel{border-left:4px solid #FF9800}
+    .circuit-category.marche{border-left:4px solid #E91E63}
+    @media(max-width:600px){.agenda-buttons{flex-direction:column;align-items:stretch} .btn-agenda{justify-content:center}}
+  </style>
+</head>
+<body>
+  <nav class="topbar">
+    <div class="tb-left">
+      <img class="tb-logo" src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
+      <div class="tb-brand">Entente Cyclotouriste Albanaise<small>Saint-Alban - Côtes-d'Armor</small></div>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="le-club.html">Le Club</a></li>
+      <li><a href="actualites.html">Activités</a></li>
+      <li><a href="agenda.html">Agenda</a></li>
+      <li><a href="galerie.html">Galerie</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="documents.html">WT 2026</a></li>
+      <li><a href="news.html">Actu vélo</a></li>
+      <li><a href="calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
+      <li><a href="Flora 2026.html" class="active">Flora 2026</a></li>
+    </ul>
+    <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Accueil</a>
+    <a href="le-club.html">Le Club</a>
+    <a href="actualites.html">Activités</a>
+    <a href="agenda.html">Agenda</a>
+    <a href="galerie.html">Galerie</a>
+    <a href="contact.html">Contact</a>
+    <a href="documents.html">WT 2026</a>
+    <a href="news.html">Actu vélo</a>
+    <a href="calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a>
+    <a href="Flora 2026.html">Flora 2026</a>
+  </div>
+
+  <header class="hero" style="background: linear-gradient(150deg, rgba(232, 53, 122, 0.75) 0%, rgba(240, 111, 160, 0.55) 48%, rgba(0, 161, 204, 0.75) 100%);">
+    <div class="hero-badge">Événement Annuel · Dimanche 17 Mai</div>
+    <h1>Randonnée <span>de la Flora</span></h1>
+    <p>La grande rando de l'Entente Cyclotouriste Albanaise à Saint-Alban.</p>
+  </header>
+
+  <main class="panel">
+    <figure class="banner-wrap">
+      <img src="images/banderole_rando_de_la_Flora_2026.webp" alt="Banderole Flora 2026" />
+      <figcaption class="banner-caption">Le grand rendez-vous du Dimanche 17 mai · Saint-Alban (22)</figcaption>
+    </figure>
+    <div class="event-details">
+      <div class="calendar-card">
+        <div style="font-size:2.5rem;margin-bottom:.5rem;">📅</div>
+        <h3>Notez la date !</h3>
+        <p><strong>Dimanche 17 mai 2026</strong><br>Dès 07h30 (Inscriptions)</p>
+        <p>📍 Salle des Fêtes, 22400 Saint-Alban</p>
+        <div class="agenda-buttons">
+          <a href="https://www.google.com/calendar/render?action=TEMPLATE&text=Randonn%C3%A9e%20de%20la%20Flora%202026&details=VTT%20(20%2C%2035%2C%2045%2C%2050%2C%2060%20km)%2C%20Route%20(51%2C%2078%2C%20108%20km)%2C%20Marche%20(5%2C%2010%2C%2015%2C%2020%20km)%2C%20Gravel%20(53%2C%2085%20km).&location=Salle%20des%20F%C3%AAtes%2C%2022400%20Saint-Alban&dates=20260517T073000/20260517T120000" target="_blank" class="btn-agenda google">Ajouter à Google</a>
+          <a href="webcal://ententecyclotouristealbanaise.github.io/Site-du-Club/Flora-2026.ics" class="btn-agenda apple">Ajouter à mon iPhone</a>
+        </div>
+      </div>
+      <div class="circuits-grid">
+        <div class="circuit-category vtt"><h4>🏔️ VTT</h4><p>5 circuits : 20 · 35 · 45 · 50 · 60 km</p></div>
+        <div class="circuit-category route"><h4>🚴 ROUTE</h4><p>3 circuits : 51 · 78 · 108 km</p></div>
+        <div class="circuit-category gravel"><h4>🪨 GRAVEL</h4><p>2 circuits : 53 · 85 km</p></div>
+        <div class="circuit-category marche"><h4>🚶 MARCHE</h4><p>4 circuits : 5 · 10 · 15 · 20 km</p></div>
+      </div>
+    </div>
+  </main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA" class="footer-logo">
+      <h4>ECTA SAINT-ALBAN</h4>
+      <p>Entente Cyclotouriste Albanaise - club de cyclotourisme fondé en 1985 à Saint-Alban, Côtes-d'Armor.</p>
+    </div>
+    <div class="footer-col" style="grid-column: span 2;">
+      <h5>Navigation</h5>
+      <ul style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="le-club.html">Le Club</a></li>
+        <li><a href="actualites.html">Activités</a></li>
+        <li><a href="agenda.html">Agenda</a></li>
+        <li><a href="galerie.html">Galerie</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="documents.html">WT 2026</a></li>
+        <li><a href="news.html">Actu vélo</a></li>
+        <li><a href="calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
+        <li><a href="Flora 2026.html">Flora 2026</a></li>
+        <li><a href="https://ecta-saintalban.clubeo.com" target="_blank">Site Clubeo</a></li>
+        <li><a href="https://www.ffvelo.fr" target="_blank">FFVélo (FFCT)</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span id="footer-year">© 2026 Entente Cyclotouriste Albanaise · Saint-Alban 22</span>
+    <a href="mentions-legales.html" style="color:rgba(255,255,255,.7);text-decoration:underline;">Mentions légales</a>
+    <span class="ffct-badge">🚴 Affilié FFVélo / FFCT</span>
+  </div>
+</footer>
+
+<script src="donnees.js" defer></script>
+<script src="scripts.js" defer></script>
+</body>
+</html>
