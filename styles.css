@@ -280,3 +280,15 @@ footer{background:var(--texte);color:rgba(255,255,255,.7);padding:1rem 1.5rem;ma
   .footer-bottom{justify-content:flex-start;text-align:left}
   .form-row{grid-template-columns:1fr}
 }
+
+/* Arrondi uniquement pour l'agenda, pas pour l'accueil */
+.hero:not(#accueil)::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 64px;
+  background: var(--blanc);
+  clip-path: ellipse(56% 100% at 50% 100%);
+}
