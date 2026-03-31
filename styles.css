@@ -185,8 +185,11 @@ section{padding:5rem 1.5rem}
       margin-right: auto;
       border-radius: 0;
       box-sizing: border-box;
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
+      padding-left: 0;
+      padding-right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
   }
     .video-container iframe {
       width: 100%;
@@ -197,15 +200,20 @@ section{padding:5rem 1.5rem}
       min-height: 120px;
       display: block;
       box-sizing: border-box;
+      margin: 0 auto;
     }
 
-    /* Centrage des boutons Openrunner sous la vidéo */
+    /* Centrage des boutons Openrunner sous la vidéo, alignés avec la vidéo */
     .circuit-unlocked > div[style*="display:flex"] {
       justify-content: center !important;
       flex-wrap: wrap;
       gap: .75rem;
       margin-top: 1rem;
-  }
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
 }
 
 /* --- GALERIE --- */
