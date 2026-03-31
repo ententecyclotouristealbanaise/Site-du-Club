@@ -188,10 +188,12 @@ section{padding:5rem 1.5rem}
     border-radius: 0;
   }
   .video-container iframe {
-    max-height: 220px;
-    height: 45vw;
-    min-height: 140px;
     width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    max-width: 100vw;
+    max-height: 180px;
+    min-height: 120px;
     display: block;
   }
 }
