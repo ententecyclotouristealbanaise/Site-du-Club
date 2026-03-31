@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECTA · Tableau de Bord</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="../donnees.js"></script>
+    <style>
+        :root {
+            --rose: #e8357a;
+            --rose-dark: #c9295e;
+            --rose-pale: #fde8f1;
+            --cyan: #00b4d8;
+            --bg: #f8fafc;
+            --surface: rgba(255, 255, 255, 0.85);
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: rgba(232, 53, 122, 0.1);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(232, 53, 122, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 180, 216, 0.05) 0px, transparent 50%);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.01em;
+            background: linear-gradient(135deg, var(--rose), var(--cyan));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
+
+        /* --- DASHBOARD WRAPPER --- */
+        .dashboard-card {
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1.2rem;
+            border: none;
+            background: none;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tab-btn.active {
+            color: var(--rose);
+            background: #fff;
+            position: relative;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            right: 20%;
+            height: 3px;
+            background: var(--rose);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .content { padding: 2rem; }
+
+        .hidden { display: none; }
+
+        /* --- ITEM LISTS --- */
+        .item-list { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+
+        .item-card {
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        .item-card:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border-color: rgba(232, 53, 122, 0.2);
+        }
+
+        .item-info { flex: 1; }
+        .item-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.25rem; }
+        .item-subtitle { font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 1rem; }
+        .item-badge { background: var(--rose-pale); color: var(--rose); font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; text-transform: uppercase; }
+
+        .item-actions { display: flex; gap: 0.5rem; }
+        .btn-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .btn-icon:hover { background: var(--rose); color: #fff; border-color: var(--rose); }
+        .btn-icon.delete:hover { background: #ef4444; border-color: #ef4444; }
+
+        /* --- FORMS --- */
+        .form-section {
+            background: rgba(232, 53, 122, 0.02);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .form-title { font-weight: 800; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.1em; color: var(--rose); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.03em; }
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            border: 1.5px solid #e2e8f0;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background: #fff;
+            outline: none;
+        }
+        input:focus, textarea:focus, select:focus { border-color: var(--rose); box-shadow: 0 0 0 4px rgba(232, 53, 122, 0.1); }
+
+        .btn-main {
+            width: 100%;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            border: none;
+            background: linear-gradient(135deg, var(--rose), var(--rose-dark));
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+            box-shadow: 0 10px 20px -5px rgba(232, 53, 122, 0.3);
+        }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 15px 25px -5px rgba(232, 53, 122, 0.4); opacity: 0.95; }
+        .btn-main:active { transform: scale(0.98); }
+
+        /* --- MODAL / CODE --- */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(30, 41, 59, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal.open { opacity: 1; pointer-events: auto; }
+        .modal-card {
+            background: #fff;
+            width: 100%;
+            max-width: 800px;
+            max-height: 85vh;
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .modal-header { padding: 1.5rem; border-bottom: 1px solid #eef2f6; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { flex: 1; padding: 1.5rem; overflow-y: auto; background: #0f172a; color: #cbd5e1; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; }
+        .btn-copy { background: var(--rose); color: #fff; border: none; padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: 700; cursor: pointer; }
+
+        .save-banner {
+            margin-top: 2rem;
+            background: linear-gradient(135deg, var(--cyan), #48cae4);
+            color: #fff;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+        }
+        .save-banner p { font-size: 0.9rem; font-weight: 500; }
+        .btn-generate { background: #fff; color: var(--cyan); border: none; padding: 0.75rem 1.5rem; border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.1em; transition: all 0.2s; }
+        .btn-generate:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .parcours-entry { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
+        .btn-sub { background: #f1f5f9; border: none; padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; margin-bottom: 1rem; }
+        
+        .toast {
+            position: fixed; bottom: 2rem; right: 2rem; background: #1e293b; color: #fff; padding: 1rem 1.5rem; border-radius: 12px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+            transform: translateY(100px); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1001;
+        }
+        .toast.show { transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>ECTA · Tableau de bord</h1>
+        <p>Gérez les actualités et l'agenda du club en toute simplicité.</p>
+        <div style="margin-top:0.75rem;"><a href="../index.html" style="color:var(--rose); font-size:0.85rem; font-weight:700; text-decoration:none;">← Retour au site</a></div>
+        <div id="save-status" style="margin-top:1rem; font-size:0.75rem; font-weight:700; color:var(--cyan); opacity:0; transition:opacity 0.5s;">✓ SAUVEGARDÉ LOCALEMENT</div>
+    </header>
+
+    <div class="dashboard-card">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('actu')">🗞 Actualités</button>
+            <button class="tab-btn" onclick="showTab('agenda')">📆 Agenda</button>
+            <button class="tab-btn" onclick="showTab('galerie')">🖼 Galerie</button>
+        </div>
+
+        <!-- SECTION ACTUALITÉS -->
+        <div id="tab-actu" class="content">
+            <div class="item-list" id="list-actu"></div>
+            
+            <div class="form-section">
+                <div class="form-title">➕ Nouvelle Actualité</div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Date de l'événement</label>
+                        <input type="date" id="actu-raw-date">
+                        <input type="hidden" id="actu-date">
+                    </div>
+                    <div class="form-group">
+                        <label>Étiquette (Tag)</label>
+                        <select id="actu-tag">
+                            <option>Sortie</option>
+                            <option>Brevet</option>
+                            <option>Rando extérieure</option>
+                            <option>Débroussaillage</option>
+                            <option>Événement</option>
+                            <option>Information</option>
+                            <option>Travaux</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Titre</label>
+                    <input type="text" id="actu-title" placeholder="Titre de l'actu">
+                </div>
+                <div class="form-group">
+                    <label>Texte (Description)</label>
+                    <textarea id="actu-text" rows="3" placeholder="Rendez-vous à 08h15..."></textarea>
+                </div>
+                <button class="btn-main" id="btn-add-actu" onclick="addActu()">Ajouter l'actualité</button>
+            </div>
+        </div>
+
+        <!-- SECTION AGENDA -->
+        <div id="tab-agenda" class="content hidden">
+            <div class="item-list" id="list-agenda"></div>
+
+            <div class="form-section">
+                <div class="form-title">➕ Nouvelle Sortie / Circuit</div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Date de la sortie</label>
+                        <input type="date" id="agen-raw-date">
+                        <input type="hidden" id="agen-date">
+                    </div>
+                    <div class="form-group">
+                        <label>Titre / Nom du circuit</label>
+                        <input type="text" id="agen-title" placeholder="Circuit D62">
+                    </div>
+                </div>
+                <div class="form-group" style="display:flex; align-items:center; gap:0.5rem; margin-bottom: 0.5rem;">
+                    <input type="checkbox" id="agen-locked" style="width: auto;" checked>
+                    <label style="margin-bottom:0; cursor:pointer;" for="agen-locked">🔒 Verrouiller (réservé licenciés)</label>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>🎥 Vidéo 1 (Ajoutez l'ID à la fin)</label>
+                        <input type="text" id="agen-video1" value="https://www.youtube.com/embed/">
+                    </div>
+                    <div class="form-group">
+                        <label>🎥 Vidéo 2 (Ajoutez l'ID à la fin)</label>
+                        <input type="text" id="agen-video2" value="https://www.youtube.com/embed/">
+                    </div>
+                </div>
+
+                <label>Parcours (Distances et Liens Openrunner)</label>
+                <div id="parcours-container">
+                    <div class="parcours-entry">
+                        <input type="text" placeholder="Ex: 88 Kms" class="p-dist">
+                        <input type="url" placeholder="https://www.openrunner.com/..." class="p-link">
+                    </div>
+                </div>
+                <button class="btn-sub" onclick="addParcoursField()">+ Ajouter un parcours</button>
+
+                <button class="btn-main" id="btn-add-agenda" onclick="addAgenda()">Ajouter à l'agenda</button>
+            </div>
+        </div>
+
+                <!-- SECTION GALERIE -->
+        <div id="tab-galerie" class="content hidden">
+            <div class="item-list" id="list-galerie"></div>
+
+            <div class="form-section">
+                <div class="form-title">➕ Nouvel Album Photo</div>
+                <div class="form-group">
+                    <label>Titre de l'album</label>
+                    <input type="text" id="gal-title" placeholder="Sortie Annuelle 2026">
+                </div>
+                <div class="form-group">
+                    <label>Image de couverture (Chemin)</label>
+                    <input type="text" id="gal-cover" placeholder="images/album/photo_01.jpg">
+                </div>
+                <div class="form-group">
+                    <label>Liste des photos (Chemins, une par ligne)</label>
+                    <textarea id="gal-photos" rows="5" placeholder="images/album/photo_01.jpg&#10;images/album/photo_02.jpg"></textarea>
+                </div>
+                <div class="form-group" style="display:flex; align-items:center; gap:0.5rem;">
+                    <input type="checkbox" id="gal-future" style="width: auto;">
+                    <label style="margin-bottom:0; cursor:pointer;" for="gal-future">⏳ "A Venir" (Album vide pour l'instant)</label>
+                </div>
+                <button class="btn-main" id="btn-add-galerie" onclick="addGallery()">Ajouter l'album</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="save-banner" style="margin-bottom:1rem; flex-direction:column; align-items:flex-start; height:auto; gap:1rem;">
+        <div>
+            <p><strong>Vos modifications sont prêtes ?</strong></p>
+            <p style="opacity: 0.8; font-size: 0.8rem;">Cliquez sur générer pour obtenir le code à mettre à jour dans donnees.js.</p>
+        </div>
+        <button class="btn-generate" style="width:100%;" onclick="generateCode()">🚀 Générer donnees.js</button>
+    </div>
+
+    <div style="background:#fff; border:1px solid var(--border); border-radius:15px; padding:1rem; display:flex; justify-content:space-between; align-items:center;">
+        <p style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">Gestion des données du navigateur :</p>
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn-sub" style="margin-bottom:0;" onclick="syncFromFile()">🔄 Recharger depuis le fichier</button>
+            <button class="btn-sub" style="margin-bottom:0; background:#fee2e2; color:#b91c1c;" onclick="clearSync()">🗑️ Effacer le brouillon</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL POUR LE CODE -->
+<div class="modal" id="modal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h2 style="font-family:'Barlow Condensed', sans-serif; font-weight:800; font-size:1.2rem; text-transform:uppercase;">Fichier donnees.js généré</h2>
+            <div style="display:flex; gap:0.5rem;">
+                <button class="btn-copy" style="background:var(--cyan);" onclick="exportFile()">📥 Télécharger le fichier</button>
+                <button class="btn-copy" onclick="copyCode()">Copier le code</button>
+                <button class="btn-icon" onclick="closeModal()">✕</button>
+            </div>
+        </div>
+        <div style="padding: 1rem; background: #1e293b; color: #94a3b8; font-size: 0.75rem; font-weight: 500;">
+            👉 <strong>Option 1</strong> : Téléchargez le fichier et glissez-le dans votre dossier pour remplacer l'ancien.<br>
+            👉 <strong>Option 2</strong> : Copiez tout le texte et remplacez le contenu de <strong>donnees.js</strong> manuellement.
+        </div>
+        <div class="modal-body" id="generated-code"></div>
+    </div>
+</div>
+
+<div class="toast" id="toast">Code copié !</div>
+
+<script>
+    // Initialisation intelligente des données
+    let localData = { actualites: [], agenda: [], galerie: [], motDePasse: "" };
+    
+    // 1. On tente d'abord de charger depuis le brouillon navigateur (localStorage)
+    const draft = localStorage.getItem('ecta_draft');
+    if (draft) {
+        try {
+            localData = JSON.parse(draft);
+            console.log("Chargé depuis le brouillon locale");
+        } catch (e) {
+            console.error("Erreur de chargement du brouillon", e);
+        }
+    } else {
+        // 2. Si pas de brouillon, on prend ce qui est dans donnees.js
+        if (typeof ECTA_DATA !== 'undefined') {
+            localData = JSON.parse(JSON.stringify(ECTA_DATA));
+            console.log("Initialisé depuis le fichier donnees.js");
+        }
+    }
+
+    function saveDraft() {
+        localStorage.setItem('ecta_draft', JSON.stringify(localData));
+        const status = document.getElementById('save-status');
+        status.style.opacity = '1';
+        setTimeout(() => { status.style.opacity = '0'; }, 2000);
+    }
+
+    function syncFromFile() {
+        if(confirm("Cela va écraser votre brouillon de travail actuel avec les données du fichier donnees.js. Continuer ?")) {
+            localStorage.removeItem('ecta_draft');
+            location.reload();
+        }
+    }
+
+    function clearSync() {
+        if(confirm("Voulez-vous vraiment effacer votre brouillon et repartir d'un site vide ?")) {
+            localData = { actualites: [], agenda: [], galerie: [], motDePasse: "ZWN0YTE5ODU=" };
+            localStorage.setItem('ecta_draft', JSON.stringify(localData));
+            renderLists();
+            toast("Brouillon effacé.");
+        }
+    }
+
+    function showTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.content').forEach(c => c.classList.add('hidden'));
+        event.target.classList.add('active');
+        document.getElementById('tab-' + tab).classList.remove('hidden');
+    }
+
+    function renderLists() {
+        // Tri automatique avant affichage
+        // Actualités : Par ordre chronologique (Croissant)
+        localData.actualites.sort((a, b) => (a.dateSort || "").localeCompare(b.dateSort || ""));
+        // Agenda : Les plus proches en premier (Croissant)
+        localData.agenda.sort((a, b) => (a.dateSort || "").localeCompare(b.dateSort || ""));
+
+        // Liste Actu
+        const listActu = document.getElementById('list-actu');
+        listActu.innerHTML = localData.actualites.map((a, i) => `
+            <div class="item-card">
+                <div class="item-info">
+                    <div class="item-title">${a.titre}</div>
+                    <div class="item-subtitle">
+                        <span>📅 ${a.date}</span>
+                        <span class="item-badge">${a.tag}</span>
+                    </div>
+                </div>
+                <div class="item-actions">
+                    <button class="btn-icon" onclick="editActu(${i})" title="Modifier">✏️</button>
+                    <button class="btn-icon delete" onclick="removeActu(${i})" title="Supprimer">🗑️</button>
+                </div>
+            </div>
+        `).join('') || '<p style="text-align:center; color:var(--text-muted); padding:1rem;">Aucune actualité.</p>';
+
+        // Liste Agenda
+        const listAgenda = document.getElementById('list-agenda');
+        listAgenda.innerHTML = localData.agenda.map((a, i) => `
+            <div class="item-card">
+                <div class="item-info">
+                    <div class="item-title">${a.titre}</div>
+                    <div class="item-subtitle">
+                        <span>📅 ${a.date}</span>
+                        <span>🚴 ${a.parcours ? a.parcours.length : 0} parcours</span>
+                        ${a.videos && a.videos.length > 0 ? `<span>🎥 ${a.videos.length} vidéo(s)</span>` : ''}
+                        ${a.locked ? '<span>🔒</span>' : ''}
+                    </div>
+                </div>
+                <div class="item-actions">
+                    <button class="btn-icon" onclick="editAgenda(${i})" title="Modifier">✏️</button>
+                    <button class="btn-icon delete" onclick="removeAgenda(${i})" title="Supprimer">🗑️</button>
+                </div>
+            </div>
+        `).join('') || '<p style="text-align:center; color:var(--text-muted); padding:1rem;">L\'agenda est vide.</p>';
+
+        // Liste Galerie
+        const listGalerie = document.getElementById('list-galerie');
+        listGalerie.innerHTML = localData.galerie.map((g, i) => `
+            <div class="item-card">
+                <div class="item-info">
+                    <div class="item-title">${g.titre || (g.aVenir ? '⚠️ Album "À venir"' : 'Album sans titre')}</div>
+                    <div class="item-subtitle">
+                        <span>📸 ${g.photos ? g.photos.length : 0} photos</span>
+                        ${g.aVenir ? '<span class="item-badge">PROCHAINEMENT</span>' : ''}
+                    </div>
+                </div>
+                <div class="item-actions">
+                    <button class="btn-icon" onclick="editGallery(${i})" title="Modifier">✏️</button>
+                    <button class="btn-icon delete" onclick="removeGallery(${i})" title="Supprimer">🗑️</button>
+                </div>
+            </div>
+        `).join('') || '<p style="text-align:center; color:var(--text-muted); padding:1rem;">Aucun album.</p>';
+    }
+
+    // Helpers dates
+    function formatDateLong(isoStr) {
+        const d = new Date(isoStr);
+        const days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+        const months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+        return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function formatDateShort(isoStr) {
+        const d = new Date(isoStr);
+        const dayNames = ["Dim.", "Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam."];
+        const monthNames = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+        return `${dayNames[d.getDay()]} ${d.getDate()} ${monthNames[d.getMonth()]}.`;
+    }
+
+    function formatYoutubeLink(url) {
+        if (!url) return "";
+        const clean = url.trim();
+        if (clean === "https://www.youtube.com/embed/") return "";
+        let videoId = "";
+        try {
+            if (clean.includes('youtu.be/')) {
+                videoId = clean.split('youtu.be/')[1].split(/[?#]/)[0];
+            } else if (clean.includes('v=')) {
+                videoId = clean.split('v=')[1].split(/[&#]/)[0];
+            } else if (clean.includes('embed/')) {
+                videoId = clean.split('embed/')[1].split(/[?#]/)[0];
+                if (!videoId) return ""; // empty ID at end of embed string
+            } else if (clean.length === 11) {
+                videoId = clean;
+            } else {
+                return ""; // invalid link or too short
+            }
+            return `https://www.youtube.com/embed/${videoId}`;
+        } catch(e) { return ""; }
+    }
+
+    // --- ACTIONS ---
+    let editActuIndex = -1;
+    function editActu(i) {
+        const item = localData.actualites[i];
+        document.getElementById('actu-raw-date').value = item.dateSort || "";
+        document.getElementById('actu-tag').value = item.tag || "Sortie";
+        document.getElementById('actu-title').value = item.titre || "";
+        document.getElementById('actu-text').value = item.texte || "";
+        editActuIndex = i;
+        document.getElementById('btn-add-actu').textContent = "Mettre à jour l'actualité";
+        showTab('actu');
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function addActu() {
+        const rawDate = document.getElementById('actu-raw-date').value;
+        const tag = document.getElementById('actu-tag').value;
+        const title = document.getElementById('actu-title').value;
+        const text = document.getElementById('actu-text').value;
+
+        if(!rawDate || !title || !text) return alert("Veuillez remplir la Date, le Titre et le Texte");
+
+        const displayDate = formatDateLong(rawDate);
+        if (editActuIndex > -1) {
+            localData.actualites[editActuIndex] = { ...localData.actualites[editActuIndex], date: displayDate, dateSort: rawDate, titre: title, texte: text, tag };
+            editActuIndex = -1;
+            document.getElementById('btn-add-actu').textContent = "Ajouter l'actualité";
+            toast("Actualité mise à jour !");
+        } else {
+            localData.actualites.unshift({ date: displayDate, dateSort: rawDate, titre: title, texte: text, tag, image: "" });
+            toast("Actualité ajoutée !");
+        }
+        
+        renderLists();
+        saveDraft();
+        
+        // Reset
+        document.getElementById('actu-raw-date').value = "";
+        document.getElementById('actu-title').value = "";
+        document.getElementById('actu-text').value = "";
+    }
+
+    function removeActu(i) {
+        if(confirm("Supprimer cette actualité ?")) {
+            localData.actualites.splice(i, 1);
+            renderLists();
+        saveDraft();
+        }
+    }
+
+    function addParcoursField(dist = '', link = '') {
+        const div = document.createElement('div');
+        div.className = 'parcours-entry';
+        div.innerHTML = `<input type="text" placeholder="Ex: 88 Kms" class="p-dist" value="${dist}"> <input type="url" placeholder="https://..." class="p-link" value="${link}">`;
+        document.getElementById('parcours-container').appendChild(div);
+    }
+
+    let editAgendaIndex = -1;
+    function editAgenda(i) {
+        const item = localData.agenda[i];
+        document.getElementById('agen-raw-date').value = item.dateSort || "";
+        document.getElementById('agen-title').value = item.titre || "";
+        document.getElementById('agen-locked').checked = item.locked !== false; // Default true
+        
+        const v1 = item.videos && item.videos.length > 0 ? item.videos[0] : "https://www.youtube.com/embed/";
+        const v2 = item.videos && item.videos.length > 1 ? item.videos[1] : "https://www.youtube.com/embed/";
+        document.getElementById('agen-video1').value = v1;
+        document.getElementById('agen-video2').value = v2;
+        
+        document.getElementById('parcours-container').innerHTML = "";
+        if (item.parcours && item.parcours.length > 0) {
+            item.parcours.forEach(p => addParcoursField(p.distance || '', p.lien || ''));
+        } else {
+            addParcoursField();
+        }
+        
+        editAgendaIndex = i;
+        document.getElementById('btn-add-agenda').textContent = "Mettre à jour l'agenda";
+        showTab('agenda');
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function addAgenda() {
+        const rawDate = document.getElementById('agen-raw-date').value;
+        const title = document.getElementById('agen-title').value;
+        const v1 = document.getElementById('agen-video1').value;
+        const v2 = document.getElementById('agen-video2').value;
+        const locked = document.getElementById('agen-locked').checked;
+        
+        const pEntries = document.querySelectorAll('.parcours-entry');
+        const parcours = [];
+        pEntries.forEach(pe => {
+            const dist = pe.querySelector('.p-dist').value;
+            const link = pe.querySelector('.p-link').value;
+            if(dist) parcours.push({ distance: dist, lien: link });
+        });
+
+        if(!rawDate || !title || parcours.length === 0) return alert("Veuillez remplir la date, le titre et au moins un parcours");
+
+        const displayDate = formatDateShort(rawDate);
+        const videos = [v1, v2].map(v => formatYoutubeLink(v)).filter(v => v !== "");
+
+        if (editAgendaIndex > -1) {
+            localData.agenda[editAgendaIndex] = { ...localData.agenda[editAgendaIndex], date: displayDate, dateSort: rawDate, titre: title, videos, locked, parcours };
+            editAgendaIndex = -1;
+            document.getElementById('btn-add-agenda').textContent = "Ajouter à l'agenda";
+            toast("Agenda mis à jour !");
+        } else {
+            localData.agenda.push({ date: displayDate, dateSort: rawDate, titre: title, videos, locked, parcours });
+            toast("Agenda ajouté !");
+        }
+
+        renderLists();
+        saveDraft();
+
+        // Reset
+        document.getElementById('agen-raw-date').value = "";
+        document.getElementById('agen-title').value = "";
+        document.getElementById('agen-video1').value = "https://www.youtube.com/embed/";
+        document.getElementById('agen-video2').value = "https://www.youtube.com/embed/";
+        document.getElementById('agen-locked').checked = true;
+        document.getElementById('parcours-container').innerHTML = `<div class="parcours-entry"><input type="text" placeholder="Ex: 88 Kms" class="p-dist"> <input type="url" placeholder="https://..." class="p-link"></div>`;
+    }
+
+    function removeAgenda(i) {
+        if(confirm("Supprimer cette sortie ?")) {
+            localData.agenda.splice(i, 1);
+            renderLists();
+        saveDraft();
+        }
+    }
+
+    // --- GALERIE ---
+    let editGalerieIndex = -1;
+    function editGallery(i) {
+        const item = localData.galerie[i];
+        document.getElementById('gal-title').value = item.titre || "";
+        document.getElementById('gal-cover').value = item.couverture || "";
+        document.getElementById('gal-photos').value = item.photos ? item.photos.join('\n') : "";
+        document.getElementById('gal-future').checked = item.aVenir || false;
+        
+        editGalerieIndex = i;
+        document.getElementById('btn-add-galerie').textContent = "Mettre à jour l'album";
+        showTab('galerie');
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function addGallery() {
+        const title = document.getElementById('gal-title').value;
+        const cover = document.getElementById('gal-cover').value;
+        const photosStr = document.getElementById('gal-photos').value;
+        const isFuture = document.getElementById('gal-future').checked;
+
+        if(!title && !isFuture) return alert("Veuillez donner un titre à l'album ou cocher 'A venir'");
+
+        const photos = photosStr.split('\n').map(p => p.trim()).filter(p => p !== "");
+
+        if (editGalerieIndex > -1) {
+            localData.galerie[editGalerieIndex] = { ...localData.galerie[editGalerieIndex], titre: title, couverture: cover, aVenir: isFuture, photos };
+            editGalerieIndex = -1;
+            document.getElementById('btn-add-galerie').textContent = "Ajouter l'album";
+            toast("Album photo mis à jour !");
+        } else {
+            const newGallery = { titre: title, couverture: cover, aVenir: isFuture, photos };
+            if (isFuture) {
+                localData.galerie.push(newGallery);
+            } else {
+                localData.galerie.unshift(newGallery);
+            }
+            toast("Album photo ajouté !");
+        }
+
+        renderLists();
+        saveDraft();
+        
+        // Reset
+        document.getElementById('gal-title').value = "";
+        document.getElementById('gal-cover').value = "";
+        document.getElementById('gal-photos').value = "";
+        document.getElementById('gal-future').checked = false;
+    }
+
+    function removeGallery(i) {
+        if(confirm("Supprimer cet album photo ?")) {
+            localData.galerie.splice(i, 1);
+            renderLists();
+        saveDraft();
+        }
+    }
+
+    // --- GENERATION ---
+    function generateCode() {
+        const jsonStr = JSON.stringify(localData, null, 2);
+        const code = `const ECTA_DATA = ${jsonStr};`;
+        document.getElementById('generated-code').textContent = code;
+        document.getElementById('modal').classList.add('open');
+    }
+
+    function closeModal() {
+        document.getElementById('modal').classList.remove('open');
+    }
+
+    function copyCode() {
+        const code = document.getElementById('generated-code').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+            toast("Copié dans le presse-papier !");
+        });
+    }
+
+    function exportFile() {
+        const code = document.getElementById('generated-code').textContent;
+        const blob = new Blob([code], { type: 'application/javascript' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'donnees.js';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast("Téléchargement lancé !");
+    }
+
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    // Premier rendu
+    renderLists();
+</script>
+
+</body>
+</html>
