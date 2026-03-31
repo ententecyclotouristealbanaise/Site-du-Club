@@ -185,8 +185,8 @@ section{padding:5rem 1.5rem}
       margin-right: auto;
       border-radius: 0;
       box-sizing: border-box;
-      padding-left: 1rem;
-      padding-right: 1rem;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
   }
     .video-container iframe {
       width: 100%;
@@ -197,6 +197,14 @@ section{padding:5rem 1.5rem}
       min-height: 120px;
       display: block;
       box-sizing: border-box;
+    }
+
+    /* Centrage des boutons Openrunner sous la vidéo */
+    .circuit-unlocked > div[style*="display:flex"] {
+      justify-content: center !important;
+      flex-wrap: wrap;
+      gap: .75rem;
+      margin-top: 1rem;
   }
 }
 

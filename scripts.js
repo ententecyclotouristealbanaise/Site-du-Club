@@ -22,8 +22,29 @@ function initFooterYear() {
 }
 
 // --- MENU BURGER ----------------------------------------------------------------------
-function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
-function closeMenu()  { document.getElementById('mobileMenu').classList.remove('open'); }
+
+let burgerTimeout;
+function toggleMenu() {
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.toggle('open');
+  if (menu.classList.contains('open')) {
+    clearTimeout(burgerTimeout);
+    burgerTimeout = setTimeout(closeMenu, 5000);
+    // Ferme au scroll ou au touch
+    window.addEventListener('scroll', closeMenuOnce, { passive: true });
+    window.addEventListener('touchstart', closeMenuOnce, { passive: true });
+  }
+}
+function closeMenu() {
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.remove('open');
+  clearTimeout(burgerTimeout);
+  window.removeEventListener('scroll', closeMenuOnce);
+  window.removeEventListener('touchstart', closeMenuOnce);
+}
+function closeMenuOnce() {
+  closeMenu();
+}
 
 document.addEventListener('click', function(e) {
   const menu = document.getElementById('mobileMenu');
