@@ -282,7 +282,7 @@ footer{background:var(--texte);color:rgba(255,255,255,.7);padding:1rem 1.5rem;ma
 }
 
 /* Arrondi uniquement pour l'agenda, pas pour l'accueil */
-.hero:not(#accueil)::after {
+.hero::after {
   content: '';
   position: absolute;
   bottom: -2px;
@@ -291,4 +291,7 @@ footer{background:var(--texte);color:rgba(255,255,255,.7);padding:1rem 1.5rem;ma
   height: 64px;
   background: var(--blanc);
   clip-path: ellipse(56% 100% at 50% 100%);
+}
+#accueil::after {
+  display: none;
 }
