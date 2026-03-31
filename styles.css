@@ -185,6 +185,8 @@ section{padding:5rem 1.5rem}
       margin-right: auto;
       border-radius: 0;
       box-sizing: border-box;
+      padding-left: 1rem;
+      padding-right: 1rem;
   }
     .video-container iframe {
       width: 100%;
