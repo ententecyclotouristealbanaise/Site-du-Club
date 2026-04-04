@@ -1,0 +1,65 @@
+# PWA & Security Headers
+
+# Enable gzip compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Set Cache-Control headers
+<FilesMatch "\.(jpg|jpeg|png|gif|ico|svg|webp|css|js|ttf|woff|woff2)$">
+  Header set Cache-Control "public, max-age=604800, immutable"
+</FilesMatch>
+
+# HTML files (no cache to ensure latest version)
+<FilesMatch "\.(html)$">
+  Header set Cache-Control "public, max-age=3600, must-revalidate"
+</FilesMatch>
+
+# Service Worker (important to not cache)
+<FilesMatch "^service-worker\.js$">
+  Header set Cache-Control "public, max-age=0, must-revalidate"
+  Header set Service-Worker-Allowed "/"
+</FilesMatch>
+
+# Manifest
+<FilesMatch "manifest\.json$">
+  Header set Cache-Control "public, max-age=604800"
+  AddType application/manifest+json .json
+</FilesMatch>
+
+# Security Headers for PWA
+Header set X-Content-Type-Options "nosniff"
+Header set X-Frame-Options "SAMEORIGIN"
+Header set X-XSS-Protection "1; mode=block"
+Header set Referrer-Policy "strict-origin-when-cross-origin"
+Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+# Modern TLS et HTTPS (Strict-Transport-Security) si applicable
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Si tu veux forcer HTTPS, décommente la ligne suivante :
+  # RewriteCond %{HTTPS} off
+  # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Blocage des accès aux fichiers sensibles
+<FilesMatch "^\.">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# Blocage des fichiers système
+<FilesMatch "(\.env|\.git|\.gitignore|README|composer\.json)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>

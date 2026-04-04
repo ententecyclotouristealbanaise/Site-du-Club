@@ -340,3 +340,27 @@ function lightboxNav(dir) {
   currentPhotoIndex = (currentPhotoIndex + dir + currentAlbum.photos.length) % currentAlbum.photos.length;
   updateLightbox();
 }
+
+/* --- SERVICE WORKER (PWA) --- */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => {
+        console.log('SW: Enregistrement réussi', reg);
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('SW: Mise à jour disponible');
+              const msg = document.createElement('div');
+              msg.id = 'sw-update-banner';
+              msg.innerHTML = '<span>✨ Une mise à jour est disponible</span> <button onclick="location.reload()">Recharger</button>';
+              msg.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:var(--rose);color:white;padding:1rem;text-align:center;z-index:9999;gap:1rem;display:flex;justify-content:center;align-items:center;font-weight:700;';
+              document.body.appendChild(msg);
+            }
+          });
+        });
+      })
+      .catch(err => console.error('SW: Erreur enregistrement', err));
+  });
+}
