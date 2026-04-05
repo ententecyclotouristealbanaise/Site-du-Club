@@ -5,15 +5,8 @@
  width="925.000000pt" height="1068.000000pt" viewBox="0 0 925.000000 1068.000000"
  preserveAspectRatio="xMidYMid meet">
 
-<defs>
-<linearGradient id="ffveloGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-<stop offset="0%" style="stop-color:#e8357a;stop-opacity:1" />
-<stop offset="100%" style="stop-color:#00b4d8;stop-opacity:1" />
-</linearGradient>
-</defs>
-
 <g transform="translate(0.000000,1068.000000) scale(0.100000,-0.100000)"
-fill="url(#ffveloGrad)" stroke="none">
+fill="#000000" stroke="none">
 <path d="M4240 10670 c-1062 -83 -2008 -493 -2788 -1210 -313 -287 -630 -686
 -848 -1065 -664 -1159 -785 -2593 -321 -3838 l51 -138 1743 -1389 1744 -1390
 97 -14 c286 -43 782 -56 1052 -28 858 88 1596 370 2280 870 166 121 204 155
