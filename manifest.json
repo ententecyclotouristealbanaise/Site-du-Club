@@ -10,15 +10,15 @@
   "background_color": "#f4f4f6",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><circle cx='96' cy='96' r='96' fill='%23e8357a'/><text x='96' y='110' font-size='80' font-weight='bold' fill='white' text-anchor='middle' font-family='Arial'>🚴</text></svg>",
+      "src": "icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><circle cx='256' cy='256' r='256' fill='%23e8357a'/><text x='256' y='280' font-size='220' font-weight='bold' fill='white' text-anchor='middle' font-family='Arial'>🚴</text></svg>",
+      "src": "icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
