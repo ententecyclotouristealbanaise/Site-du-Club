@@ -29,6 +29,11 @@
       "sizes": "1024x768",
       "type": "image/png",
       "form_factor": "wide"
+    },
+    {
+      "src": "/Site-du-Club/screenshot-portrait.png",
+      "sizes": "540x720",
+      "type": "image/png"
     }
   ],
   "shortcuts": [
@@ -36,13 +41,27 @@
       "name": "Agenda",
       "short_name": "Agenda",
       "description": "Voir l'agenda des sorties",
-      "url": "/Site-du-Club/agenda.html"
+      "url": "/Site-du-Club/agenda.html",
+      "icons": [
+        {
+          "src": "/Site-du-Club/shortcut-agenda-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Contact",
       "short_name": "Contact",
       "description": "Nous contacter",
-      "url": "/Site-du-Club/contact.html"
+      "url": "/Site-du-Club/contact.html",
+      "icons": [
+        {
+          "src": "/Site-du-Club/shortcut-contact-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
