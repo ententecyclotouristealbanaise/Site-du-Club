@@ -54,6 +54,8 @@
     .circuit-category.route{border-left:4px solid #2196F3}
     .circuit-category.gravel{border-left:4px solid #FF9800}
     .circuit-category.marche{border-left:4px solid #E91E63}
+    .youtube-video{transition:all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);transform:scale(1)}
+    .youtube-video:hover{transform:scale(1.05);box-shadow:0 24px 56px rgba(232,53,122,0.5), 0 14px 28px rgba(0,0,0,0.3), 0 6px 12px rgba(0,0,0,0.15) !important}
     @media(max-width:600px){.agenda-buttons{flex-direction:column;align-items:stretch} .btn-agenda{justify-content:center}}
   </style>
 </head>
@@ -104,7 +106,7 @@
     </figure>
     <div style="margin:2rem auto;max-width:440px;display:flex;flex-direction:column;align-items:center;">
       <div style="width:100%;padding:0;">
-        <iframe width="100%" height="250" src="https://www.youtube.com/embed/3nBBPPtV_Ic" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="border-radius:8px;box-shadow:0 1.5px 6px rgba(0,0,0,0.08);"></iframe>
+        <iframe class="youtube-video" width="100%" height="250" src="https://www.youtube.com/embed/3nBBPPtV_Ic" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="border-radius:12px;border:2px solid #e8357a;box-shadow:0 20px 48px rgba(232,53,122,0.45), 0 12px 24px rgba(0,0,0,0.25), 0 4px 8px rgba(0,0,0,0.1);"></iframe>
       </div>
       <div style="width:100%;margin-top:2.2rem;padding:1.1rem 1.2rem;background:linear-gradient(90deg,rgba(232,53,122,0.08),rgba(0,180,216,0.08));border-radius:10px;font-size:1.05rem;font-style:italic;color:#1c1c2e;box-shadow:0 2px 8px rgba(0,0,0,0.04);text-align:center;">
         Plongez dans l’ambiance de notre prochaine randonnée : laissez-vous porter par l’esprit d’aventure et la beauté des paysages qui vous attendent !
@@ -112,7 +114,7 @@
     </div>
     <div class="event-details">
       <div class="calendar-card">
-        <div style="font-size:2.5rem;margin-bottom:.5rem;">📅</div>
+        <div style="margin-bottom:.5rem;"><svg width="70" height="70" viewBox="0 0 100 100" fill="none" style="margin: 0 auto; display: block;"><defs><linearGradient id="calGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#e8357a;stop-opacity:1" /><stop offset="100%" style="stop-color:#f06fa0;stop-opacity:1" /></linearGradient></defs><rect x="12" y="18" width="76" height="70" rx="6" fill="url(#calGrad)" filter="drop-shadow(0 4px 8px rgba(232,53,122,0.3))"/><rect x="16" y="22" width="68" height="18" rx="4" fill="rgba(255,255,255,0.15)"/><text x="50" y="35" font-size="12" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial">MAI</text><line x1="20" y1="48" x2="80" y2="48" stroke="white" stroke-width="0.5" opacity="0.3"/><text x="50" y="78" font-size="42" font-weight="900" fill="white" text-anchor="middle" font-family="Arial">17</text></svg></div>
         <h3>Notez la date !</h3>
         <p><strong>Dimanche 17 mai 2026</strong><br>Dès 07h30 (Inscriptions)</p>
         <p>📍 Salle des Fêtes, 22400 Saint-Alban</p>
@@ -134,7 +136,10 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
-      <img src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA" class="footer-logo">
+      <div style="display:flex;gap:1rem;align-items:center;margin-bottom:.5rem;">
+        <img src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA" class="footer-logo">
+        <img src="images/logo_ffvelo.svg" alt="FFVélo" style="height:auto;max-height:50px;max-width:50px;">
+      </div>
       <h4>ECTA SAINT-ALBAN</h4>
       <p>Entente Cyclotouriste Albanaise - club de cyclotourisme fondé en 1985 à Saint-Alban, Côtes-d'Armor.</p>
     </div>
