@@ -2,21 +2,21 @@
   "name": "Entente Cyclotouriste Albanaise",
   "short_name": "ECTA Saint-Alban",
   "description": "Club de cyclotourisme fondé en 1985 à Saint-Alban, Côtes-d'Armor. Sorties du dimanche, randonnées, brevets et convivialité.",
-  "start_url": "/index.html",
-  "scope": "/",
+  "start_url": "/Site-du-Club/index.html",
+  "scope": "/Site-du-Club/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "theme_color": "#e8357a",
   "background_color": "#f4f4f6",
   "icons": [
     {
-      "src": "icon-192x192.png",
+      "src": "/Site-du-Club/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-512x512.png",
+      "src": "/Site-du-Club/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -36,7 +36,7 @@
       "name": "Agenda",
       "short_name": "Agenda",
       "description": "Voir l'agenda des sorties",
-      "url": "/agenda.html",
+      "url": "/Site-du-Club/agenda.html",
       "icons": [
         {
           "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><circle cx='48' cy='48' r='48' fill='%2300b4d8'/><text x='48' y='56' font-size='40' fill='white' text-anchor='middle' font-family='Arial'>📅</text></svg>",
@@ -48,7 +48,7 @@
       "name": "Contact",
       "short_name": "Contact",
       "description": "Nous contacter",
-      "url": "/contact.html",
+      "url": "/Site-du-Club/contact.html",
       "icons": [
         {
           "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><circle cx='48' cy='48' r='48' fill='%23f06fa0'/><text x='48' y='56' font-size='40' fill='white' text-anchor='middle' font-family='Arial'>✉️</text></svg>",
