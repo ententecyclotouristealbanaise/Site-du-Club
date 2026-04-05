@@ -276,10 +276,9 @@ footer{background:var(--texte);color:rgba(255,255,255,.7);padding:1rem 1.5rem;ma
 .footer-col h5{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--rose-clair);margin-bottom:.4rem}
 .footer-col ul{list-style:none}
 .footer-col ul li{margin-bottom:.25rem}
-.footer-col ul li a{font-size:.82rem;color:rgba(255,255,255,.65);transition:color .2s}
-.footer-col ul li a:hover{color:var(--blanc)}
+.footer-col ul li a{font-size:.82rem;color:rgba(255,255,255,.65);transition:color .2s, transform .4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;display:inline-block !important;transform:scale(1) !important}
+.footer-col ul li a:hover{color:var(--blanc) !important;transform:scale(1.15) !important}
 .footer-bottom{max-width:1100px;margin:.8rem auto 0;display:flex;justify-content:space-between;font-size:.75rem;flex-wrap:wrap;gap:.5rem}
-.ffct-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.08);padding:.3rem .8rem;border-radius:2rem;font-size:.72rem}
 
 /* --- RESPONSIVE --- */
 @media(max-width:1024px){
