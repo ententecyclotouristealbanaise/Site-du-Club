@@ -1,20 +1,21 @@
 /* Service Worker pour ECTA Saint-Alban - PWA Offline Support */
 
-const CACHE_NAME = 'ecta-v1';
+const CACHE_NAME = 'ecta-v2';
+const BASE_PATH = new URL('.', self.registration.scope).pathname.replace(/\/$/, '');
+const withBase = (path) => `${BASE_PATH}/${path.replace(/^\//, '')}`;
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/le-club.html',
-  '/actualites.html',
-  '/agenda.html',
-  '/galerie.html',
-  '/contact.html',
-  '/documents.html',
-  '/news.html',
-  '/styles.css',
-  '/scripts.js',
-  '/donnees.js',
-  '/manifest.json'
+  withBase('index.html'),
+  withBase('le-club.html'),
+  withBase('actualites.html'),
+  withBase('agenda.html'),
+  withBase('galerie.html'),
+  withBase('contact.html'),
+  withBase('documents.html'),
+  withBase('news.html'),
+  withBase('styles.css'),
+  withBase('scripts.js'),
+  withBase('donnees.js'),
+  withBase('manifest.json')
 ];
 
 /* Installation du Service Worker */
@@ -88,7 +89,7 @@ self.addEventListener('fetch', event => {
       })
       .catch(() => {
         return caches.match(request)
-          .then(response => response || caches.match('/index.html'))
+            .then(response => response || caches.match(withBase('index.html')))
           .catch(() => new Response('Offline - Page non disponible', { status: 503 }));
       })
   );
