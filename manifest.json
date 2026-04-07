@@ -5,7 +5,7 @@
   "start_url": "/Site-du-Club/index.html",
   "scope": "/Site-du-Club/",
   "display": "standalone",
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "theme_color": "#e8357a",
   "background_color": "#f4f4f6",
   "icons": [
