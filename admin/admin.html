@@ -379,7 +379,7 @@
             <div class="item-list" id="list-galerie"></div>
 
             <div class="form-section">
-                <div class="form-title">➕ Nouvel Album Photo</div>
+                <div class="form-title">➕ Nouvel Album Media</div>
                 <div class="form-group">
                     <label>Titre de l'album</label>
                     <input type="text" id="gal-title" placeholder="Sortie Annuelle 2026">
@@ -391,6 +391,12 @@
                 <div class="form-group">
                     <label>Liste des photos (Chemins, une par ligne)</label>
                     <textarea id="gal-photos" rows="5" placeholder="images/album/photo_01.jpg&#10;images/album/photo_02.jpg"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Liste des videos (webm|mp4|poster, une par ligne)</label>
+                    <textarea id="gal-videos" rows="4" placeholder="images/Brevet des 100 kms/videos/brevet_100_video_01.webm|images/Brevet des 100 kms/videos/brevet_100_video_01.mp4|images/Brevet des 100 kms/brevet_100_05.jpg"></textarea>
+                    <small style="display:block; margin-top:0.45rem; color:var(--text-muted); font-size:0.78rem;">Format: webm|mp4|poster (mp4 et poster optionnels)</small>
+                    <button type="button" class="btn-sub" style="margin-top:0.6rem;" onclick="autoFillGalleryPosters()">🖼 Générer les posters manquants</button>
                 </div>
                 <div class="form-group" style="display:flex; align-items:center; gap:0.5rem;">
                     <input type="checkbox" id="gal-future" style="width: auto;">
@@ -539,11 +545,20 @@
         // Liste Galerie
         const listGalerie = document.getElementById('list-galerie');
         listGalerie.innerHTML = localData.galerie.map((g, i) => `
+            ${(() => {
+                const medias = Array.isArray(g.medias) ? g.medias : [];
+                const photosCount = medias.length
+                    ? medias.filter(m => m.type === 'image').length
+                    : (g.photos ? g.photos.length : 0);
+                const videosCount = medias.filter(m => m.type === 'video').length;
+                const videoLabel = videosCount > 0 ? `<span>🎥 ${videosCount} vidéo(s)</span>` : '';
+                return `
             <div class="item-card">
                 <div class="item-info">
                     <div class="item-title">${g.titre || (g.aVenir ? '⚠️ Album "À venir"' : 'Album sans titre')}</div>
                     <div class="item-subtitle">
-                        <span>📸 ${g.photos ? g.photos.length : 0} photos</span>
+                        <span>📸 ${photosCount} photo(s)</span>
+                        ${videoLabel}
                         ${g.aVenir ? '<span class="item-badge">PROCHAINEMENT</span>' : ''}
                     </div>
                 </div>
@@ -552,6 +567,8 @@
                     <button class="btn-icon delete" onclick="removeGallery(${i})" title="Supprimer">🗑️</button>
                 </div>
             </div>
+            `;
+            })()}
         `).join('') || '<p style="text-align:center; color:var(--text-muted); padding:1rem;">Aucun album.</p>';
     }
 
@@ -725,12 +742,118 @@
     }
 
     // --- GALERIE ---
+    function getGalleryImages(item) {
+        if (item.medias && Array.isArray(item.medias)) {
+            return item.medias
+                .filter(m => m.type === 'image' && m.src)
+                .map(m => m.src);
+        }
+        return item.photos || [];
+    }
+
+    function getGalleryVideos(item) {
+        if (!item.medias || !Array.isArray(item.medias)) return [];
+        return item.medias
+            .filter(m => m.type === 'video' && (m.webm || m.mp4 || m.src))
+            .map(m => normalizeVideoFields({
+                webm: m.webm || m.src || '',
+                mp4: m.mp4 || '',
+                poster: m.poster || ''
+            }));
+    }
+
+    function normalizeVideoFields(video) {
+        const v = {
+            type: video.type || 'video',
+            webm: (video.webm || '').trim(),
+            mp4: (video.mp4 || '').trim(),
+            poster: (video.poster || '').trim()
+        };
+
+        if (v.webm && !v.mp4 && v.webm.toLowerCase().endsWith('.mp4')) {
+            v.mp4 = v.webm;
+            v.webm = '';
+        }
+        if (v.mp4 && !v.webm && v.mp4.toLowerCase().endsWith('.webm')) {
+            v.webm = v.mp4;
+            v.mp4 = '';
+        }
+        return v;
+    }
+
+    function parseGalleryVideos(raw) {
+        return raw
+            .split('\n')
+            .map(line => line.trim())
+            .filter(line => line !== '')
+            .map(line => {
+                const parts = line.split('|').map(p => p.trim());
+                return normalizeVideoFields({
+                    type: 'video',
+                    webm: parts[0] || '',
+                    mp4: parts[1] || '',
+                    poster: parts[2] || ''
+                });
+            })
+            .filter(v => v.webm || v.mp4);
+    }
+
+    function guessPosterPath(videoPath) {
+        const cleanPath = (videoPath || '').trim();
+        if (!cleanPath) return '';
+        return cleanPath.replace(/\.(webm|mp4)$/i, '_poster.jpg');
+    }
+
+    function autoFillGalleryPosters() {
+        const field = document.getElementById('gal-videos');
+        const lines = field.value
+            .split('\n')
+            .map(l => l.trim())
+            .filter(l => l !== '');
+
+        if (!lines.length) {
+            toast('Ajoutez d\'abord au moins une ligne vidéo.');
+            return;
+        }
+
+        let updated = 0;
+        const normalizedLines = lines.map(line => {
+            const parts = line.split('|').map(p => p.trim());
+            const normalized = normalizeVideoFields({
+                type: 'video',
+                webm: parts[0] || '',
+                mp4: parts[1] || '',
+                poster: parts[2] || ''
+            });
+
+            if (!normalized.poster) {
+                const baseVideoPath = normalized.mp4 || normalized.webm;
+                normalized.poster = guessPosterPath(baseVideoPath);
+                if (normalized.poster) updated += 1;
+            }
+
+            return `${normalized.webm || ''}|${normalized.mp4 || ''}|${normalized.poster || ''}`;
+        });
+
+        field.value = normalizedLines.join('\n');
+        if (updated > 0) {
+            toast(`${updated} poster(s) renseigné(s) automatiquement.`);
+        } else {
+            toast('Tous les posters sont déjà renseignés.');
+        }
+    }
+
     let editGalerieIndex = -1;
     function editGallery(i) {
         const item = localData.galerie[i];
+        const photos = getGalleryImages(item);
+        const videos = getGalleryVideos(item);
         document.getElementById('gal-title').value = item.titre || "";
         document.getElementById('gal-cover').value = item.couverture || "";
-        document.getElementById('gal-photos').value = item.photos ? item.photos.join('\n') : "";
+        document.getElementById('gal-photos').value = photos.join('\n');
+        document.getElementById('gal-videos').value = videos
+            .map(v => `${v.webm || ''}|${v.mp4 || ''}|${v.poster || ''}`)
+            .join('\n');
         document.getElementById('gal-future').checked = item.aVenir || false;
         
         editGalerieIndex = i;
@@ -743,25 +866,42 @@
         const title = document.getElementById('gal-title').value;
         const cover = document.getElementById('gal-cover').value;
         const photosStr = document.getElementById('gal-photos').value;
+        const videosStr = document.getElementById('gal-videos').value;
         const isFuture = document.getElementById('gal-future').checked;
 
         if(!title && !isFuture) return alert("Veuillez donner un titre à l'album ou cocher 'A venir'");
 
         const photos = photosStr.split('\n').map(p => p.trim()).filter(p => p !== "");
+        const videos = parseGalleryVideos(videosStr);
+        const medias = [
+            ...photos.map(src => ({ type: 'image', src })),
+            ...videos
+        ];
+        const shouldUseMedias = videos.length > 0 || (editGalerieIndex > -1 && Array.isArray(localData.galerie[editGalerieIndex].medias));
 
         if (editGalerieIndex > -1) {
-            localData.galerie[editGalerieIndex] = { ...localData.galerie[editGalerieIndex], titre: title, couverture: cover, aVenir: isFuture, photos };
+            const existing = localData.galerie[editGalerieIndex];
+            localData.galerie[editGalerieIndex] = {
+                ...existing,
+                titre: title,
+                couverture: cover,
+                aVenir: isFuture,
+                photos: shouldUseMedias ? undefined : photos,
+                medias: shouldUseMedias ? medias : undefined
+            };
             editGalerieIndex = -1;
             document.getElementById('btn-add-galerie').textContent = "Ajouter l'album";
-            toast("Album photo mis à jour !");
+            toast("Album media mis à jour !");
         } else {
-            const newGallery = { titre: title, couverture: cover, aVenir: isFuture, photos };
+            const newGallery = shouldUseMedias
+                ? { titre: title, couverture: cover, aVenir: isFuture, medias }
+                : { titre: title, couverture: cover, aVenir: isFuture, photos };
             if (isFuture) {
                 localData.galerie.push(newGallery);
             } else {
                 localData.galerie.unshift(newGallery);
             }
-            toast("Album photo ajouté !");
+            toast("Album media ajouté !");
         }
 
         renderLists();
@@ -771,6 +911,7 @@
         document.getElementById('gal-title').value = "";
         document.getElementById('gal-cover').value = "";
         document.getElementById('gal-photos').value = "";
+        document.getElementById('gal-videos').value = "";
         document.getElementById('gal-future').checked = false;
     }
 

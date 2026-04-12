@@ -1,56 +1,84 @@
 const ECTA_DATA = {
   "actualites": [
     {
-      "date": "Dimanche 12 Avril 2026",
-      "dateSort": "2026-04-12",
-      "titre": "Brevet des 100 Kms",
-      "texte": "Départ à 07 h 30 du Stade de foot. ",
-      "tag": "Brevet",
+      "date": "Samedi 18 Avril 2026",
+      "dateSort": "2026-04-18",
+      "titre": " 40 ANS de l' ECTA",
+      "texte": "...",
+      "tag": "Événement",
       "image": ""
     },
     {
-      "date": "Dimanche 12 Avril 2026",
-      "dateSort": "2026-04-12",
+      "date": "Dimanche 19 Avril 2026",
+      "dateSort": "2026-04-19",
       "titre": "Sortie du Dimanche",
-      "texte": "Rendez-vous à 08h00 devant le Stade de foot. 1 Parcours : 77  kms",
+      "texte": "Départ à 08h00 devant le Stade de foot. 1 Parcours : 73 kms",
       "tag": "Sortie",
       "image": ""
     }
   ],
   "agenda": [
     {
-      "date": "Dim. 12 avr..",
-      "dateSort": "2026-04-12",
-      "titre": "Circuit D 15",
-      "videos": [
-        "https://www.youtube.com/embed/j_YvW3o3jQU"
-      ],
+      "date": "Dim. 19 avr..",
+      "dateSort": "2026-04-19",
+      "titre": "Circuit D68",
+      "videos": [],
       "locked": true,
       "parcours": [
         {
-          "distance": "77 Kms",
-          "lien": "https://www.openrunner.com/route-details/16496766"
-        }
-      ]
-    },
-    {
-      "date": "Dim. 12 avr..",
-      "dateSort": "2026-04-12",
-      "titre": "Brevet des 100 Kms ",
-      "videos": [
-        "https://www.youtube.com/embed/WnjQtix2cG8"
-      ],
-      "locked": true,
-      "parcours": [
-        {
-          "distance": "100 Kms",
-          "lien": "https://www.openrunner.com/route-details/18703156"
+          "distance": "73 Kms",
+          "lien": "https://www.openrunner.com/route-details/23193861"
         }
       ]
     }
   ],
   "motDePasse": "ZWN0YTE5ODU=",
   "galerie": [
+    {
+      "titre": "Brevet des  100 Kms",
+      "couverture": "images/Brevet des 100 kms/brevet_100_05.jpg",
+      "aVenir": false,
+      "medias": [
+        {
+          "type": "image",
+          "src": "images/Brevet des 100 kms/brevet_100_01.jpg"
+        },
+        {
+          "type": "image",
+          "src": "images/Brevet des 100 kms/brevet_100_02.jpg"
+        },
+        {
+          "type": "image",
+          "src": "images/Brevet des 100 kms/brevet_100_03.jpg"
+        },
+        {
+          "type": "image",
+          "src": "images/Brevet des 100 kms/brevet_100_04.jpg"
+        },
+        {
+          "type": "image",
+          "src": "images/Brevet des 100 kms/brevet_100_05.jpg"
+        },
+        {
+          "type": "video",
+          "webm": "",
+          "mp4": "images/Brevet des 100 kms/videos/brevet_100_video_01.mp4",
+          "poster": "images/Brevet des 100 kms/videos/brevet_100_video_01_poster.jpg"
+        },
+        {
+          "type": "video",
+          "webm": "",
+          "mp4": "images/Brevet des 100 kms/videos/brevet_100_video_02.mp4",
+          "poster": "images/Brevet des 100 kms/videos/brevet_100_video_02_poster.jpg"
+        },
+        {
+          "type": "video",
+          "webm": "",
+          "mp4": "images/Brevet des 100 kms/videos/brevet_100_video_03.mp4",
+          "poster": "images/Brevet des 100 kms/videos/brevet_100_video_03_poster.jpg"
+        }
+      ]
+    },
     {
       "titre": "Galette des Rois 2026",
       "couverture": "images/Galette des Rois 2026/photo_09.jpg",

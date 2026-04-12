@@ -266,6 +266,46 @@ let currentAlbum = null;
 let currentPhotoIndex = 0;
 let diaporamaInterval = null;
 
+function getAlbumMedias(album) {
+  if (album && Array.isArray(album.medias) && album.medias.length) {
+    return album.medias.map((m) => {
+      if (typeof m === 'string') return { type: 'image', src: m };
+      return m;
+    });
+  }
+  if (album && Array.isArray(album.photos) && album.photos.length) {
+    return album.photos.map((p) => ({ type: 'image', src: p }));
+  }
+  return [];
+}
+
+function getAlbumCountLabel(album) {
+  const medias = getAlbumMedias(album);
+  const hasVideo = medias.some((m) => m.type === 'video');
+  return `${medias.length} ${hasVideo ? 'medias' : 'photos'}`;
+}
+
+function getMediaThumb(media, album) {
+  if (media.type === 'video') return media.thumb || media.poster || album.couverture;
+  return media.thumb || media.src || album.couverture;
+}
+
+function inferVideoMime(path) {
+  const p = String(path || '').toLowerCase();
+  if (p.endsWith('.webm')) return 'video/webm';
+  if (p.endsWith('.mp4')) return 'video/mp4';
+  return 'video/mp4';
+}
+
+function stopLightboxVideo() {
+  const video = document.getElementById('lightboxVideo');
+  if (!video) return;
+  video.pause();
+  video.removeAttribute('src');
+  video.innerHTML = '';
+  video.load();
+}
+
 function renderGalerie() {
   const grid = document.getElementById('albumsGrid');
   if (!grid) return;
@@ -273,7 +313,7 @@ function renderGalerie() {
     <div class="album-card" onclick="openAlbum(${i})">
       <div class="album-cover">
         <img src="${album.couverture}" alt="${album.titre}">
-        <div class="album-count">${album.photos.length} photos</div>
+        <div class="album-count">${getAlbumCountLabel(album)}</div>
       </div>
       <div class="album-title">${album.titre}</div>
     </div>
@@ -291,6 +331,7 @@ function openAlbum(i) {
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
+  stopLightboxVideo();
   
   // Arrêt du diaporama si on ferme
   if (diaporamaInterval) {
@@ -319,17 +360,42 @@ function toggleDiaporama() {
 
 function updateLightbox() {
   const img = document.getElementById('lightboxImg');
+  const video = document.getElementById('lightboxVideo');
   const counter = document.getElementById('lightboxCounter');
   const title = document.getElementById('lightboxTitle');
   const thumbs = document.getElementById('lightboxThumbs');
+  const medias = getAlbumMedias(currentAlbum);
+
+  if (!medias.length) return;
+
+  const currentMedia = medias[currentPhotoIndex];
 
   title.textContent = currentAlbum.titre;
-  img.src = currentAlbum.photos[currentPhotoIndex];
-  counter.textContent = `${currentPhotoIndex + 1} / ${currentAlbum.photos.length}`;
+  counter.textContent = `${currentPhotoIndex + 1} / ${medias.length}`;
 
-  thumbs.innerHTML = currentAlbum.photos.map((p, i) => `
+  stopLightboxVideo();
+  if (currentMedia.type === 'video') {
+    img.style.display = 'none';
+    video.style.display = 'block';
+    video.poster = currentMedia.poster || '';
+
+    const sources = [];
+    if (currentMedia.webm) sources.push(`<source src="${currentMedia.webm}" type="${inferVideoMime(currentMedia.webm)}">`);
+    if (currentMedia.mp4) sources.push(`<source src="${currentMedia.mp4}" type="${inferVideoMime(currentMedia.mp4)}">`);
+    if (currentMedia.src) sources.push(`<source src="${currentMedia.src}" type="${inferVideoMime(currentMedia.src)}">`);
+
+    video.innerHTML = `${sources.join('')}Votre navigateur ne supporte pas la video HTML5.`;
+    video.load();
+  } else {
+    video.style.display = 'none';
+    img.style.display = 'block';
+    img.src = currentMedia.src;
+    img.alt = currentMedia.alt || currentAlbum.titre;
+  }
+
+  thumbs.innerHTML = medias.map((m, i) => `
     <img class="lightbox-thumb ${i === currentPhotoIndex ? 'active' : ''}" 
-         src="${p}" onclick="currentPhotoIndex=${i};updateLightbox();">
+         src="${getMediaThumb(m, currentAlbum)}" onclick="currentPhotoIndex=${i};updateLightbox();">
   `).join('');
   
   const activeThumb = thumbs.querySelector('.active');
@@ -337,7 +403,9 @@ function updateLightbox() {
 }
 
 function lightboxNav(dir) {
-  currentPhotoIndex = (currentPhotoIndex + dir + currentAlbum.photos.length) % currentAlbum.photos.length;
+  const medias = getAlbumMedias(currentAlbum);
+  if (!medias.length) return;
+  currentPhotoIndex = (currentPhotoIndex + dir + medias.length) % medias.length;
   updateLightbox();
 }
 
