@@ -1,6 +1,6 @@
 /* Service Worker pour ECTA Saint-Alban - PWA Offline Support */
 
-const CACHE_NAME = 'ecta-v3';
+const CACHE_NAME = 'ecta-v4';
 const BASE_PATH = new URL('.', self.registration.scope).pathname.replace(/\/$/, '');
 const withBase = (path) => `${BASE_PATH}/${path.replace(/^\//, '')}`;
 const STATIC_ASSETS = [
@@ -61,15 +61,24 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  /* Stratégie Cache-First pour assets statiques */
+  /* Stratégie Network-First pour assets statiques (JS, CSS) */
   if (request.destination === 'style' ||
       request.destination === 'script' ||
       request.url.includes('.js') ||
       request.url.includes('.css')) {
     event.respondWith(
-      caches.match(request)
-        .then(response => response || fetch(request))
-        .catch(() => new Response('Offline - Ressource non disponible', { status: 503 }))
+      fetch(request)
+        .then(response => {
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(request, responseClone));
+          return response;
+        })
+        .catch(() => caches.match(request)
+          .catch(() => new Response('Offline - Ressource non disponible', { status: 503 }))
+        )
     );
     return;
   }
