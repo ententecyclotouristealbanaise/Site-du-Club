@@ -175,6 +175,7 @@
     max-height:calc(100dvh - 290px);
     overflow:auto;
     overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
   }
   .table-ecta{ min-width:560px; }
 
@@ -287,14 +288,23 @@
     .sticky-col{ position:static; top:auto; }
     .col-tableau{ display:block; }
     .col-tableau > .card{ min-height:auto; }
-    .table-scroll-wrap{ max-height:min(52dvh, 480px); overflow-y:auto; }
+    .table-scroll-wrap{
+      height:52dvh;
+      max-height:52dvh;
+      overflow:auto !important;
+    }
+    #gran-tabs{
+      flex-wrap:nowrap !important;
+      overflow-x:auto;
+      padding-bottom:2px;
+    }
     #map-wrap{ height:320px; }
     #map-wrap.map-expanded{ height:420px; }
   }
 
   @media (max-width: 991.98px){
     @supports not (height: 100dvh){
-      .table-scroll-wrap{ max-height:min(52vh, 480px); }
+      .table-scroll-wrap{ height:52vh; max-height:52vh; }
     }
   }
 
@@ -308,6 +318,10 @@
   }
 
   @media (max-width: 575.98px){
+    .stats-main-row > [class*="col-"]{
+      flex:0 0 100%;
+      max-width:100%;
+    }
     .result-actions{
       width:100%;
       grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
@@ -319,7 +333,7 @@
     .speed-input{ width:44px; font-size:1.25rem; }
     .speed-unit{ font-size:.72rem; }
     .preset-btn{ font-size:.58rem; padding:1px 4px; }
-    .table-scroll-wrap{ max-height:min(48dvh, 420px); }
+    .table-scroll-wrap{ height:46dvh; max-height:46dvh; }
     #map-wrap{ height:260px; }
     #map-wrap.map-expanded{ height:340px; }
   }
@@ -334,7 +348,7 @@
 
   @media (max-width: 575.98px){
     @supports not (height: 100dvh){
-      .table-scroll-wrap{ max-height:min(48vh, 420px); }
+      .table-scroll-wrap{ height:46vh; max-height:46vh; }
     }
   }
 
@@ -450,7 +464,7 @@
     </div>
 
     <!-- Stats + contrôles principaux -->
-    <div class="row g-2 mb-2 align-items-stretch">
+    <div class="row g-2 mb-2 align-items-stretch stats-main-row">
       <div class="col-6 col-md-4 col-lg d-flex">
         <div class="stat-card w-100"><div class="stat-label">Distance</div><div class="stat-val" id="s-dist">—</div></div>
       </div>
