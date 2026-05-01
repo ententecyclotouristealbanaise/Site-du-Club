@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculateur GPX · ECTA Saint-Alban</title>
+  <meta name="description" content="Calculateur de passage GPX du club ECTA Saint-Alban. Estimez vos horaires de passage sur vos parcours vélo." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e8357a'/></svg>" />
+  <link rel="apple-touch-icon" href="../icon-192x192.png" />
+  <link rel="manifest" href="../manifest.json" />
+  <meta name="theme-color" content="#e8357a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Bootstrap CSS en premier (sera surchargé par les styles suivants pour nav/footer) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Styles du club (nav, footer — après Bootstrap pour conserver la nav ECTA) -->
+  <link rel="stylesheet" href="../styles.css?v=20260501">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Leaflet CSS -->
+  <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+
+  <!-- Scripts CDN en tête (Chart.js + Leaflet) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+  /* ══ Variables couleurs du club (étendues pour le calculateur) ══ */
+  :root{
+    --rose:#e8357a; --rose-clair:#f06fa0; --rose-pale:#fde8f1; --rose-border:#f5b8d3;
+    --cyan:#00b4d8; --cyan-pale:#e0f7fd;
+    --violet:#7c3aed; --violet-pale:#ede9fe;
+    --vert:#16a34a;
+    --blanc:#f4f4f6; --texte:#1c1c2e; --gris:#6b7280; --gris-clair:#e8e4ed;
+    --nav-h:54px;
+  }
+  [data-bs-theme="dark"]{
+    --rose:#f06fa0; --rose-pale:#2a0e1a; --rose-border:#4a1530;
+    --cyan:#22d3ee; --cyan-pale:#042a33;
+    --violet-pale:#1e1533;
+    --blanc:#141420; --texte:#f0edff; --gris:#9ca3af; --gris-clair:#2d2d45;
+  }
+
+  /* ══ BASE — padding pour nav fixe ══ */
+  body{
+    font-family:'Nunito',sans-serif;
+    background:var(--blanc);
+    color:var(--texte);
+    padding-top:var(--nav-h);
+  }
+
+  /* ══ Reset .btn aux valeurs Bootstrap (surchargé par styles.css du club) ══ */
+  .btn{ padding:.375rem .75rem; font-size:.875rem; letter-spacing:0; transform:none !important; }
+  .btn:hover{ transform:none !important; box-shadow:none; }
+  .btn-sm{ padding:.25rem .5rem; font-size:.75rem; }
+  .btn-lg{ padding:.5rem 1rem; font-size:1.125rem; }
+
+  /* ══ Actions calculateur dans la nav ══ */
+  .calc-actions{ display:flex; gap:6px; align-items:center; flex-shrink:0; }
+  @media(max-width:1024px){ .calc-actions{ gap:4px; } }
+
+  /* ══ DROP ZONE ══ */
+  .drop-zone{
+    border:2.5px dashed var(--rose-border); border-radius:14px;
+    padding:3.5rem 2rem; text-align:center; cursor:pointer;
+    background:var(--rose-pale); transition:border-color .2s,opacity .2s;
+  }
+  .drop-zone:hover,.drop-zone.drag-over{ border-color:var(--rose); opacity:.88; }
+  .drop-zone .dz-icon{ font-size:3rem; color:var(--rose); }
+
+  /* ══ FEATURE CARDS ══ */
+  .feature-card{ border:1px solid var(--gris-clair) !important; transition:transform .2s,box-shadow .2s; }
+  .feature-card:hover{ transform:translateY(-4px); box-shadow:0 8px 24px rgba(232,53,122,.15) !important; }
+
+  /* ══ STAT BOXES ══ */
+  .stat-card{
+    background:var(--rose-pale); border:1px solid var(--rose-border);
+    border-radius:10px; padding:.7rem .9rem; text-align:center;
+    height:100%;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+  }
+  .stat-label{
+    font-size:.6rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:.8px; color:var(--rose); margin-bottom:2px;
+  }
+  .stat-val{ font-family:'Barlow Condensed',sans-serif; font-size:1.5rem; font-weight:700; line-height:1; }
+  .stat-sub{ font-size:.68rem; color:var(--gris); margin-top:2px; }
+  .stat-card.cyan{ background:var(--cyan-pale); border-color:rgba(0,180,216,.3); }
+  .stat-card.cyan .stat-label{ color:var(--cyan); }
+
+  /* ══ SECTION TITLE ══ */
+  .section-title{
+    font-family:'Barlow Condensed',sans-serif; font-size:.95rem; font-weight:700;
+    color:var(--rose); text-transform:uppercase; letter-spacing:1px;
+    border-bottom:2px solid var(--rose-pale); padding-bottom:.35rem; margin-bottom:.75rem;
+  }
+
+  /* ══ GRAN TABS ══ */
+  .gran-tab{
+    font-family:'Barlow Condensed',sans-serif; font-size:.85rem; font-weight:700;
+    padding:.2rem .65rem; border-radius:20px;
+    border:1.5px solid var(--gris-clair); background:transparent; color:var(--gris);
+    cursor:pointer; transition:all .18s;
+  }
+  .gran-tab.active,.gran-tab:hover{ background:var(--rose); color:#fff; border-color:var(--rose); }
+
+  /* ══ BOUTONS ══ */
+  .btn-rose{ background:var(--rose); color:#fff; border:none; font-family:'Barlow Condensed',sans-serif; font-weight:700; letter-spacing:.4px; }
+  .btn-rose:hover,.btn-rose:focus{ background:var(--rose-clair); color:#fff; }
+  .btn-rose-outline{ background:transparent; color:var(--rose); border:1.5px solid var(--rose); font-family:'Barlow Condensed',sans-serif; font-weight:700; }
+  .btn-rose-outline:hover{ background:var(--rose-pale); color:var(--rose); }
+  .btn-cyan{ background:var(--cyan); color:#fff; border:none; font-family:'Barlow Condensed',sans-serif; font-weight:700; }
+  .btn-cyan:hover{ background:#0096b4; color:#fff; }
+
+  /* ══ CARTE LEAFLET ══ */
+  #map-wrap{
+    height:380px; border-radius:10px; overflow:hidden;
+    border:1px solid var(--gris-clair);
+    transition:height .3s;
+  }
+  #map-wrap.map-expanded{ height:560px; }
+  .leaflet-popup-content-wrapper{
+    font-family:'Nunito',sans-serif !important; border-radius:10px !important;
+    box-shadow:0 4px 18px rgba(0,0,0,.18) !important;
+    padding:0 !important;
+  }
+  .leaflet-popup-content{ margin:0 !important; }
+  .lf-popup{ font-family:'Nunito',sans-serif; padding:10px 14px; min-width:155px; }
+  .lf-popup-km{ font-family:'Barlow Condensed',sans-serif; font-size:1.15rem; font-weight:700; color:var(--rose); margin-bottom:3px; line-height:1; }
+  .lf-popup-heure{ font-weight:700; font-size:.9rem; }
+  .lf-popup-meta{ font-size:.78rem; color:var(--gris); margin-top:3px; }
+  .cursor-icon{ width:16px; height:16px; background:#fff; border:3px solid var(--rose); border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,.3); }
+
+  /* ══ STICKY LEFT COLUMN ══ */
+  .sticky-col{ position:sticky; top:calc(var(--nav-h) + 12px); }
+
+  /* ══ COLONNE TABLEAU ══ */
+  .col-tableau{ display:flex; flex-direction:column; }
+  .col-tableau > .card{ flex:1 1 0; min-height:0; }
+  .col-tableau > .card > .card-body{ min-height:0; }
+
+  /* ══ CHART ══ */
+  .chart-wrap{ position:relative; height:180px; margin-top:.4rem; }
+
+  /* ══ TABLEAU ══ */
+  .table-ecta thead th{
+    font-family:'Barlow Condensed',sans-serif; font-size:.68rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:.8px; color:var(--rose);
+    background:var(--rose-pale); border-bottom:2px solid var(--rose-border); white-space:nowrap;
+    position:sticky; top:0; z-index:1;
+  }
+  .table-ecta tbody tr{ cursor:pointer; transition:background .1s; }
+  .table-ecta tbody tr:hover td{ background:var(--rose-pale) !important; }
+  .table-ecta tbody tr.hl td{ background:var(--rose-pale); font-weight:700; }
+  .table-ecta tbody tr.map-active td{
+    background:rgba(232,53,122,.18) !important;
+    outline:2px solid var(--rose);
+    outline-offset:-1px;
+  }
+  .km-cell{ font-family:'Barlow Condensed',sans-serif; font-size:.95rem; font-weight:700; }
+  .heure-cell{ font-family:'Barlow Condensed',sans-serif; font-size:1.05rem; font-weight:700; color:var(--rose); }
+  .elapsed{ color:var(--gris); font-size:.78rem; }
+  .alt-cell{ color:var(--gris); font-size:.8rem; }
+  .table-scroll-wrap{ flex:1 1 0; min-height:0; overflow-y:auto; }
+
+  /* ══ BADGES ══ */
+  .badge-rose{ background:var(--rose); color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.7px; }
+  .badge-cyan{ background:var(--cyan); color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:.6rem; font-weight:700; }
+  .badge-violet{ background:var(--violet); color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:.6rem; font-weight:700; }
+
+  /* ══ NOM CIRCUIT ══ */
+  .circuit-name{ font-family:'Barlow Condensed',sans-serif; font-size:1.4rem; font-weight:700; color:var(--rose); margin:0; }
+
+  /* ══ MODAL HEADERS ══ */
+  .modal-header-rose{ background:var(--rose); color:#fff; }
+  .modal-header-cyan{ background:var(--cyan); color:#fff; }
+
+  /* ══ LÉGENDE PENTES ══ */
+  .slope-legend{ display:flex; gap:4px; flex-wrap:wrap; font-size:.65rem; font-family:'Barlow Condensed',sans-serif; font-weight:700; letter-spacing:.4px; }
+  .slope-legend span{ display:inline-flex; align-items:center; gap:3px; background:rgba(0,0,0,.05); border-radius:4px; padding:2px 6px; }
+  .slope-dot{ width:10px; height:10px; border-radius:50%; display:inline-block; flex-shrink:0; }
+
+  /* ══ TOAST ══ */
+  .toast-ecta{
+    position:fixed; bottom:1.5rem; right:1.5rem; z-index:9999;
+    padding:.6rem 1.1rem; border-radius:8px;
+    font-family:'Nunito',sans-serif; font-size:.88rem; font-weight:600;
+    box-shadow:0 4px 18px rgba(0,0,0,.22); color:#fff;
+    animation:fadeInUp .3s ease;
+  }
+
+  /* ══ DARK MODE ══ */
+  [data-bs-theme="dark"] nav{ background:rgba(232,53,122,.97) !important; }
+  [data-bs-theme="dark"] .card{ background:#1a1a2e; border-color:#2d2d45; }
+  [data-bs-theme="dark"] .feature-card{ background:#1e1e35 !important; border-color:#2d2d45 !important; }
+  [data-bs-theme="dark"] .section-title{ border-color:#2a0e1a; }
+  [data-bs-theme="dark"] .table-ecta thead th{ background:#2a0e1a; }
+  [data-bs-theme="dark"] .gran-tab{ border-color:#3d3d5a; color:#9ca3af; }
+  [data-bs-theme="dark"] .drop-zone{ background:#2a0e1a; border-color:#4a1530; }
+  [data-bs-theme="dark"] .modal-content{ background:#1a1a2e; color:var(--texte); }
+  [data-bs-theme="dark"] .modal-body,[data-bs-theme="dark"] .modal-footer{ background:#1a1a2e; }
+  [data-bs-theme="dark"] .form-control,[data-bs-theme="dark"] .form-select{ background:#22223a; border-color:#3d3d5a; color:#f0edff; }
+  [data-bs-theme="dark"] .form-control::placeholder{ color:#6b7280; }
+  [data-bs-theme="dark"] .list-group-item{ background:#1e1e35; border-color:#2d2d45; color:var(--texte); }
+  [data-bs-theme="dark"] .input-group-text{ background:#22223a; border-color:#3d3d5a; color:#9ca3af; }
+  [data-bs-theme="dark"] #map-wrap{ border-color:#2d2d45; }
+  [data-bs-theme="dark"] .lf-popup{ background:#1a1a2e; color:var(--texte); }
+  [data-bs-theme="dark"] .slope-legend span{ background:rgba(255,255,255,.06); }
+  [data-bs-theme="dark"] .table-ecta tbody tr.map-active td{ background:rgba(232,53,122,.22) !important; }
+
+  /* ══ CONTRÔLE VITESSE COMPACT ══ */
+  .btn-speed{
+    background:transparent; color:var(--rose);
+    border:1.5px solid var(--rose-border); border-radius:6px;
+    font-size:1rem; font-weight:700; line-height:1;
+    width:26px; height:26px; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center;
+    transition:all .15s; padding:0; font-family:'Barlow Condensed',sans-serif;
+    flex-shrink:0;
+  }
+  .btn-speed:hover{ background:var(--rose); color:#fff; border-color:var(--rose); }
+  .speed-input{
+    font-family:'Barlow Condensed',sans-serif; font-size:1.4rem; font-weight:700;
+    color:var(--rose); background:transparent; border:none;
+    border-bottom:2px solid var(--rose-border);
+    outline:none; width:50px; text-align:center; padding:0; margin:0 2px;
+  }
+  .speed-input:focus{ border-bottom-color:var(--rose); }
+  .speed-unit{ font-family:'Barlow Condensed',sans-serif; font-weight:700; color:var(--gris); font-size:.8rem; }
+  .preset-btn{
+    font-family:'Barlow Condensed',sans-serif; font-size:.62rem; font-weight:700;
+    background:rgba(232,53,122,.1); color:var(--rose);
+    border:1px solid var(--rose-border); border-radius:4px;
+    padding:1px 5px; cursor:pointer; transition:all .15s; white-space:nowrap;
+  }
+  .preset-btn:hover{ background:var(--rose); color:#fff; }
+  [data-bs-theme="dark"] .speed-input{ color:var(--rose); }
+
+  /* ══ STAT CARD — INPUT TIME ══ */
+  .stat-card input[type=time]{
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:1.4rem; font-weight:700; line-height:1;
+    color:var(--rose); background:transparent;
+    border:none; border-bottom:2px solid var(--rose-border);
+    outline:none; width:100%; text-align:center;
+    padding:2px 0; cursor:pointer; margin-top:1px;
+  }
+  .stat-card input[type=time]:hover{ border-bottom-color:var(--rose); }
+  .stat-card input[type=time]:focus{ border-bottom-color:var(--rose); background:rgba(232,53,122,.07); border-radius:4px; }
+  [data-bs-theme="dark"] .stat-card input[type=time]{ color:var(--rose); }
+
+  /* ══ IMPRESSION ══ */
+  @media print{
+    .no-print{ display:none !important; }
+    nav,footer{ display:none !important; }
+    body{ padding-top:0 !important; background:#fff !important; color:#000 !important; }
+    .card{ box-shadow:none !important; border:1px solid #ddd !important; break-inside:avoid; }
+    .stat-card{ background:#fafafa !important; }
+    .chart-wrap{ height:140px; }
+    #map-wrap{ display:none; }
+    .sticky-col{ position:static !important; }
+    .table-scroll-wrap{ max-height:none !important; overflow:visible !important; }
+  }
+
+  @keyframes fadeInUp{ from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  </style>
+</head>
+<body>
+
+<!-- ════ NAV DU CLUB ════ -->
+<nav>
+  <div class="nav-brand">
+    <a href="../index.html" style="display:flex;align-items:center;gap:.75rem;text-decoration:none">
+      <img class="nav-logo-img" src="../images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
+      <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban · Côtes-d'Armor</small></div>
+    </a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="../index.html">Accueil</a></li>
+    <li><a href="../le-club.html">Le Club</a></li>
+    <li><a href="../actualites.html">Activités</a></li>
+    <li><a href="../agenda.html">Agenda</a></li>
+    <li><a href="../galerie.html">Galerie</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+    <li><a href="../documents.html">WT 2026</a></li>
+    <li><a href="../news.html">Actu vélo</a></li>
+    <li><a href="../calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
+    <li><a href="../Flora 2026.html">Flora 2026</a></li>
+    <li><a href="../outils.html" class="active">Outils</a></li>
+  </ul>
+
+  <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- ════ MENU MOBILE ════ -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="../index.html" onclick="closeMenu()">Accueil</a>
+  <a href="../le-club.html" onclick="closeMenu()">Le Club</a>
+  <a href="../actualites.html" onclick="closeMenu()">Activités</a>
+  <a href="../agenda.html" onclick="closeMenu()">Agenda</a>
+  <a href="../galerie.html" onclick="closeMenu()">Galerie</a>
+  <a href="../contact.html" onclick="closeMenu()">Contact</a>
+  <a href="../documents.html" onclick="closeMenu()">WT 2026</a>
+  <a href="../news.html" onclick="closeMenu()">Actu vélo</a>
+  <a href="../calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
+  <a href="../Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
+  <a href="../outils.html" onclick="closeMenu()">Outils</a>
+</div>
+
+<!-- ════ CONTENU CALCULATEUR ════ -->
+<div class="container-xl py-3 px-3">
+
+  <!-- ── DROP ZONE ── -->
+  <div id="drop-section">
+    <div class="drop-zone mx-auto mb-4" style="max-width:560px" id="drop-zone"
+         onclick="document.getElementById('gpx-input').click()"
+         ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+      <div class="dz-icon mb-2"><i class="bi bi-file-earmark-arrow-up-fill"></i></div>
+      <h5 class="fw-bold mb-1">Glissez votre fichier GPX ici</h5>
+      <p class="text-muted small mb-3">ou cliquez pour parcourir votre ordinateur</p>
+      <button class="btn btn-rose px-4">
+        <i class="bi bi-folder2-open me-1"></i> Choisir un fichier GPX
+      </button>
+      <input type="file" id="gpx-input" accept=".gpx" class="d-none" onchange="loadFile(this.files[0])">
+    </div>
+    <div class="row justify-content-center g-3 mb-2">
+      <div class="col-md-4 col-sm-6">
+        <div class="card feature-card border text-center p-3 h-100">
+          <i class="bi bi-map-fill fs-2 mb-2" style="color:var(--rose)"></i>
+          <div class="fw-bold" style="font-family:'Barlow Condensed',sans-serif;font-size:1.05rem">Carte interactive</div>
+          <div class="small text-muted mt-1">Trace sur carte, synchro tableau, coloration par pente</div>
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <div class="card feature-card border text-center p-3 h-100">
+          <i class="bi bi-clock-fill fs-2 mb-2" style="color:var(--rose)"></i>
+          <div class="fw-bold" style="font-family:'Barlow Condensed',sans-serif;font-size:1.05rem">Horaires de passage</div>
+          <div class="small text-muted mt-1">Correction dénivelé, pauses automatiques</div>
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <div class="card feature-card border text-center p-3 h-100">
+          <i class="bi bi-box-arrow-up fs-2 mb-2" style="color:var(--cyan)"></i>
+          <div class="fw-bold" style="font-family:'Barlow Condensed',sans-serif;font-size:1.05rem">Export &amp; Waypoints</div>
+          <div class="small text-muted mt-1">CSV, JSON, ravitaillements personnalisés</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RÉSULTAT ── -->
+  <div id="result-section" class="d-none">
+
+    <!-- Entête circuit -->
+    <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-2">
+      <div>
+        <h4 id="circuit-name" class="circuit-name">—</h4>
+        <div id="circuit-sub" class="small text-muted"></div>
+      </div>
+      <div class="d-grid gap-2 no-print" style="grid-template-columns:repeat(4,auto)">
+        <button class="btn btn-sm btn-rose" data-bs-toggle="modal" data-bs-target="#settingsModal">
+          <i class="bi bi-gear-fill me-1"></i> Paramètres
+        </button>
+        <button class="btn btn-sm btn-cyan" data-bs-toggle="modal" data-bs-target="#waypointModal">
+          <i class="bi bi-pin-map-fill me-1"></i> Waypoints
+        </button>
+        <button class="btn btn-sm btn-rose" data-bs-toggle="modal" data-bs-target="#exportModal">
+          <i class="bi bi-box-arrow-up me-1"></i> Exporter
+        </button>
+        <button class="btn btn-sm btn-rose-outline" onclick="resetFile()">
+          <i class="bi bi-arrow-counterclockwise me-1"></i> Nouveau GPX
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats + contrôles principaux -->
+    <div class="row g-2 mb-2 align-items-stretch">
+      <div class="col-6 col-md-4 col-lg d-flex">
+        <div class="stat-card w-100"><div class="stat-label">Distance</div><div class="stat-val" id="s-dist">—</div></div>
+      </div>
+      <div class="col-6 col-md-4 col-lg d-flex">
+        <div class="stat-card w-100"><div class="stat-label">Dénivelé ↑ / ↓</div><div class="stat-val" id="s-dplus">—</div><div class="stat-sub" id="s-dminus">—</div></div>
+      </div>
+      <div class="col-6 col-md-4 col-lg d-flex">
+        <div class="stat-card w-100">
+          <div class="stat-label">Départ ✎</div>
+          <input type="time" id="dep-time-main" value="09:00" title="Modifier l'heure de départ" onchange="onDepTimeMainChange(this.value)">
+        </div>
+      </div>
+      <div class="col-6 col-md-6 col-lg d-flex no-print">
+        <div class="stat-card w-100">
+          <div class="stat-label"><i class="bi bi-speedometer2 me-1"></i> Vitesse moyenne</div>
+          <div class="d-flex align-items-center justify-content-center gap-1 mt-1">
+            <button class="btn-speed" onclick="changeSpeed(-1)" title="-1 km/h">−</button>
+            <input type="number" id="vitesse-inline" class="speed-input"
+                   value="25" min="5" max="55" step="0.5"
+                   oninput="syncSpeedFromInline(this.value)">
+            <span class="speed-unit">km/h</span>
+            <button class="btn-speed" onclick="changeSpeed(+1)" title="+1 km/h">+</button>
+          </div>
+          <div class="d-flex gap-1 justify-content-center mt-1">
+            <button class="preset-btn" onclick="setSpeedPreset(15)">Rando</button>
+            <button class="preset-btn" onclick="setSpeedPreset(25)">Cyclo</button>
+            <button class="preset-btn" onclick="setSpeedPreset(35)">Sportif</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-6 col-lg d-flex">
+        <div class="stat-card w-100"><div class="stat-label">Arrivée estimée</div><div class="stat-val" id="s-arr">—</div></div>
+      </div>
+    </div>
+    <input type="range" id="vitesse-inline-range" value="25" min="5" max="55" step="0.5" style="display:none" oninput="syncSpeedFromRange(this.value)">
+
+    <!-- Stats avancées -->
+    <div class="row g-2 mb-3" id="adv-stats-row">
+      <div class="col-6 col-sm-3">
+        <div class="stat-card cyan"><div class="stat-label">Alt. max</div><div class="stat-val" id="s-altmax">—</div></div>
+      </div>
+      <div class="col-6 col-sm-3">
+        <div class="stat-card cyan"><div class="stat-label">Alt. min</div><div class="stat-val" id="s-altmin">—</div></div>
+      </div>
+      <div class="col-6 col-sm-3">
+        <div class="stat-card cyan"><div class="stat-label">Durée totale</div><div class="stat-val" id="s-duration">—</div></div>
+      </div>
+      <div class="col-6 col-sm-3">
+        <div class="stat-card cyan"><div class="stat-label">Pauses</div><div class="stat-val" id="s-pause">—</div></div>
+      </div>
+    </div>
+
+    <!-- Layout 2 colonnes -->
+    <div class="row g-3" style="min-height:calc(100vh - 320px)">
+
+      <!-- Colonne gauche — Carte + Profil -->
+      <div class="col-lg-5">
+        <div class="sticky-col">
+          <div class="card shadow-sm mb-3 no-print">
+            <div class="card-body p-2 pb-2">
+              <div class="d-flex align-items-center justify-content-between mb-1 px-1">
+                <div class="section-title mb-0"><i class="bi bi-map-fill me-1"></i> Carte</div>
+                <div class="d-flex gap-1 align-items-center">
+                  <button class="btn btn-sm py-0 btn-rose-outline" id="slope-toggle"
+                          onclick="toggleSlopeLayer()" title="Afficher/masquer la coloration pentes">
+                    <i class="bi bi-palette-fill me-1"></i> Pentes
+                  </button>
+                  <button class="btn btn-sm py-0 btn-rose-outline" onclick="toggleMapSize()" id="map-expand-btn" title="Agrandir la carte">
+                    <i class="bi bi-arrows-fullscreen"></i>
+                  </button>
+                  <button class="btn btn-sm py-0 btn-rose-outline" onclick="fitBounds()" title="Recentrer">
+                    <i class="bi bi-crosshair"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="slope-legend px-1 mb-1" id="slope-legend" style="display:none">
+                <span><span class="slope-dot" style="background:#2563eb"></span> &lt; −7%</span>
+                <span><span class="slope-dot" style="background:#60a5fa"></span> −7 à −3%</span>
+                <span><span class="slope-dot" style="background:#22c55e"></span> Plat</span>
+                <span><span class="slope-dot" style="background:#f59e0b"></span> 3 à 7%</span>
+                <span><span class="slope-dot" style="background:#ef4444"></span> &gt; 7%</span>
+              </div>
+              <div id="map-wrap"></div>
+            </div>
+          </div>
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="section-title"><i class="bi bi-bar-chart-area-fill me-1"></i> Profil altimétrique
+                <span class="float-end small fw-normal text-muted" style="font-family:'Nunito',sans-serif;text-transform:none;letter-spacing:0;font-size:.7rem">
+                  ← Survolez pour voir la position sur la carte
+                </span>
+              </div>
+              <div class="chart-wrap"><canvas id="alti-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Colonne droite — Tableau -->
+      <div class="col-lg-7 col-tableau">
+        <div class="card shadow-sm h-100">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-2">
+              <div class="section-title mb-0"><i class="bi bi-table me-1"></i> Horaires de passage</div>
+              <div class="d-flex gap-1 flex-wrap no-print" id="gran-tabs">
+                <button class="gran-tab" data-v="1"  onclick="setGran(1)">1 km</button>
+                <button class="gran-tab" data-v="2"  onclick="setGran(2)">2 km</button>
+                <button class="gran-tab active" data-v="5"  onclick="setGran(5)">5 km</button>
+                <button class="gran-tab" data-v="10" onclick="setGran(10)">10 km</button>
+                <button class="gran-tab" data-v="20" onclick="setGran(20)">20 km</button>
+              </div>
+            </div>
+            <input class="form-control form-control-sm mb-2 no-print" type="text" id="search"
+                   placeholder="Filtrer par km (ex : 30)…" oninput="filterTable()">
+            <div class="table-scroll-wrap flex-grow-1">
+              <table class="table table-hover table-sm table-ecta mb-0">
+                <thead>
+                  <tr>
+                    <th>Km</th>
+                    <th>Heure</th>
+                    <th>Écoulé</th>
+                    <th>Alt.</th>
+                    <th>Pente</th>
+                    <th class="no-print" style="width:36px"></th>
+                  </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+              </table>
+            </div>
+            <div id="empty-state" class="text-center py-4 d-none flex-grow-1">
+              <i class="bi bi-search fs-3 text-muted d-block mb-2"></i>
+              <p class="text-muted small mb-0">Aucun résultat</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════ MODAL — PARAMÈTRES ════════ -->
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header modal-header-rose">
+        <h5 class="modal-title fw-bold" style="font-family:'Barlow Condensed',sans-serif">
+          <i class="bi bi-gear-fill me-2"></i> Paramètres du calcul
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-bold small text-uppercase" style="color:var(--rose);letter-spacing:.6px">
+            <i class="bi bi-clock-fill me-1"></i> Heure de départ
+          </label>
+          <input type="time" id="dep-time" class="form-control" value="09:00">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold small text-uppercase" style="color:var(--rose);letter-spacing:.6px">
+            <i class="bi bi-speedometer2 me-1"></i> Vitesse —
+            <span id="vitesse-display" class="fw-bold" style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem">25</span> km/h
+          </label>
+          <input type="range" id="vitesse" class="form-range" value="25" min="5" max="55" step="0.5"
+                 oninput="document.getElementById('vitesse-display').textContent=this.value">
+          <div class="d-flex justify-content-between small text-muted mt-1">
+            <span>Rando 5</span><span>Cyclo 25</span><span>Compét. 55</span>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold small text-uppercase" style="color:var(--rose);letter-spacing:.6px">
+            <i class="bi bi-cup-hot-fill me-1"></i> Pauses automatiques
+          </label>
+          <div class="row g-2">
+            <div class="col-6">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text"><i class="bi bi-hourglass-split"></i></span>
+                <input type="number" id="pause-duree" class="form-control" value="0" min="0" max="120">
+                <span class="input-group-text">min</span>
+              </div>
+              <div class="small text-muted mt-1">durée de la pause</div>
+            </div>
+            <div class="col-6">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text"><i class="bi bi-signpost-split-fill"></i></span>
+                <input type="number" id="pause-freq" class="form-control" value="50" min="5" max="300">
+                <span class="input-group-text">km</span>
+              </div>
+              <div class="small text-muted mt-1">toutes les N km</div>
+            </div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="corr-denivele" role="switch" checked>
+            <label class="form-check-label" for="corr-denivele">
+              <span class="fw-bold small">Correction dénivelé</span>
+              <span class="badge badge-rose ms-1">Nouveau</span>
+              <div class="small text-muted">Ajuste la vitesse selon la pente (−1 km/h par +1 %)</div>
+            </label>
+          </div>
+        </div>
+        <div class="mb-1">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="show-adv-stats" role="switch" checked onchange="toggleAdvStats()">
+            <label class="form-check-label small fw-bold" for="show-adv-stats">Afficher les statistiques avancées</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-rose btn-sm" onclick="applySettings()" data-bs-dismiss="modal">
+          <i class="bi bi-check-lg me-1"></i> Appliquer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════ MODAL — WAYPOINTS ════════ -->
+<div class="modal fade" id="waypointModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header modal-header-cyan">
+        <h5 class="modal-title fw-bold" style="font-family:'Barlow Condensed',sans-serif">
+          <i class="bi bi-pin-map-fill me-2"></i> Waypoints personnalisés
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="small text-muted mb-3">Ajoutez des points d'intérêt (ravitaillements, checkpoints…)</p>
+        <div class="row g-2 mb-3 align-items-end">
+          <div class="col-sm-3">
+            <label class="form-label small fw-bold">Km</label>
+            <input type="number" id="wp-km" class="form-control form-control-sm" placeholder="Ex : 45.5" min="0" step="0.1">
+          </div>
+          <div class="col-sm-5">
+            <label class="form-label small fw-bold">Nom</label>
+            <input type="text" id="wp-name" class="form-control form-control-sm" placeholder="Ex : Ravitaillement…" maxlength="30">
+          </div>
+          <div class="col-sm-2">
+            <label class="form-label small fw-bold">Icône</label>
+            <select id="wp-icon" class="form-select form-select-sm">
+              <option value="🥤">🥤 Ravito</option>
+              <option value="📍">📍 Point</option>
+              <option value="🏁">🏁 Brevet</option>
+              <option value="⛽">⛽ Station</option>
+              <option value="🏥">🏥 Secours</option>
+              <option value="🚻">🚻 Sanitaires</option>
+              <option value="⭐">⭐ Perso</option>
+            </select>
+          </div>
+          <div class="col-sm-2">
+            <button class="btn btn-cyan btn-sm w-100" onclick="addWaypoint()">
+              <i class="bi bi-plus-circle-fill me-1"></i> Ajouter
+            </button>
+          </div>
+        </div>
+        <div id="gpx-wp-section" class="d-none mb-3">
+          <div class="small fw-bold text-muted text-uppercase mb-1" style="letter-spacing:.6px">
+            <i class="bi bi-flag-fill me-1" style="color:var(--cyan)"></i> Waypoints dans le fichier GPX
+          </div>
+          <div id="gpx-wp-list" class="d-flex flex-wrap gap-1"></div>
+        </div>
+        <div class="small fw-bold text-muted text-uppercase mb-1" style="letter-spacing:.6px">
+          <i class="bi bi-pin-fill me-1" style="color:var(--violet)"></i> Mes waypoints
+        </div>
+        <div id="wp-list" class="list-group list-group-flush rounded">
+          <div class="text-center text-muted small py-3" id="wp-empty">
+            <i class="bi bi-inbox fs-3 d-block mb-1"></i> Aucun waypoint
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+        <button type="button" class="btn btn-cyan btn-sm" onclick="applyWaypoints()" data-bs-dismiss="modal">
+          <i class="bi bi-check-lg me-1"></i> Appliquer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════ MODAL — EXPORT ════════ -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header modal-header-rose">
+        <h5 class="modal-title fw-bold" style="font-family:'Barlow Condensed',sans-serif">
+          <i class="bi bi-box-arrow-up me-2"></i> Exporter
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-grid gap-2">
+          <button class="btn btn-rose d-flex align-items-center gap-3 text-start p-3" onclick="exportCSV();closeModal('exportModal')">
+            <i class="bi bi-filetype-csv fs-3"></i>
+            <div><div class="fw-bold">CSV</div><div class="small opacity-75">Excel, LibreOffice Calc…</div></div>
+          </button>
+          <button class="btn btn-rose d-flex align-items-center gap-3 text-start p-3" onclick="exportJSON();closeModal('exportModal')">
+            <i class="bi bi-filetype-json fs-3"></i>
+            <div><div class="fw-bold">JSON</div><div class="small opacity-75">Données brutes structurées</div></div>
+          </button>
+          <button class="btn btn-rose d-flex align-items-center gap-3 text-start p-3" onclick="window.print();closeModal('exportModal')">
+            <i class="bi bi-printer-fill fs-3"></i>
+            <div><div class="fw-bold">Imprimer / PDF</div><div class="small opacity-75">Via la boîte de dialogue système</div></div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════ MODAL — DÉTAIL POINT ════════ -->
+<div class="modal fade" id="pointModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header modal-header-rose">
+        <h5 class="modal-title fw-bold" style="font-family:'Barlow Condensed',sans-serif">
+          <i class="bi bi-geo-alt-fill me-2"></i> Détail du point
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="point-modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+        <a id="point-modal-maps" href="#" target="_blank" class="btn btn-rose btn-sm">
+          <i class="bi bi-map-fill me-1"></i> Maps
+        </a>
+        <a id="point-modal-sv" href="#" target="_blank" class="btn btn-cyan btn-sm">
+          <i class="bi bi-camera-fill me-1"></i> Street View
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════ FOOTER DU CLUB ════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div style="display:flex;gap:1rem;align-items:center;margin-bottom:.5rem;">
+        <img src="../images/logo_ECTA.png?v=20260305" alt="Logo ECTA" class="footer-logo">
+        <img src="../images/logo_ffvelo.png" alt="FFVélo" style="height:auto;max-height:50px;max-width:50px;">
+      </div>
+      <h4>ECTA SAINT-ALBAN</h4>
+      <p>Entente Cyclotouriste Albanaise - club de cyclotourisme fondé en 1985 à Saint-Alban, Côtes-d'Armor.</p>
+    </div>
+    <div class="footer-col" style="grid-column: span 2;">
+      <h5>Navigation</h5>
+      <ul style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+        <li><a href="../index.html">Accueil</a></li>
+        <li><a href="../le-club.html">Le Club</a></li>
+        <li><a href="../actualites.html">Activités</a></li>
+        <li><a href="../agenda.html">Agenda</a></li>
+        <li><a href="../galerie.html">Galerie</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+        <li><a href="../documents.html">WT 2026</a></li>
+        <li><a href="../news.html">Actu vélo</a></li>
+        <li><a href="../outils.html">Outils</a></li>
+        <li><a href="https://ecta-saintalban.clubeo.com" target="_blank">Site Clubeo</a></li>
+        <li><a href="https://www.ffvelo.fr" target="_blank">FFVélo (FFCT)</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span id="footer-year">© 2026 Entente Cyclotouriste Albanaise · Saint-Alban 22</span>
+    <a href="../mentions-legales.html" style="color:rgba(255,255,255,.7);text-decoration:underline;">Mentions légales</a>
+    <span class="ffct-badge">🚴 Affilié FFVélo / FFCT</span>
+  </div>
+</footer>
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Scripts du club (toggleMenu, closeMenu, initFooterYear…) -->
+<script src="../scripts.js" defer></script>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// ÉTAT GLOBAL
+// ═══════════════════════════════════════════════════════════
+let gpxPoints        = [];
+let gpxWaypoints     = [];
+let customWps        = [];
+let totalKm          = 0;
+let dPlus            = 0;
+let dMinus           = 0;
+let gran             = 5;
+let altiChart        = null;
+let cachedRows       = [];
+let cachedMilestones = [];
+
+// Leaflet
+let leafletMap        = null;
+let traceLayer        = null;
+let slopeLayer        = null;
+let markersLayer      = null;
+let cursorMarker      = null;
+let activeRowIdx      = -1;
+let slopeLayerVisible = false;
+
+// ═══════════════════════════════════════════════════════════
+// THÈME
+// ═══════════════════════════════════════════════════════════
+function toggleTheme(){
+  const html   = document.documentElement;
+  const isDark = html.getAttribute('data-bs-theme') === 'dark';
+  html.setAttribute('data-bs-theme', isDark ? 'light' : 'dark');
+  document.getElementById('theme-btn').innerHTML = isDark
+    ? '<i class="bi bi-moon-fill"></i>'
+    : '<i class="bi bi-sun-fill"></i>';
+  if(altiChart) buildChart();
+  if(leafletMap) updateTileStyle();
+}
+
+function toggleAdvStats(){
+  document.getElementById('adv-stats-row').style.display =
+    document.getElementById('show-adv-stats').checked ? '' : 'none';
+}
+
+// ═══════════════════════════════════════════════════════════
+// DRAG & DROP
+// ═══════════════════════════════════════════════════════════
+function dragOver(e){ e.preventDefault(); document.getElementById('drop-zone').classList.add('drag-over'); }
+function dragLeave(){ document.getElementById('drop-zone').classList.remove('drag-over'); }
+function dropFile(e){
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if(f && f.name.toLowerCase().endsWith('.gpx')) loadFile(f);
+  else showToast('Veuillez déposer un fichier .gpx', 'danger');
+}
+
+// ═══════════════════════════════════════════════════════════
+// CHARGEMENT GPX
+// ═══════════════════════════════════════════════════════════
+function loadFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => parseGPX(e.target.result, file.name);
+  reader.readAsText(file);
+}
+
+function parseGPX(text, filename){
+  const parser = new DOMParser();
+  const doc    = parser.parseFromString(text, 'application/xml');
+  const ns     = 'http://www.topografix.com/GPX/1/1';
+
+  let trkpts = Array.from(doc.getElementsByTagNameNS(ns, 'trkpt'));
+  if(!trkpts.length) trkpts = Array.from(doc.getElementsByTagName('trkpt'));
+  if(!trkpts.length){ showToast('Aucun point de trace trouvé.', 'danger'); return; }
+
+  let wpts = Array.from(doc.getElementsByTagNameNS(ns, 'wpt'));
+  if(!wpts.length) wpts = Array.from(doc.getElementsByTagName('wpt'));
+  gpxWaypoints = wpts.map(w => {
+    const lat = parseFloat(w.getAttribute('lat'));
+    const lon = parseFloat(w.getAttribute('lon'));
+    const nm  = w.getElementsByTagName('name')[0];
+    return { lat, lon, name: nm ? nm.textContent.trim() : 'WP' };
+  });
+
+  const raw = trkpts.map(pt => {
+    const lat   = parseFloat(pt.getAttribute('lat'));
+    const lon   = parseFloat(pt.getAttribute('lon'));
+    const eleEl = pt.getElementsByTagNameNS(ns,'ele')[0] || pt.getElementsByTagName('ele')[0];
+    return { lat, lon, ele: eleEl ? parseFloat(eleEl.textContent) : 0 };
+  });
+
+  gpxPoints = [{ ...raw[0], dist: 0 }];
+  dPlus = 0; dMinus = 0;
+  let cumDist = 0;
+  for(let i = 1; i < raw.length; i++){
+    cumDist += haversine(raw[i-1], raw[i]);
+    const dEle = raw[i].ele - raw[i-1].ele;
+    if(dEle > 0) dPlus  += dEle;
+    else         dMinus += Math.abs(dEle);
+    gpxPoints.push({ ...raw[i], dist: cumDist / 1000 });
+  }
+  totalKm = gpxPoints[gpxPoints.length - 1].dist;
+
+  gpxWaypoints.forEach(w => {
+    let minD = Infinity, minI = 0;
+    gpxPoints.forEach((p, i) => { const d = haversine(p, w); if(d < minD){ minD = d; minI = i; } });
+    w.km = gpxPoints[minI].dist;
+  });
+
+  const name = filename.replace(/\.gpx$/i,'').replace(/-\d{8,}.*$/,'').replace(/_/g,' ');
+  document.getElementById('circuit-name').textContent = name + ' · ' + totalKm.toFixed(1) + ' km';
+  document.getElementById('circuit-sub').textContent  = '↑ ' + Math.round(dPlus) + ' m  ↓ ' + Math.round(dMinus) + ' m';
+  document.title = 'Calculateur — ' + name + ' · ECTA';
+
+  renderGpxWpBadges();
+
+  document.getElementById('drop-section').classList.add('d-none');
+  document.getElementById('result-section').classList.remove('d-none');
+
+  setTimeout(() => {
+    initMapIfNeeded();
+    buildStaticTrace();
+    buildChart();
+    update();
+    showToast(totalKm.toFixed(1) + ' km · ' + Math.round(dPlus) + ' m D+', 'success');
+  }, 80);
+}
+
+// ═══════════════════════════════════════════════════════════
+// HAVERSINE
+// ═══════════════════════════════════════════════════════════
+function haversine(a, b){
+  const R = 6371000, toR = x => x * Math.PI / 180;
+  const dl = toR(b.lat - a.lat), dlo = toR(b.lon - a.lon);
+  const x  = Math.sin(dl/2)**2 + Math.cos(toR(a.lat)) * Math.cos(toR(b.lat)) * Math.sin(dlo/2)**2;
+  return R * 2 * Math.asin(Math.sqrt(x));
+}
+
+// ═══════════════════════════════════════════════════════════
+// INTERPOLATION
+// ═══════════════════════════════════════════════════════════
+function pointAtKm(km){
+  if(km <= 0) return gpxPoints[0];
+  if(km >= totalKm) return gpxPoints[gpxPoints.length - 1];
+  let lo = 0, hi = gpxPoints.length - 1;
+  while(lo < hi - 1){
+    const mid = (lo + hi) >> 1;
+    if(gpxPoints[mid].dist < km) lo = mid; else hi = mid;
+  }
+  const p0 = gpxPoints[lo], p1 = gpxPoints[hi];
+  const t  = p1.dist > p0.dist ? (km - p0.dist) / (p1.dist - p0.dist) : 0;
+  return { lat: p0.lat + t*(p1.lat-p0.lat), lon: p0.lon + t*(p1.lon-p0.lon),
+           ele: p0.ele + t*(p1.ele-p0.ele), dist: km };
+}
+
+function getMilestones(step){
+  const pts = [];
+  for(let km = 0; km <= totalKm; km += step) pts.push(pointAtKm(km));
+  const last = pts[pts.length - 1];
+  if(Math.abs(last.dist - totalKm) > 0.01) pts.push(pointAtKm(totalKm));
+  return pts;
+}
+
+// ═══════════════════════════════════════════════════════════
+// GRANULARITÉ
+// ═══════════════════════════════════════════════════════════
+function setGran(v){
+  gran = v;
+  document.querySelectorAll('.gran-tab').forEach(t => t.classList.toggle('active', +t.dataset.v === v));
+  update();
+}
+
+// ═══════════════════════════════════════════════════════════
+// TEMPS
+// ═══════════════════════════════════════════════════════════
+function toMin(str){ const [h,m] = str.split(':').map(Number); return h*60+m; }
+function fmt(min){ const h = Math.floor(min/60), m = Math.round(min%60); return String(h).padStart(2,'0')+'h'+String(m).padStart(2,'0'); }
+function fmtElapsed(min){ const h = Math.floor(min/60), m = Math.round(min%60); return h > 0 ? h+'h'+String(m).padStart(2,'0') : m+' min'; }
+
+// ═══════════════════════════════════════════════════════════
+// PENTE
+// ═══════════════════════════════════════════════════════════
+function avgSlope(km0, km1){
+  if(km1 <= km0) return 0;
+  return ((pointAtKm(km1).ele - pointAtKm(km0).ele) / ((km1 - km0) * 1000)) * 100;
+}
+function slopeClass(s){
+  const a = Math.abs(s);
+  if(a < 1)  return 'text-secondary';
+  if(a < 4)  return 'text-warning';
+  if(a < 7)  return s > 0 ? 'text-danger' : 'text-info';
+  return s > 0 ? 'fw-bold text-danger' : 'fw-bold text-primary';
+}
+function slopeColor(s){
+  if(s < -7)  return '#2563eb';
+  if(s < -3)  return '#60a5fa';
+  if(s < 3)   return '#22c55e';
+  if(s < 7)   return '#f59e0b';
+  return '#ef4444';
+}
+
+// ═══════════════════════════════════════════════════════════
+// CORRECTION DÉNIVELÉ
+// ═══════════════════════════════════════════════════════════
+function effectiveSpeed(base, slope){
+  if(!document.getElementById('corr-denivele').checked) return base;
+  const corr = slope > 0 ? -slope * 1.0 : slope * -0.4;
+  return Math.max(3, Math.min(base + corr, base * 1.2));
+}
+
+function pauseAtKm(km){
+  const d = parseFloat(document.getElementById('pause-duree').value) || 0;
+  const f = parseFloat(document.getElementById('pause-freq').value)  || 50;
+  if(d <= 0 || f <= 0) return 0;
+  return Math.floor(km / f) * d;
+}
+
+// ═══════════════════════════════════════════════════════════
+// CONTRÔLES VITESSE INLINE
+// ═══════════════════════════════════════════════════════════
+function syncSpeedFromInline(val){
+  const v = Math.max(5, Math.min(55, parseFloat(val) || 25));
+  document.getElementById('vitesse').value               = v;
+  document.getElementById('vitesse-display').textContent = v;
+  document.getElementById('vitesse-inline-range').value  = v;
+  debouncedUpdate();
+}
+function syncSpeedFromRange(val){
+  const v = parseFloat(val);
+  document.getElementById('vitesse').value               = v;
+  document.getElementById('vitesse-display').textContent = v;
+  document.getElementById('vitesse-inline').value        = v;
+  debouncedUpdate();
+}
+function changeSpeed(delta){
+  const cur = parseFloat(document.getElementById('vitesse-inline').value) || 25;
+  const next = Math.max(5, Math.min(55, Math.round((cur + delta) * 2) / 2));
+  document.getElementById('vitesse-inline').value        = next;
+  document.getElementById('vitesse').value               = next;
+  document.getElementById('vitesse-display').textContent = next;
+  document.getElementById('vitesse-inline-range').value  = next;
+  update();
+}
+function setSpeedPreset(v){
+  document.getElementById('vitesse-inline').value        = v;
+  document.getElementById('vitesse').value               = v;
+  document.getElementById('vitesse-display').textContent = v;
+  document.getElementById('vitesse-inline-range').value  = v;
+  update();
+}
+
+// ═══════════════════════════════════════════════════════════
+// UPDATE PRINCIPAL
+// ═══════════════════════════════════════════════════════════
+function update(){
+  if(!gpxPoints.length) return;
+  const depMin = toMin(document.getElementById('dep-time').value);
+  const v      = parseFloat(document.getElementById('vitesse').value) || 25;
+
+  document.getElementById('s-dist').textContent   = totalKm.toFixed(1) + ' km';
+  document.getElementById('s-dplus').textContent  = '+' + Math.round(dPlus) + ' m';
+  document.getElementById('s-dminus').textContent = '−' + Math.round(dMinus) + ' m';
+
+  const eles = gpxPoints.map(p => p.ele).filter(e => e > 0);
+  document.getElementById('s-altmax').textContent = (eles.length ? Math.round(Math.max(...eles)) : '—') + ' m';
+  document.getElementById('s-altmin').textContent = (eles.length ? Math.round(Math.min(...eles)) : '—') + ' m';
+
+  const milestones = getMilestones(gran);
+
+  gpxWaypoints.forEach(w => {
+    if(!milestones.find(m => Math.abs(m.dist - w.km) < gran * 0.1)){
+      const p = pointAtKm(w.km);
+      p.wpName = w.name; p.wpType = 'gpx'; p.wpIcon = '📍';
+      milestones.push(p);
+    }
+  });
+  customWps.forEach(w => {
+    if(!milestones.find(m => Math.abs(m.dist - w.km) < 0.5)){
+      const p = pointAtKm(w.km);
+      p.wpName = w.name; p.wpType = 'custom'; p.wpIcon = w.icon || '📍';
+      milestones.push(p);
+    }
+  });
+  milestones.sort((a, b) => a.dist - b.dist);
+
+  let cumulMin = 0;
+  const tbody  = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  cachedRows       = [];
+  cachedMilestones = [];
+
+  milestones.forEach((p, idx) => {
+    const isStart = p.dist < 0.01;
+    const isEnd   = Math.abs(p.dist - totalKm) < 0.01;
+
+    if(idx > 0){
+      const prev  = milestones[idx - 1];
+      const segKm = p.dist - prev.dist;
+      const slope = avgSlope(prev.dist, p.dist);
+      cumulMin   += (segKm / effectiveSpeed(v, slope)) * 60;
+      cumulMin   += pauseAtKm(p.dist) - pauseAtKm(prev.dist);
+    }
+
+    const passage = depMin + cumulMin;
+    const slope   = idx > 0 ? avgSlope(milestones[idx-1].dist, p.dist) : 0;
+
+    cachedMilestones.push(p);
+    cachedRows.push({
+      km: p.dist, heure: fmt(passage),
+      elapsed: isStart ? '—' : fmtElapsed(cumulMin),
+      alt: Math.round(p.ele), slope,
+      lat: p.lat, lon: p.lon,
+      name: p.wpName || '', type: p.wpType || '', icon: p.wpIcon || ''
+    });
+
+    let kmCell = `<span class="km-cell">${p.dist.toFixed(isEnd && totalKm%1 !== 0 ? 1 : 0)} km`;
+    if(isStart) kmCell += ' <span class="badge badge-rose">Départ</span>';
+    if(isEnd)   kmCell += ' <span class="badge badge-rose">Arrivée</span>';
+    if(p.wpType === 'gpx')    kmCell += ` <span class="badge badge-cyan">${escapeHtml(p.wpName)}</span>`;
+    if(p.wpType === 'custom') kmCell += ` <span class="badge badge-violet">${escapeHtml(p.wpIcon)} ${escapeHtml(p.wpName)}</span>`;
+    kmCell += '</span>';
+
+    const slopeTxt = idx === 0
+      ? '<span class="text-muted">—</span>'
+      : `<span class="${slopeClass(slope)}">${slope > 0 ? '+' : ''}${slope.toFixed(1)}%</span>`;
+
+    const tr = document.createElement('tr');
+    if(isStart || isEnd) tr.classList.add('hl');
+    tr.dataset.idx = idx;
+    tr.dataset.km  = Math.round(p.dist);
+    tr.onclick = () => focusOnMap(idx, true);
+    tr.innerHTML =
+      `<td>${kmCell}</td>` +
+      `<td class="heure-cell">${fmt(passage)}</td>` +
+      `<td class="elapsed">${isStart ? '—' : fmtElapsed(cumulMin)}</td>` +
+      `<td class="alt-cell">${Math.round(p.ele)} m</td>` +
+      `<td class="small">${slopeTxt}</td>` +
+      `<td class="no-print"><button class="btn btn-sm p-0 px-1 btn-rose-outline" style="font-size:.72rem"
+           onclick="event.stopPropagation();openPointModal(${idx})" title="Détail"><i class="bi bi-info-circle"></i></button></td>`;
+    tbody.appendChild(tr);
+  });
+
+  const totalPauses = pauseAtKm(totalKm);
+  document.getElementById('s-arr').textContent      = fmt(depMin + cumulMin);
+  document.getElementById('s-duration').textContent = fmtElapsed(cumulMin);
+  document.getElementById('s-pause').textContent    = totalPauses > 0 ? fmtElapsed(totalPauses) : '—';
+
+  filterTable();
+  buildDynamicMarkers();
+}
+
+// ═══════════════════════════════════════════════════════════
+// LEAFLET — INIT
+// ═══════════════════════════════════════════════════════════
+let osmTile, topoTile, darkTile;
+
+function initMapIfNeeded(){
+  if(leafletMap) return;
+
+  leafletMap = L.map('map-wrap', { zoomControl: true, attributionControl: true });
+
+  osmTile = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  });
+  topoTile = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://opentopomap.org">OpenTopoMap</a>',
+    maxZoom: 17
+  });
+  darkTile = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© <a href="https://carto.com">CARTO</a>',
+    maxZoom: 19
+  });
+
+  const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+  (isDark ? darkTile : osmTile).addTo(leafletMap);
+
+  const baseLayers = { 'Routière (OSM)': osmTile, 'Topographique': topoTile, 'Nuit (Carto)': darkTile };
+  const cycloOverlay = L.tileLayer(
+    'https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png',
+    { attribution: '© Waymarked Trails', maxZoom: 17, opacity: 0.6 }
+  );
+  L.control.layers(baseLayers, { 'Pistes cyclables (overlay)': cycloOverlay }, { position:'topright' }).addTo(leafletMap);
+
+  traceLayer   = L.layerGroup().addTo(leafletMap);
+  slopeLayer   = L.layerGroup();
+  markersLayer = L.layerGroup().addTo(leafletMap);
+}
+
+function updateTileStyle(){
+  if(!leafletMap) return;
+  const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+  if(isDark){
+    if(leafletMap.hasLayer(osmTile))  { leafletMap.removeLayer(osmTile);  darkTile.addTo(leafletMap); }
+    if(leafletMap.hasLayer(topoTile)) { leafletMap.removeLayer(topoTile); darkTile.addTo(leafletMap); }
+  } else {
+    if(leafletMap.hasLayer(darkTile)) { leafletMap.removeLayer(darkTile); osmTile.addTo(leafletMap); }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// LEAFLET — TRACE STATIQUE (appelée une fois par chargement GPX)
+// ═══════════════════════════════════════════════════════════
+function buildStaticTrace(){
+  if(!leafletMap) return;
+  traceLayer.clearLayers();
+  slopeLayer.clearLayers();
+
+  const latlngs = gpxPoints.map(p => [p.lat, p.lon]);
+  const mainTrace = L.polyline(latlngs, { color:'#e8357a', weight:4, opacity:.85 }).addTo(traceLayer);
+  leafletMap.fitBounds(mainTrace.getBounds(), { padding:[24,24] });
+
+  const SLOPE_STEP = Math.max(1, Math.floor(gpxPoints.length / 1500));
+  for(let i = SLOPE_STEP; i < gpxPoints.length; i += SLOPE_STEP){
+    const p0 = gpxPoints[i - SLOPE_STEP], p1 = gpxPoints[i];
+    const segDist = p1.dist - p0.dist;
+    if(segDist < 0.0005) continue;
+    const slope = ((p1.ele - p0.ele) / (segDist * 1000)) * 100;
+    L.polyline([[p0.lat, p0.lon],[p1.lat, p1.lon]], {
+      color: slopeColor(slope), weight: 5, opacity: .9
+    }).addTo(slopeLayer);
+  }
+  if(slopeLayerVisible) slopeLayer.addTo(leafletMap);
+}
+
+// ═══════════════════════════════════════════════════════════
+// LEAFLET — MARQUEURS DYNAMIQUES (appelée à chaque update)
+// ═══════════════════════════════════════════════════════════
+function buildDynamicMarkers(){
+  if(!leafletMap) return;
+  leafletMap.invalidateSize();
+  markersLayer.clearLayers();
+
+  cachedRows.forEach((row, idx) => {
+    const isStart = idx === 0;
+    const isEnd   = idx === cachedRows.length - 1;
+    let color, radius;
+
+    if(isStart)                   { color = '#16a34a'; radius = 9; }
+    else if(isEnd)                 { color = '#e8357a'; radius = 9; }
+    else if(row.type === 'custom') { color = '#7c3aed'; radius = 8; }
+    else if(row.type === 'gpx')    { color = '#00b4d8'; radius = 8; }
+    else                           { color = '#e8357a'; radius = 5; }
+
+    const m = L.circleMarker([row.lat, row.lon], {
+      radius, fillColor: color, color:'#fff',
+      weight:2, fillOpacity:.92
+    }).addTo(markersLayer);
+
+    m.bindPopup(buildPopupHtml(idx), { maxWidth: 220, className:'ecta-popup' });
+    m.on('click', () => focusOnMap(idx, false));
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// POPUP HTML
+// ═══════════════════════════════════════════════════════════
+function buildPopupHtml(idx){
+  const row = cachedRows[idx];
+  const isStart = idx === 0, isEnd = idx === cachedRows.length - 1;
+  const badge = isStart ? '<span style="background:#16a34a;color:#fff;font-size:.6rem;padding:1px 6px;border-radius:10px;font-weight:700">DÉPART</span>'
+              : isEnd   ? '<span style="background:#e8357a;color:#fff;font-size:.6rem;padding:1px 6px;border-radius:10px;font-weight:700">ARRIVÉE</span>'
+              : row.type === 'custom' ? `<span style="background:#7c3aed;color:#fff;font-size:.6rem;padding:1px 6px;border-radius:10px;font-weight:700">${escapeHtml(row.icon)} ${escapeHtml(row.name)}</span>`
+              : row.type === 'gpx'    ? `<span style="background:#00b4d8;color:#fff;font-size:.6rem;padding:1px 6px;border-radius:10px;font-weight:700">${escapeHtml(row.name)}</span>`
+              : '';
+  return `<div class="lf-popup">
+    <div class="lf-popup-km">${row.km.toFixed(1)} km ${badge}</div>
+    <div class="lf-popup-heure">${row.heure} <span style="font-weight:400;color:#888;font-size:.78rem">· ${row.elapsed}</span></div>
+    <div class="lf-popup-meta">Alt. ${row.alt} m &nbsp;·&nbsp; Pente ${row.slope > 0 ? '+' : ''}${row.slope.toFixed(1)} %</div>
+    <div style="margin-top:6px;display:flex;gap:5px">
+      <a href="https://www.google.com/maps?q=${row.lat.toFixed(5)},${row.lon.toFixed(5)}"
+         target="_blank" style="font-size:.72rem;color:#e8357a;font-weight:700;text-decoration:none">
+        <i class="bi bi-map-fill"></i> Maps
+      </a>
+      <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${row.lat.toFixed(5)},${row.lon.toFixed(5)}"
+         target="_blank" style="font-size:.72rem;color:#00b4d8;font-weight:700;text-decoration:none">
+        <i class="bi bi-camera-fill"></i> Street View
+      </a>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// FOCUS SUR LA CARTE
+// ═══════════════════════════════════════════════════════════
+function focusOnMap(idx, fromTable){
+  if(!leafletMap || !cachedRows[idx]) return;
+  document.querySelectorAll('#tbody tr.map-active').forEach(tr => tr.classList.remove('map-active'));
+  const rows = document.querySelectorAll('#tbody tr');
+  if(rows[idx]){
+    rows[idx].classList.add('map-active');
+    rows[idx].scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+  activeRowIdx = idx;
+  const markers = [];
+  markersLayer.eachLayer(l => markers.push(l));
+  if(markers[idx]){
+    const latlng = markers[idx].getLatLng();
+    leafletMap.setView(latlng, Math.max(leafletMap.getZoom(), 13), { animate:true });
+    markers[idx].openPopup();
+  }
+}
+
+function fitBounds(){
+  if(!leafletMap || !gpxPoints.length) return;
+  const latlngs = gpxPoints.map(p => [p.lat, p.lon]);
+  leafletMap.fitBounds(L.latLngBounds(latlngs), { padding:[24,24] });
+}
+
+function toggleMapSize(){
+  const wrap = document.getElementById('map-wrap');
+  wrap.classList.toggle('map-expanded');
+  leafletMap.invalidateSize();
+  const btn = document.getElementById('map-expand-btn');
+  btn.innerHTML = wrap.classList.contains('map-expanded')
+    ? '<i class="bi bi-arrows-angle-contract"></i>'
+    : '<i class="bi bi-arrows-fullscreen"></i>';
+}
+
+function toggleSlopeLayer(){
+  if(!leafletMap) return;
+  slopeLayerVisible = !slopeLayerVisible;
+  if(slopeLayerVisible){
+    slopeLayer.addTo(leafletMap);
+    document.getElementById('slope-legend').style.display = '';
+    document.getElementById('slope-toggle').classList.remove('btn-rose-outline');
+    document.getElementById('slope-toggle').classList.add('btn-rose');
+  } else {
+    leafletMap.removeLayer(slopeLayer);
+    document.getElementById('slope-legend').style.display = 'none';
+    document.getElementById('slope-toggle').classList.add('btn-rose-outline');
+    document.getElementById('slope-toggle').classList.remove('btn-rose');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// CURSEUR CARTE ← SURVOL GRAPHIQUE
+// ═══════════════════════════════════════════════════════════
+function attachChartMapSync(){
+  const canvas = document.getElementById('alti-chart');
+  canvas.addEventListener('mousemove', e => {
+    if(!leafletMap || !altiChart) return;
+    const pts = altiChart.getElementsAtEventForMode(e, 'index', { intersect:false }, true);
+    if(!pts.length) return;
+    const km = parseFloat(altiChart.data.labels[pts[0].index]);
+    const p  = pointAtKm(km);
+    if(cursorMarker){
+      cursorMarker.setLatLng([p.lat, p.lon]);
+    } else {
+      cursorMarker = L.marker([p.lat, p.lon], {
+        icon: L.divIcon({
+          className:'',
+          html:'<div class="cursor-icon"></div>',
+          iconSize:[16,16], iconAnchor:[8,8]
+        }),
+        zIndexOffset:1000, interactive:false
+      }).addTo(leafletMap);
+    }
+    if(cachedRows.length){
+      let nearest = 0, minDist = Infinity;
+      cachedRows.forEach((row, i) => {
+        const d = Math.abs(row.km - km);
+        if(d < minDist){ minDist = d; nearest = i; }
+      });
+      if(nearest !== activeRowIdx){
+        document.querySelectorAll('#tbody tr.map-active').forEach(tr => tr.classList.remove('map-active'));
+        const rows = document.querySelectorAll('#tbody tr');
+        if(rows[nearest]){
+          rows[nearest].classList.add('map-active');
+          rows[nearest].scrollIntoView({ behavior:'smooth', block:'nearest' });
+        }
+        activeRowIdx = nearest;
+      }
+    }
+  });
+  canvas.addEventListener('mouseleave', () => {
+    if(cursorMarker){ leafletMap.removeLayer(cursorMarker); cursorMarker = null; }
+    document.querySelectorAll('#tbody tr.map-active').forEach(tr => tr.classList.remove('map-active'));
+    activeRowIdx = -1;
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// PROFIL ALTIMÉTRIQUE
+// ═══════════════════════════════════════════════════════════
+function buildChart(){
+  const N    = Math.min(gpxPoints.length, 350);
+  const step = Math.max(1, Math.floor(gpxPoints.length / N));
+  const labels = [], data = [];
+  for(let i = 0; i < gpxPoints.length; i += step){
+    labels.push(gpxPoints[i].dist.toFixed(2));
+    data.push(Math.round(gpxPoints[i].ele));
+  }
+  const last = gpxPoints[gpxPoints.length - 1];
+  labels.push(last.dist.toFixed(2));
+  data.push(Math.round(last.ele));
+
+  const isDark    = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+  const gridColor = isDark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.07)';
+  const textColor = isDark ? '#666' : '#888';
+
+  if(altiChart) altiChart.destroy();
+  const ctx  = document.getElementById('alti-chart').getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, 0, 180);
+  grad.addColorStop(0, isDark ? 'rgba(232,53,122,.38)' : 'rgba(232,53,122,.22)');
+  grad.addColorStop(1, 'rgba(232,53,122,0)');
+
+  altiChart = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[{ data, fill:true, backgroundColor:grad, borderColor:'#e8357a',
+                  borderWidth:2, pointRadius:0, tension:.3 }]
+    },
+    options:{
+      animation:false, responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{ display:false }, tooltip:{
+        callbacks:{
+          title: i  => i[0].label+' km',
+          label: i  => 'Altitude : '+i.raw+' m'
+        }
+      }},
+      scales:{
+        x:{ ticks:{ color:textColor, font:{size:10}, maxTicksLimit:12,
+              callback:(v,i) => Number(labels[i]) % Math.ceil(totalKm/10) < 0.1 ? labels[i] : ''
+            }, grid:{ color:gridColor } },
+        y:{ ticks:{ color:textColor, font:{size:10}, callback:v=>v+' m' }, grid:{ color:gridColor } }
+      }
+    }
+  });
+  attachChartMapSync();
+}
+
+// ═══════════════════════════════════════════════════════════
+// MODAL DÉTAIL POINT
+// ═══════════════════════════════════════════════════════════
+function openPointModal(idx){
+  const row = cachedRows[idx];
+  if(!row) return;
+  const mapsUrl = `https://www.google.com/maps?q=${row.lat.toFixed(5)},${row.lon.toFixed(5)}`;
+  const svUrl   = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${row.lat.toFixed(5)},${row.lon.toFixed(5)}`;
+  document.getElementById('point-modal-body').innerHTML = `
+    <div class="row g-2">
+      <div class="col-6"><div class="stat-card"><div class="stat-label">Km</div><div class="stat-val">${row.km.toFixed(1)}</div></div></div>
+      <div class="col-6"><div class="stat-card"><div class="stat-label">Heure</div><div class="stat-val">${row.heure}</div></div></div>
+      <div class="col-6"><div class="stat-card"><div class="stat-label">Altitude</div><div class="stat-val">${row.alt} m</div></div></div>
+      <div class="col-6"><div class="stat-card"><div class="stat-label">Pente moy.</div><div class="stat-val">${row.slope > 0 ? '+' : ''}${row.slope.toFixed(1)}%</div></div></div>
+      <div class="col-6"><div class="stat-card"><div class="stat-label">Temps écoulé</div><div class="stat-val" style="font-size:1.1rem">${row.elapsed}</div></div></div>
+      <div class="col-6"><div class="stat-card cyan"><div class="stat-label">Coordonnées</div><div style="font-size:.7rem;font-family:monospace;word-break:break-all;margin-top:3px">${row.lat.toFixed(5)},${row.lon.toFixed(5)}</div></div></div>
+    </div>`;
+  document.getElementById('point-modal-maps').href = mapsUrl;
+  document.getElementById('point-modal-sv').href   = svUrl;
+  new bootstrap.Modal(document.getElementById('pointModal')).show();
+}
+
+// ═══════════════════════════════════════════════════════════
+// FILTRE TABLEAU
+// ═══════════════════════════════════════════════════════════
+function filterTable(){
+  const q = document.getElementById('search').value.trim();
+  let visible = 0;
+  document.querySelectorAll('#tbody tr').forEach(tr => {
+    const show = !q || tr.dataset.km.startsWith(q);
+    tr.style.display = show ? '' : 'none';
+    if(show) visible++;
+  });
+  document.getElementById('empty-state').classList.toggle('d-none', visible > 0 || !q);
+}
+
+// ═══════════════════════════════════════════════════════════
+// WAYPOINTS
+// ═══════════════════════════════════════════════════════════
+function addWaypoint(){
+  const km   = parseFloat(document.getElementById('wp-km').value);
+  const name = document.getElementById('wp-name').value.trim();
+  const icon = document.getElementById('wp-icon').value;
+  if(isNaN(km) || km < 0 || (totalKm > 0 && km > totalKm)){
+    showToast('Kilomètre invalide (0 — '+totalKm.toFixed(1)+')', 'warning'); return;
+  }
+  if(!name){ showToast('Veuillez saisir un nom', 'warning'); return; }
+  customWps.push({ km, name, icon });
+  document.getElementById('wp-km').value = '';
+  document.getElementById('wp-name').value = '';
+  renderWpList();
+  showToast(icon + ' "' + name + '" ajouté', 'info');
+}
+function removeWaypoint(idx){
+  customWps.splice(idx, 1);
+  renderWpList();
+}
+function renderWpList(){
+  const list  = document.getElementById('wp-list');
+  const empty = document.getElementById('wp-empty');
+  if(!customWps.length){ list.innerHTML = ''; empty.classList.remove('d-none'); return; }
+  empty.classList.add('d-none');
+  list.innerHTML = customWps.map((w, i) => `
+    <div class="list-group-item d-flex justify-content-between align-items-center py-2 px-0">
+      <span><span class="badge badge-violet me-1">${escapeHtml(w.icon)} ${w.km.toFixed(1)} km</span> ${escapeHtml(w.name)}</span>
+      <button class="btn btn-sm btn-link text-danger p-0" onclick="removeWaypoint(${i})">
+        <i class="bi bi-x-circle-fill"></i>
+      </button>
+    </div>`).join('');
+}
+function renderGpxWpBadges(){
+  const section = document.getElementById('gpx-wp-section');
+  const list    = document.getElementById('gpx-wp-list');
+  if(!gpxWaypoints.length){ section.classList.add('d-none'); return; }
+  section.classList.remove('d-none');
+  list.innerHTML = gpxWaypoints.map(w =>
+    `<span class="badge badge-cyan">${escapeHtml(w.name)} (${w.km.toFixed(1)} km)</span>`
+  ).join('');
+}
+function applyWaypoints(){ update(); }
+function applySettings(){
+  const t = document.getElementById('dep-time').value;
+  document.getElementById('dep-time-main').value = t;
+  update();
+}
+function onDepTimeMainChange(val){
+  document.getElementById('dep-time').value = val;
+  update();
+}
+
+// ═══════════════════════════════════════════════════════════
+// EXPORT CSV / JSON
+// ═══════════════════════════════════════════════════════════
+function exportCSV(){
+  if(!cachedRows.length){ showToast('Aucune donnée', 'warning'); return; }
+  const hdr  = 'Km;Heure;Temps écoulé;Altitude (m);Pente (%);Latitude;Longitude;Nom\r\n';
+  const rows = cachedRows.map(r =>
+    `${r.km.toFixed(1)};${r.heure};${r.elapsed};${r.alt};${r.slope.toFixed(1)};${r.lat.toFixed(5)};${r.lon.toFixed(5)};${r.name}`
+  ).join('\r\n');
+  downloadBlob(new Blob(['\uFEFF' + hdr + rows], { type:'text/csv;charset=utf-8;' }), 'horaires_gpx.csv');
+  showToast('Export CSV téléchargé', 'success');
+}
+function exportJSON(){
+  if(!cachedRows.length){ showToast('Aucune donnée', 'warning'); return; }
+  const payload = JSON.stringify({
+    circuit: document.getElementById('circuit-name').textContent,
+    distanceKm: +totalKm.toFixed(2),
+    denivelePlus: Math.round(dPlus),
+    vitesse: parseFloat(document.getElementById('vitesse').value),
+    generatedAt: new Date().toISOString(),
+    points: cachedRows
+  }, null, 2);
+  downloadBlob(new Blob([payload], { type:'application/json' }), 'horaires_gpx.json');
+  showToast('Export JSON téléchargé', 'success');
+}
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a   = Object.assign(document.createElement('a'), { href:url, download:filename });
+  a.click(); URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════════════════
+// RESET
+// ═══════════════════════════════════════════════════════════
+function resetFile(){
+  gpxPoints = []; gpxWaypoints = []; customWps = [];
+  totalKm = 0; dPlus = 0; dMinus = 0; cachedRows = []; cachedMilestones = [];
+  activeRowIdx = -1;
+  if(altiChart){ altiChart.destroy(); altiChart = null; }
+  if(leafletMap){
+    traceLayer.clearLayers(); slopeLayer.clearLayers(); markersLayer.clearLayers();
+    if(cursorMarker){ leafletMap.removeLayer(cursorMarker); cursorMarker = null; }
+  }
+  document.getElementById('gpx-input').value = '';
+  document.getElementById('result-section').classList.add('d-none');
+  document.getElementById('drop-section').classList.remove('d-none');
+  document.getElementById('circuit-name').textContent = '—';
+  document.getElementById('circuit-sub').textContent  = '';
+  document.title = 'Calculateur GPX · ECTA Saint-Alban';
+  renderWpList();
+}
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function debounce(fn, ms){
+  let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+const debouncedUpdate = debounce(update, 200);
+
+function closeModal(id){
+  const m = bootstrap.Modal.getInstance(document.getElementById(id));
+  if(m) m.hide();
+}
+function showToast(msg, type = 'info'){
+  const c = { success:'var(--rose)', danger:'#dc3545', warning:'#fd7e14', info:'var(--cyan)' };
+  const t = document.createElement('div');
+  t.className = 'toast-ecta';
+  t.style.background = c[type] || c.info;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+</script>
+</body>
+</html>
