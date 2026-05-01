@@ -86,7 +86,12 @@
     background:var(--rose-pale); border:1px solid var(--rose-border);
     border-radius:10px; padding:.7rem .9rem; text-align:center;
     height:100%;
+    min-width:0;
+    width:100%;
+    max-width:100%;
+    flex:1 1 auto;
     display:flex; flex-direction:column; justify-content:center; align-items:center;
+    box-shadow:none;
   }
   .stat-label{
     font-size:.6rem; font-weight:700; text-transform:uppercase;
@@ -179,6 +184,28 @@
     -webkit-overflow-scrolling:touch;
   }
   .table-ecta{ width:max-content; min-width:100%; }
+
+  /* ══ LAYOUT DESKTOP PAR DÉFAUT ══ */
+  .calc-main-layout{ min-height:calc(100vh - 320px); }
+
+  /* ══ RESPONSIVE MOBILE/TABLETTE ══ */
+  @media (max-width: 991.98px){
+    .calc-main-layout{ min-height:auto; }
+    .sticky-col{ position:static; top:auto; }
+    .col-tableau{ display:block; }
+    .col-tableau > .card{ flex:initial; min-height:auto; height:auto !important; }
+    .col-tableau > .card > .card-body{ min-height:auto; }
+    .table-scroll-wrap{ max-height:none; overflow:visible; }
+    .table-ecta thead th{ position:static; }
+  }
+
+  @media (max-width: 575.98px){
+    #map-wrap{ height:320px; }
+    .stat-card{ padding:.65rem .7rem; }
+    .stat-val{ font-size:1.35rem; }
+    .speed-input{ width:42px; font-size:1.2rem; }
+    .gran-tab{ font-size:.78rem; padding:.2rem .55rem; }
+  }
 
   /* ══ BADGES ══ */
   .badge-rose{ background:var(--rose); color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.7px; }
