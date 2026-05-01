@@ -64,6 +64,9 @@
   .calc-actions{ display:flex; gap:6px; align-items:center; flex-shrink:0; }
   @media(max-width:1024px){ .calc-actions{ gap:4px; } }
 
+  /* ══ LAYOUT RÉSULTATS ══ */
+  .layout-results-row{ min-height:calc(100vh - 320px); }
+
   /* ══ DROP ZONE ══ */
   .drop-zone{
     border:2.5px dashed var(--rose-border); border-radius:14px;
@@ -267,6 +270,37 @@
     .table-scroll-wrap{ max-height:none !important; overflow:visible !important; }
   }
 
+  @media (max-width: 991.98px){
+    .layout-results-row{ min-height:auto; }
+    .sticky-col{ position:static; top:auto; }
+    .col-tableau{ display:block; }
+    .col-tableau > .card{ min-height:auto; }
+    .table-scroll-wrap{ max-height:none; overflow:visible; }
+    #map-wrap{ height:320px; }
+    #map-wrap.map-expanded{ height:420px; }
+  }
+
+  @media (max-width: 767.98px){
+    .chart-wrap{ height:160px; }
+    .section-title .float-end{
+      float:none !important;
+      display:block;
+      margin-top:.35rem;
+    }
+  }
+
+  @media (max-width: 575.98px){
+    .result-actions{
+      width:100%;
+      grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+    }
+    .result-actions .btn{ width:100%; }
+    .stat-card{ padding:.65rem .6rem; }
+    .speed-input{ width:44px; font-size:1.25rem; }
+    #map-wrap{ height:260px; }
+    #map-wrap.map-expanded{ height:340px; }
+  }
+
   @keyframes fadeInUp{ from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
   </style>
 </head>
@@ -362,7 +396,7 @@
         <h4 id="circuit-name" class="circuit-name">—</h4>
         <div id="circuit-sub" class="small text-muted"></div>
       </div>
-      <div class="d-grid gap-2 no-print" style="grid-template-columns:repeat(4,auto)">
+      <div class="d-grid gap-2 no-print result-actions" style="grid-template-columns:repeat(4,auto)">
         <button class="btn btn-sm btn-rose" data-bs-toggle="modal" data-bs-target="#settingsModal">
           <i class="bi bi-gear-fill me-1"></i> Paramètres
         </button>
@@ -433,7 +467,7 @@
     </div>
 
     <!-- Layout 2 colonnes -->
-    <div class="row g-3" style="min-height:calc(100vh - 320px)">
+    <div class="row g-3 layout-results-row">
 
       <!-- Colonne gauche — Carte + Profil -->
       <div class="col-lg-5">
