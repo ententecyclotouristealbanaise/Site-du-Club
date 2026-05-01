@@ -313,7 +313,13 @@
     .sticky-col{ position:static; top:auto; }
     .col-tableau{ display:block; }
     .col-tableau > .card{ min-height:auto; }
-    .table-scroll-wrap{ overflow:auto !important; }
+    .table-scroll-wrap{
+      flex:0 0 auto !important;
+      height:auto !important;
+      min-height:220px;
+      max-height:var(--schedule-pane-max) !important;
+      overflow:auto !important;
+    }
     #gran-tabs{
       flex-wrap:nowrap !important;
       overflow-x:auto;
@@ -360,6 +366,7 @@
     .speed-input{ width:44px; font-size:1.25rem; }
     .speed-unit{ font-size:.72rem; }
     .preset-btn{ font-size:.58rem; padding:1px 4px; }
+    .table-scroll-wrap{ min-height:180px; }
     #map-wrap{ height:260px; }
     #map-wrap.map-expanded{ height:340px; }
   }
