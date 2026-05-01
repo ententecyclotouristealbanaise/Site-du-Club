@@ -173,9 +173,10 @@
     flex:1 1 0;
     min-height:0;
     max-height:calc(100dvh - 290px);
-    overflow-y:auto;
+    overflow:auto;
     overscroll-behavior:contain;
   }
+  .table-ecta{ min-width:560px; }
 
   @supports not (height: 100dvh){
     .table-scroll-wrap{ max-height:calc(100vh - 290px); }
@@ -245,6 +246,7 @@
   }
   .speed-input:focus{ border-bottom-color:var(--rose); }
   .speed-unit{ font-family:'Barlow Condensed',sans-serif; font-weight:700; color:var(--gris); font-size:.8rem; }
+  .speed-presets{ flex-wrap:wrap; }
   .preset-btn{
     font-family:'Barlow Condensed',sans-serif; font-size:.62rem; font-weight:700;
     background:rgba(232,53,122,.1); color:var(--rose);
@@ -312,10 +314,22 @@
     }
     .result-actions .btn{ width:100%; }
     .stat-card{ padding:.65rem .6rem; }
+    .stat-val{ font-size:1.25rem; }
+    .stat-sub{ font-size:.62rem; }
     .speed-input{ width:44px; font-size:1.25rem; }
+    .speed-unit{ font-size:.72rem; }
+    .preset-btn{ font-size:.58rem; padding:1px 4px; }
     .table-scroll-wrap{ max-height:min(48dvh, 420px); }
     #map-wrap{ height:260px; }
     #map-wrap.map-expanded{ height:340px; }
+  }
+
+  @media (max-width: 420px){
+    .stat-label{ font-size:.56rem; letter-spacing:.5px; }
+    .stat-val{ font-size:1.12rem; }
+    .btn-speed{ width:24px; height:24px; }
+    .speed-input{ width:40px; font-size:1.1rem; }
+    .table-ecta{ min-width:520px; }
   }
 
   @media (max-width: 575.98px){
@@ -460,7 +474,7 @@
             <span class="speed-unit">km/h</span>
             <button class="btn-speed" onclick="changeSpeed(+1)" title="+1 km/h">+</button>
           </div>
-          <div class="d-flex gap-1 justify-content-center mt-1">
+          <div class="d-flex gap-1 justify-content-center mt-1 speed-presets">
             <button class="preset-btn" onclick="setSpeedPreset(15)">Rando</button>
             <button class="preset-btn" onclick="setSpeedPreset(25)">Cyclo</button>
             <button class="preset-btn" onclick="setSpeedPreset(35)">Sportif</button>
