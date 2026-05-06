@@ -4,7 +4,7 @@ const ECTA_DATA = {
       "date": "Mercredi 6 Mai 2026",
       "dateSort": "2026-05-06",
       "titre": "Débroussaillage rando de la Flora",
-      "texte": "Rendez-vous comme d'habitude 14 h devant le stade \n( Débroussaillage également les 6 et 13 mai aux même horaires )",
+      "texte": "Rendez-vous comme d'habitude 14 h devant le stade \n( Débroussaillage également le 13 mai à la même heure )",
       "tag": "Débroussaillage",
       "image": ""
     },
