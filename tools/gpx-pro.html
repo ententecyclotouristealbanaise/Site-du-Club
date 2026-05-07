@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GPX Pro - Traceur d'itinéraires · ECTA Saint-Alban</title>
+    <meta name="description" content="Traceur d'itinéraires GPX interactif du club ECTA Saint-Alban. Créez vos parcours vélo avec profil altimétrique et export GPX/KML." />
+    <meta name="keywords" content="cyclotourisme, GPX, traceur, itinéraire, profil altimétrique, ECTA, Saint-Alban" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e8357a'/></svg>" />
+    <link rel="apple-touch-icon" href="../icon-192x192.png" />
+    <link rel="manifest" href="../manifest.json" />
+    <meta name="theme-color" content="#e8357a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ECTA Saint-Alban" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap CSS en premier (sera surchargé par les styles suivants pour nav) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Styles du club (nav — après Bootstrap pour conserver la nav ECTA) -->
+    <link rel="stylesheet" href="../styles.css?v=20260501">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        /* Réinitialise .btn Bootstrap (surchargé par styles.css du club) */
+        .btn { padding:.375rem .75rem; font-size:.875rem; letter-spacing:0; transform:none !important; }
+        .btn:hover { transform:none !important; box-shadow:none; }
+
+        :root {
+            --primary: #e8357a;   /* ECTA rose */
+            --accent:  #00b4d8;   /* ECTA cyan */
+            --green:   #27ae60;
+            --red:     #e74c3c;
+            --orange:  #e67e22;
+            --nav-h:   54px;
+        }
+        body, html { height: 100%; margin: 0; overflow: hidden; background: #f4f7f6; font-family: 'Nunito', sans-serif; }
+
+        /* ---- BARRE DE CHARGEMENT ---- */
+        #loading-bar {
+            display: none; position: fixed; top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--green));
+            z-index: 9999; animation: pulse-bar 1s ease-in-out infinite;
+        }
+        #loading-bar.active { display: block; }
+        @keyframes pulse-bar { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        /* ---- BANNER MODE POI ---- */
+        #poi-banner {
+            display: none; position: fixed; top: calc(var(--nav-h) + 10px); left: 50%; transform: translateX(-50%);
+            z-index: 4000; background: var(--accent); color: white;
+            padding: 8px 22px; border-radius: 25px; font-weight: 700; font-size: 0.85rem;
+            box-shadow: 0 4px 18px rgba(0,180,216,0.45); pointer-events: none;
+            animation: bounce-in 0.3s ease;
+        }
+        #poi-banner.active { display: block; }
+        @keyframes bounce-in { 0% { transform: translateX(-50%) scale(0.7); opacity: 0; } 100% { transform: translateX(-50%) scale(1); opacity: 1; } }
+        body.poi-active, body.poi-active * { cursor: crosshair !important; }
+
+        /* ---- SIDEBAR ---- */
+        #sidebar {
+            width: 260px; height: calc(100vh - var(--nav-h)); position: fixed; left: 0; top: var(--nav-h); background: white; z-index: 3000;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 5px 0 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        #sidebar.closed { transform: translateX(-100%); }
+        #sidebar-handle {
+            position: fixed; left: 260px; top: calc(50vh + var(--nav-h) / 2); transform: translateY(-50%);
+            background: white; width: 35px; height: 60px; display: flex; align-items: center; justify-content: center;
+            border-radius: 0 10px 10px 0; cursor: pointer; border: 1px solid #eee; color: var(--primary);
+            z-index: 3100; transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        body.sidebar-closed #sidebar-handle { left: 0; }
+
+        /* ---- STATS EN HAUT À DROITE (alignées sur la toolbar) ---- */
+        .dashboard-top {
+            position: fixed; top: calc(var(--nav-h) + 10px); right: 15px; z-index: 2000;
+            display: flex; flex-direction: column; gap: 6px; align-items: stretch;
+            width: 85px;
+        }
+        .stat-pill {
+            background: white; padding: 5px 8px; border-radius: 12px;
+            border: 2px solid var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex; align-items: baseline; gap: 4px; justify-content: center;
+        }
+        .stat-pill.green  { border-color: var(--green); }
+        .stat-pill.red    { border-color: var(--red); }
+        .stat-pill.orange { border-color: var(--orange); }
+        .stat-val         { font-size: 1.15rem; font-weight: 900; color: var(--primary); }
+        .stat-pill.green  .stat-val { color: var(--green); }
+        .stat-pill.red    .stat-val { color: var(--red); }
+        .stat-pill.orange .stat-val { color: var(--orange); }
+        .stat-unit { font-size: 0.65rem; font-weight: 700; color: #888; text-transform: uppercase; }
+
+        /* ---- BARRE D'OUTILS DROITE ---- */
+        .right-toolbar {
+            position: fixed; right: 15px; top: calc(50vh + var(--nav-h) / 2); transform: translateY(-50%);
+            width: 85px; background: white; padding: 10px 5px; border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15); z-index: 2500;
+            display: flex; flex-direction: column; gap: 12px; align-items: center;
+        }
+        .btn-saas {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 100%; border: none; background: #f8f9fa; border-radius: 12px;
+            padding: 8px 2px; transition: 0.2s; color: #444; text-decoration: none; cursor: pointer;
+        }
+        .btn-saas i       { font-size: 1.1rem; margin-bottom: 4px; }
+        .btn-saas span    { font-size: 0.55rem; font-weight: 800; text-transform: uppercase; text-align: center; line-height: 1.1; }
+        .btn-export-main  {
+            width: 70px; height: 70px; border-radius: 50% !important;
+            background: var(--primary) !important; color: white !important;
+            box-shadow: 0 4px 15px rgba(232,53,122,0.4);
+        }
+        .btn-export-main i { font-size: 1.4rem; }
+        .btn-saas.danger  { color: var(--accent); }
+        .btn-saas:hover   { background: #eee; transform: scale(1.05); }
+        .btn-saas:disabled, .btn-saas[disabled] { opacity: 0.45; pointer-events: none; }
+
+        /* ---- PROFIL ALTIMÉTRIQUE ---- */
+        #elevation-container {
+            position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
+            width: 60%; background: rgba(255,255,255,0.97); border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15); z-index: 2400;
+            padding: 8px 12px 6px; overflow: hidden;
+        }
+        #elev-placeholder {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            color: #bbb; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em;
+            background: rgba(255,255,255,0.97); border-radius: 15px; z-index: 2; pointer-events: none;
+        }
+        #elev-chart-wrap { position: relative; height: 100px; }
+        #elevationChart { display: block; }
+
+        #map { height: calc(100vh - var(--nav-h)); width: 100vw; margin-top: var(--nav-h); z-index: 1; }
+        .poi-auto-icon {
+            font-size: 14px; background: white; border-radius: 50%; padding: 4px;
+            border: 2px solid var(--primary); text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); color: var(--primary);
+            width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+        }
+        .leaflet-control-zoom { border-radius: 12px !important; overflow: hidden; border: none !important; box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important; }
+
+    </style>
+</head>
+<body class="sidebar-open">
+
+<div id="loading-bar"></div>
+<div id="poi-banner"><i class="fa-solid fa-crosshairs me-2"></i>Cliquez sur la carte pour poser le repère</div>
+
+<!-- NAV ECTA -->
+<nav>
+  <div class="nav-brand">
+    <a href="../index.html" style="display:flex;align-items:center;gap:.75rem;text-decoration:none">
+      <img class="nav-logo-img" src="../images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
+      <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban · Côtes-d'Armor</small></div>
+    </a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="../index.html">Accueil</a></li>
+    <li><a href="../le-club.html">Le Club</a></li>
+    <li><a href="../actualites.html">Activités</a></li>
+    <li><a href="../agenda.html">Agenda</a></li>
+    <li><a href="../galerie.html">Galerie</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+    <li><a href="../documents.html">WT 2026</a></li>
+    <li><a href="../news.html">Actu vélo</a></li>
+    <li><a href="../calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
+    <li><a href="../Flora 2026.html">Flora 2026</a></li>
+    <li><a href="../outils.html" class="active">Outils</a></li>
+  </ul>
+  <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- MENU MOBILE -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="../index.html" onclick="closeMenu()">Accueil</a>
+  <a href="../le-club.html" onclick="closeMenu()">Le Club</a>
+  <a href="../actualites.html" onclick="closeMenu()">Activités</a>
+  <a href="../agenda.html" onclick="closeMenu()">Agenda</a>
+  <a href="../galerie.html" onclick="closeMenu()">Galerie</a>
+  <a href="../contact.html" onclick="closeMenu()">Contact</a>
+  <a href="../documents.html" onclick="closeMenu()">WT 2026</a>
+  <a href="../news.html" onclick="closeMenu()">Actu vélo</a>
+  <a href="../calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
+  <a href="../Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
+  <a href="../outils.html" onclick="closeMenu()">Outils</a>
+</div>
+
+<!-- ONGLET SIDEBAR (hors du div sidebar pour éviter l'effet transform) -->
+<div id="sidebar-handle" onclick="toggleSidebar()">
+    <i class="fa-solid fa-chevron-left" id="tab-icon"></i>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+    <div class="p-3">
+        <h6 class="fw-bold mb-3 text-primary">CONFIGURATION</h6>
+
+        <label class="small fw-bold text-muted">ACTIVITÉ</label>
+        <select id="routeProfile" class="form-select form-select-sm mb-3 bg-light border-0">
+            <option value="bicycle">Cyclisme Route</option>
+            <option value="hiking">Randonnée</option>
+            <option value="mtb">VTT / Gravel</option>
+        </select>
+
+        <label class="small fw-bold text-muted">CARTE</label>
+        <div class="d-grid gap-2 mb-3">
+            <button id="btn-plan" class="btn btn-sm btn-dark" onclick="setLayer('plan')">Plan</button>
+            <button id="btn-sat"  class="btn btn-sm btn-outline-dark" onclick="setLayer('sat')">Satellite</button>
+        </div>
+
+        <hr>
+        <p class="small fw-bold text-muted mb-1">AIDE RAPIDE</p>
+        <p class="small text-muted mb-1">• Cliquez sur la carte pour tracer</p>
+        <p class="small text-muted mb-1">• "Annuler" retire le dernier point</p>
+        <p class="small text-muted mb-1">• "Boucler" ferme l'itinéraire</p>
+        <p class="small text-muted mb-0">• Se ferme automatiquement après 5 s</p>
+    </div>
+</div>
+
+<!-- STATS DASHBOARD -->
+<div class="dashboard-top">
+    <div class="stat-pill">
+        <span id="dist-val" class="stat-val">0.0</span>
+        <span class="stat-unit">km</span>
+    </div>
+    <div class="stat-pill green" id="dplus-pill" style="display:none">
+        <span style="font-size:0.65rem;font-weight:800;color:#27ae60;margin-right:2px">&#8593; D+</span>
+        <span id="dplus-val" class="stat-val">0</span>
+        <span class="stat-unit">m</span>
+    </div>
+    <div class="stat-pill red" id="dminus-pill" style="display:none">
+        <span style="font-size:0.65rem;font-weight:800;color:#e74c3c;margin-right:2px">&#8595; D-</span>
+        <span id="dminus-val" class="stat-val">0</span>
+        <span class="stat-unit">m</span>
+    </div>
+</div>
+
+<!-- MAP -->
+<div id="map"></div>
+
+<!-- TOOLBAR DROITE -->
+<div class="right-toolbar">
+    <button id="btn-undo" class="btn-saas danger" onclick="undo()" disabled>
+        <i class="fa-solid fa-arrow-rotate-left"></i><span>Annuler dernier point</span>
+    </button>
+    <button id="btn-loop" class="btn-saas" onclick="closeLoop()" style="color:var(--green)" disabled>
+        <i class="fa-solid fa-flag-checkered"></i><span>Boucler retour départ</span>
+    </button>
+    <button class="btn-saas btn-export-main" data-bs-toggle="modal" data-bs-target="#exportModal">
+        <i class="fa-solid fa-file-export"></i><span>Export</span>
+    </button>
+    <button class="btn-saas" onclick="openPoiModal()">
+        <i class="fa-solid fa-location-dot" style="color:var(--accent)"></i><span>Repère POI</span>
+    </button>
+    <button id="btn-reset" class="btn-saas danger" onclick="confirmReset()" disabled>
+        <i class="fa-solid fa-trash-can"></i><span>Tout effacer</span>
+    </button>
+</div>
+
+<!-- PROFIL ALTIMÉTRIQUE -->
+<div id="elevation-container">
+    <div id="elev-placeholder">Tracez un itinéraire pour voir le profil altimétrique</div>
+    <div id="elev-chart-wrap">
+        <canvas id="elevationChart"></canvas>
+    </div>
+</div>
+
+<!-- MODAL POI -->
+<div class="modal fade" id="poiModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0">
+            <div class="modal-header border-0 pb-0">
+                <h6 class="modal-title fw-bold">Choisir un repère</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="list-group list-group-flush">
+                <button onclick="setPoiMode('wc','fa-restroom','#27ae60')"     class="list-group-item list-group-item-action d-flex align-items-center" data-bs-dismiss="modal"><i class="fa-solid fa-restroom    me-3 text-success"></i> Toilettes</button>
+                <button onclick="setPoiMode('water','fa-faucet-drip','#3498db')" class="list-group-item list-group-item-action d-flex align-items-center" data-bs-dismiss="modal"><i class="fa-solid fa-faucet-drip me-3 text-primary"></i> Ravitaillement Eau</button>
+                <button onclick="setPoiMode('bakery','fa-bread-slice','#e67e22')" class="list-group-item list-group-item-action d-flex align-items-center" data-bs-dismiss="modal"><i class="fa-solid fa-bread-slice me-3 text-warning"></i> Boulangerie</button>
+                <button onclick="setPoiMode('bike','fa-bicycle','#8e44ad')"     class="list-group-item list-group-item-action d-flex align-items-center" data-bs-dismiss="modal"><i class="fa-solid fa-bicycle     me-3" style="color:#8e44ad"></i> Magasin Vélo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EXPORT -->
+<div class="modal fade" id="exportModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 p-3">
+            <h6 class="fw-bold text-center mb-1">Format d'export</h6>
+            <div id="export-stats" class="text-center text-muted small mb-3"></div>
+            <button class="btn btn-primary mb-2 w-100 fw-bold" onclick="exportGPX()">
+                <i class="fa-solid fa-download me-2"></i>GPX
+            </button>
+            <button class="btn btn-dark w-100 fw-bold" onclick="exportKML()">
+                <i class="fa-solid fa-download me-2"></i>KML
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL INFO POINT -->
+<div class="modal fade" id="pointInfoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 p-4 text-center shadow-lg">
+            <div id="pointInfoBody"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Scripts du club (toggleMenu, closeMenu) -->
+<script src="../scripts.js" defer></script>
+
+<script>
+(function () {
+    'use strict';
+
+    // ================================================================
+    //  CONSTANTES
+    // ================================================================
+    const COORDS_DEFAULT = [48.5560, -2.5340];
+
+
+    // ================================================================
+    //  CARTE
+    // ================================================================
+    const tileLayers = {
+        plan: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            { attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>' }),
+        sat: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            { attribution: '© Esri' })
+    };
+
+    const map = L.map('map', { zoomControl: true }).setView(COORDS_DEFAULT, 14);
+    tileLayers.plan.addTo(map);
+
+    // ================================================================
+    //  ÉTAT DE L'APPLICATION
+    // ================================================================
+    let waypoints = [];   // [{ lat, lng }]
+    let segments  = [];   // un tableau de [[lat,lng],...] par segment OSRM
+    let markers   = [];   // [{ marker: L.Marker, type: 'path'|'poi' }]
+    let poiMode   = null; // { type, icon, color } ou null
+    let isLoading = false;
+
+    const polyline = L.polyline([], { color: '#e8357a', weight: 5, opacity: 0.9 }).addTo(map);
+
+    // ================================================================
+    //  PROFIL ALTIMÉTRIQUE (Chart.js)
+    // ================================================================
+    const ctx = document.getElementById('elevationChart').getContext('2d');
+    const elevChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [], borderColor: '#00b4d8', fill: true, pointRadius: 0,
+                backgroundColor: 'rgba(0,180,216,0.08)', tension: 0.4, borderWidth: 2
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+            scales: {
+                x: { display: false },
+                y: { ticks: { font: { size: 9 }, callback: v => v + ' m' }, grid: { color: 'rgba(0,0,0,0.04)' } }
+            }
+        }
+    });
+
+    // ================================================================
+    //  COUCHES DE CARTE
+    // ================================================================
+    window.setLayer = function (key) {
+        Object.values(tileLayers).forEach(l => map.removeLayer(l));
+        tileLayers[key].addTo(map);
+        document.getElementById('btn-plan').className = key === 'plan' ? 'btn btn-sm btn-dark' : 'btn btn-sm btn-outline-dark';
+        document.getElementById('btn-sat').className  = key === 'sat'  ? 'btn btn-sm btn-dark' : 'btn btn-sm btn-outline-dark';
+    };
+
+    // ================================================================
+    //  SIDEBAR (auto-fermeture après 5 s)
+    // ================================================================
+    let sidebarTimer;
+    window.toggleSidebar = function () {
+        const sb = document.getElementById('sidebar');
+        const isNowClosed = !sb.classList.contains('closed');
+        sb.classList.toggle('closed');
+        document.body.classList.toggle('sidebar-closed', isNowClosed);
+        document.getElementById('tab-icon').className = isNowClosed
+            ? 'fa-solid fa-chevron-right' : 'fa-solid fa-chevron-left';
+        clearTimeout(sidebarTimer);
+        if (!isNowClosed) {
+            // Sidebar vient de s'ouvrir → fermeture auto après 5 s
+            sidebarTimer = setTimeout(toggleSidebar, 5000);
+        }
+    };
+    // Fermeture initiale après 5 s
+    sidebarTimer = setTimeout(() => {
+        document.getElementById('sidebar').classList.add('closed');
+        document.body.classList.add('sidebar-closed');
+        document.getElementById('tab-icon').className = 'fa-solid fa-chevron-right';
+    }, 5000);
+
+    // ================================================================
+    //  INDICATEUR DE CHARGEMENT
+    // ================================================================
+    function setLoading(v) {
+        isLoading = v;
+        document.getElementById('loading-bar').classList.toggle('active', v);
+    }
+
+    // ================================================================
+    //  FILE D'ATTENTE — tous les clics sont enregistrés et traités dans l'ordre
+    // ================================================================
+    let routeQueue = Promise.resolve();
+
+    map.on('click', (e) => {
+        if (poiMode) { placePOI(e.latlng); return; }
+        // Chaîne chaque clic à la fin de la promesse précédente → jamais perdu
+        routeQueue = routeQueue.then(() => addPoint(e.latlng));
+    });
+
+    // ================================================================
+    //  ROUTAGE OSRM (profil bicycle évite nativement autoroutes/voies express)
+    // ================================================================
+    async function addPoint(latlng) {
+        setLoading(true);
+        let segment = [];
+
+        if (waypoints.length > 0) {
+            const prev    = waypoints[waypoints.length - 1];
+            const profile = document.getElementById('routeProfile').value;
+            // bicycle et mtb → profil OSRM bicycle (évite motorway/trunk)
+            // hiking        → profil OSRM foot
+            const osrmProfile = profile === 'hiking' ? 'foot' : 'bicycle';
+            const url = `https://router.project-osrm.org/route/v1/${osrmProfile}/`
+                      + `${prev.lng},${prev.lat};${latlng.lng},${latlng.lat}`
+                      + `?overview=full&geometries=geojson&annotations=false`;
+            try {
+                const ctrl = new AbortController();
+                const tid  = setTimeout(() => ctrl.abort(), 12000);
+                const res  = await fetch(url, { signal: ctrl.signal });
+                clearTimeout(tid);
+                if (!res.ok) throw new Error('OSRM HTTP ' + res.status);
+                const data = await res.json();
+                if (data.routes && data.routes[0]) {
+                    segment = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                }
+            } catch {
+                // Fallback ligne droite si réseau indisponible
+                segment = [[prev.lat, prev.lng], [latlng.lat, latlng.lng]];
+            }
+        }
+
+        waypoints.push({ lat: latlng.lat, lng: latlng.lng });
+        if (segment.length > 0) segments.push(segment);
+
+        refreshMarkers();
+        updateButtons();
+        updateDistanceUI();          // rapide, synchrone
+        fetchElevations(getFullPath()); // lent, détaché — ne bloque pas la file
+        setLoading(false);
+    }
+
+    // ================================================================
+    //  RECONSTRUCTION DU TRACÉ COMPLET
+    // ================================================================
+    function getFullPath() {
+        if (waypoints.length === 0) return [];
+        let path = [[waypoints[0].lat, waypoints[0].lng]];
+        segments.forEach(seg => { path = path.concat(seg.slice(1)); });
+        return path;
+    }
+
+    // ================================================================
+    //  MARQUEURS
+    // ================================================================
+    function refreshMarkers() {
+        markers.filter(m => m.type === 'path').forEach(m => map.removeLayer(m.marker));
+        markers = markers.filter(m => m.type !== 'path');
+
+        waypoints.forEach((wp, idx) => {
+            let html;
+            if (idx === 0) {
+                html = `<div style="background:#27ae60;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.4)"><span style="color:white;font-size:11px;font-weight:900;line-height:1">D</span></div>`;
+            } else if (idx === waypoints.length - 1) {
+                html = `<div style="color:var(--red);font-size:22px;line-height:1"><i class="fa-solid fa-flag-checkered"></i></div>`;
+            } else {
+                html = `<div style="background:#e8357a;width:16px;height:16px;border-radius:50%;border:2px solid white;box-shadow:0 1px 5px rgba(0,0,0,0.4);cursor:pointer"></div>`;
+            }
+            const icon = L.divIcon({ className: '', html, iconAnchor: [11, 11] });
+            const m = L.marker([wp.lat, wp.lng], { icon, interactive: true }).addTo(map);
+            m.on('click', (e) => { L.DomEvent.stopPropagation(e); showInfo(wp); });
+            markers.push({ marker: m, type: 'path' });
+        });
+    }
+
+    // ================================================================
+    //  MISE À JOUR DISTANCE (synchrone, rapide)
+    // ================================================================
+    function updateDistanceUI() {
+        const fullPath = getFullPath();
+        polyline.setLatLngs(fullPath);
+        let d = 0;
+        for (let i = 0; i < fullPath.length - 1; i++) {
+            d += L.latLng(fullPath[i]).distanceTo(L.latLng(fullPath[i + 1]));
+        }
+        document.getElementById('dist-val').innerText = (d / 1000).toFixed(1);
+    }
+
+    // compaté avec les appels existants (undo, reset)
+    async function updateUI() {
+        updateDistanceUI();
+        await fetchElevations(getFullPath());
+    }
+
+    // ================================================================
+    //  ÉLÉVATION VIA OPEN-METEO (gratuit, fiable, pas de clé API)
+    // ================================================================
+    async function fetchElevations(fullPath) {
+        if (fullPath.length < 2) return;
+        const MAX_PTS = 100;
+        const step    = Math.max(1, Math.floor(fullPath.length / MAX_PTS));
+        const sampled = [];
+        for (let i = 0; i < fullPath.length; i += step) sampled.push(fullPath[i]);
+        try {
+            const lats = sampled.map(p => p[0].toFixed(6)).join(',');
+            const lngs = sampled.map(p => p[1].toFixed(6)).join(',');
+            const ctrl = new AbortController();
+            const tid  = setTimeout(() => ctrl.abort(), 10000);
+            const res  = await fetch(
+                `https://api.open-meteo.com/v1/elevation?latitude=${lats}&longitude=${lngs}`,
+                { signal: ctrl.signal }
+            );
+            clearTimeout(tid);
+            if (!res.ok) throw new Error('Open-Meteo HTTP ' + res.status);
+            const data = await res.json();
+            const elevs = Array.isArray(data.elevation) ? data.elevation : [data.elevation];
+            renderElevationChart(elevs, parseFloat(document.getElementById('dist-val').innerText));
+        } catch (err) {
+            console.warn('Élévation indisponible :', err.message);
+        }
+    }
+
+    function renderElevationChart(elevs, totalKm) {
+        // Labels km
+        const labels = elevs.map((_, i) => ((i / (elevs.length - 1)) * totalKm).toFixed(1));
+
+        // D+ / D-
+        let dPlus = 0, dMinus = 0;
+        for (let i = 1; i < elevs.length; i++) {
+            const diff = elevs[i] - elevs[i - 1];
+            if (diff > 0) dPlus += diff; else dMinus += Math.abs(diff);
+        }
+
+        elevChart.data.labels = labels;
+        elevChart.data.datasets[0].data = elevs;
+        elevChart.update();
+
+        document.getElementById('dplus-val').innerText = Math.round(dPlus);
+        document.getElementById('dminus-val').innerText = Math.round(dMinus);
+        document.getElementById('dplus-pill').style.display = '';
+        document.getElementById('dminus-pill').style.display = '';
+        // Cache le placeholder (canvas est toujours affiché)
+        document.getElementById('elev-placeholder').style.display = 'none';
+    }
+
+    // ================================================================
+    //  ACTIVATION/DÉSACTIVATION DES BOUTONS
+    // ================================================================
+    function updateButtons() {
+        const hasPoints = waypoints.length > 0;
+        const hasTwo    = waypoints.length > 1;
+        document.getElementById('btn-undo').disabled  = !hasPoints;
+        document.getElementById('btn-loop').disabled  = !hasTwo;
+        document.getElementById('btn-reset').disabled = !hasPoints;
+    }
+
+    // ================================================================
+    //  ANNULER DERNIER POINT (CORRIGÉ — sans reload)
+    // ================================================================
+    window.undo = function () {
+        if (waypoints.length === 0) return;
+        waypoints.pop();
+        if (segments.length > 0) segments.pop();
+
+        // Réinitialise le graphique d'élévation
+        elevChart.data.labels = [];
+        elevChart.data.datasets[0].data = [];
+        elevChart.update();
+        document.getElementById('dplus-pill').style.display = 'none';
+        document.getElementById('dminus-pill').style.display = 'none';
+        document.getElementById('elev-placeholder').style.display = '';
+
+        refreshMarkers();
+        updateButtons();
+        updateUI();
+    };
+
+    // ================================================================
+    //  TOUT EFFACER
+    // ================================================================
+    window.confirmReset = function () {
+        if (waypoints.length === 0) return;
+        if (!confirm('Effacer tout le tracé ?')) return;
+
+        waypoints = []; segments = [];
+        markers.forEach(m => map.removeLayer(m.marker));
+        markers = [];
+        polyline.setLatLngs([]);
+
+        elevChart.data.labels = [];
+        elevChart.data.datasets[0].data = [];
+        elevChart.update();
+
+        document.getElementById('dist-val').innerText  = '0.0';
+        ['dplus-pill','dminus-pill'].forEach(id => {
+            document.getElementById(id).style.display = 'none';
+        });
+        document.getElementById('elev-placeholder').style.display = '';
+        updateButtons();
+    };
+
+    // ================================================================
+    //  BOUCLER
+    // ================================================================
+    window.closeLoop = async function () {
+        if (waypoints.length > 1) await addPoint(waypoints[0]);
+    };
+
+    // ================================================================
+    //  MODE POI
+    // ================================================================
+    window.openPoiModal = function () { new bootstrap.Modal('#poiModal').show(); };
+
+    window.setPoiMode = function (type, icon, color) {
+        poiMode = { type, icon, color };
+        document.getElementById('poi-banner').classList.add('active');
+        document.body.classList.add('poi-active');
+    };
+
+    function placePOI(latlng) {
+        const { icon, color, type } = poiMode;
+        const html = `<div style="color:${color};font-size:22px;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.3));line-height:1"><i class="fa-solid ${icon}"></i></div>`;
+        const m = L.marker(latlng, {
+            icon: L.divIcon({ className: '', html, iconAnchor: [11, 11] })
+        }).addTo(map);
+        m.bindPopup(`<b>${type}</b><br><small>${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}</small>`);
+        markers.push({ marker: m, type: 'poi' });
+        poiMode = null;
+        document.getElementById('poi-banner').classList.remove('active');
+        document.body.classList.remove('poi-active');
+    }
+
+    // ================================================================
+    //  INFO POINT (clic marqueur)
+    // ================================================================
+    function showInfo(wp) {
+        document.getElementById('pointInfoBody').innerHTML = `
+            <p class="fw-bold mb-3">${wp.lat.toFixed(5)}, ${wp.lng.toFixed(5)}</p>
+            <div class="d-grid gap-2">
+                <a href="https://www.google.com/maps/search/?api=1&query=${wp.lat},${wp.lng}"
+                   target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-map-location-dot me-2"></i>Google Maps
+                </a>
+                <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${wp.lat},${wp.lng}"
+                   target="_blank" rel="noopener noreferrer" class="btn btn-warning btn-sm text-white">
+                    <i class="fa-solid fa-street-view me-2"></i>Street View
+                </a>
+            </div>`;
+        new bootstrap.Modal('#pointInfoModal').show();
+    }
+
+    // ================================================================
+    //  EXPORT GPX (RÉEL)
+    // ================================================================
+    window.exportGPX = function () {
+        const fullPath = getFullPath();
+        if (fullPath.length < 2) { alert("Tracez d'abord un itinéraire !"); return; }
+
+        const now  = new Date().toISOString();
+        const trkpts = fullPath
+            .map(p => `      <trkpt lat="${p[0].toFixed(7)}" lon="${p[1].toFixed(7)}"></trkpt>`)
+            .join('\n');
+
+        const poiMarkers = markers.filter(m => m.type === 'poi');
+        const wpts = poiMarkers
+            .map(m => {
+                const ll = m.marker.getLatLng();
+                return `  <wpt lat="${ll.lat.toFixed(7)}" lon="${ll.lng.toFixed(7)}"><name>POI</name></wpt>`;
+            })
+            .join('\n');
+
+        const gpx = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="GPX Pro Saint-Alban" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>Itinéraire Saint-Alban</name>
+    <time>${now}</time>
+    <desc>Distance : ${document.getElementById('dist-val').innerText} km — D+ ${document.getElementById('dplus-val').innerText} m</desc>
+  </metadata>
+${wpts}
+  <trk>
+    <name>Mon itinéraire</name>
+    <trkseg>
+${trkpts}
+    </trkseg>
+  </trk>
+</gpx>`;
+        downloadFile(gpx, 'itineraire-saint-alban.gpx', 'application/gpx+xml');
+        bootstrap.Modal.getInstance(document.getElementById('exportModal'))?.hide();
+    };
+
+    // ================================================================
+    //  EXPORT KML (RÉEL)
+    // ================================================================
+    window.exportKML = function () {
+        const fullPath = getFullPath();
+        if (fullPath.length < 2) { alert("Tracez d'abord un itinéraire !"); return; }
+
+        const coords = fullPath.map(p => `${p[1].toFixed(7)},${p[0].toFixed(7)},0`).join(' ');
+        const kml = `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Itinéraire Saint-Alban</name>
+    <Style id="routeStyle">
+      <LineStyle><color>ff7a35e8</color><width>5</width></LineStyle>
+    </Style>
+    <Placemark>
+      <name>Mon itinéraire</name>
+      <styleUrl>#routeStyle</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>${coords}</coordinates>
+      </LineString>
+    </Placemark>
+  </Document>
+</kml>`;
+        downloadFile(kml, 'itineraire-saint-alban.kml', 'application/vnd.google-earth.kml+xml');
+        bootstrap.Modal.getInstance(document.getElementById('exportModal'))?.hide();
+    };
+
+    // ================================================================
+    //  UTILITAIRE TÉLÉCHARGEMENT
+    // ================================================================
+    function downloadFile(content, filename, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // ================================================================
+    //  STATS DANS LE MODAL EXPORT
+    // ================================================================
+    document.getElementById('exportModal').addEventListener('show.bs.modal', () => {
+        const dist  = document.getElementById('dist-val').innerText;
+        const dplus = document.getElementById('dplus-val').innerText;
+        document.getElementById('export-stats').innerHTML =
+            `<i class="fa-solid fa-route me-1"></i>${dist} km &nbsp;`
+          + `<i class="fa-solid fa-arrow-trend-up me-1 text-success"></i>D+ ${dplus} m`;
+    });
+
+    // Init boutons
+    updateButtons();
+
+})();
+</script>
+</body>
+</html>
