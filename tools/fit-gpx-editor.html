@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIT → GPX Editor · ECTA Saint-Alban</title>
+  <meta name="description" content="Convertisseur et éditeur FIT vers GPX. Modifiez vos données Garmin avant d'importer sur Strava.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e8357a'/></svg>">
+  <link rel="apple-touch-icon" href="../icon-192x192.png">
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#e8357a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css?v=20260501">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --rose:#e8357a; --rose-clair:#f06fa0; --rose-pale:#fde8f1; --rose-border:#f5b8d3;
+      --cyan:#00b4d8; --cyan-pale:#e0f7fd;
+      --vert:#16a34a; --vert-pale:#dcfce7;
+      --orange:#f59e0b; --orange-pale:#fef3c7;
+      --blanc:#f4f4f6; --texte:#1c1c2e; --gris:#6b7280; --gris-clair:#e8e4ed;
+      --nav-h:54px;
+    }
+    [data-bs-theme="dark"] {
+      --rose:#f06fa0; --rose-pale:#2a0e1a; --rose-border:#4a1530;
+      --cyan:#22d3ee; --cyan-pale:#042a33;
+      --vert-pale:#052e16; --orange-pale:#1c1000;
+      --blanc:#141420; --texte:#f0edff; --gris:#9ca3af; --gris-clair:#2d2d45;
+    }
+
+    body { font-family:'Nunito',sans-serif; background:var(--blanc); color:var(--texte); padding-top:var(--nav-h); }
+    .btn { padding:.375rem .75rem; font-size:.875rem; letter-spacing:0; transform:none !important; }
+    .btn:hover { transform:none !important; box-shadow:none; }
+
+    .page-title {
+      font-family:'Barlow Condensed',sans-serif; font-size:1.9rem; font-weight:800;
+      color:var(--rose); letter-spacing:.5px; line-height:1;
+    }
+    .section-title {
+      font-family:'Barlow Condensed',sans-serif; font-size:.9rem; font-weight:700;
+      color:var(--rose); text-transform:uppercase; letter-spacing:1px;
+      border-bottom:2px solid var(--rose-pale); padding-bottom:.3rem; margin-bottom:.9rem;
+    }
+
+    .btn-rose { background:var(--rose); color:#fff; border:none; font-family:'Barlow Condensed',sans-serif; font-weight:700; }
+    .btn-rose:hover { background:var(--rose-clair); color:#fff; }
+
+    /* ── Drop zone ── */
+    .drop-zone {
+      border:2.5px dashed var(--rose-border); border-radius:14px;
+      padding:4rem 2rem; text-align:center; cursor:pointer;
+      background:var(--rose-pale); transition:border-color .2s, opacity .2s;
+    }
+    .drop-zone:hover, .drop-zone.drag-over { border-color:var(--rose); opacity:.88; }
+    .drop-zone .dz-icon { font-size:3rem; color:var(--rose); }
+
+    /* ── Stat groups ── */
+    .stat-group { margin-bottom:1.1rem; }
+    .stat-group:last-child { margin-bottom:0; }
+    .stat-group-lbl {
+      font-size:.58rem; font-weight:700; text-transform:uppercase; letter-spacing:1.2px;
+      color:var(--gris); margin-bottom:.55rem;
+    }
+    .stat-group-cards { display:flex; flex-wrap:wrap; gap:.65rem; }
+
+    /* ── Stat cards ── */
+    .stat-card {
+      background:var(--rose-pale); border:2px solid var(--rose-border);
+      border-radius:14px; padding:.8rem 1.1rem; text-align:center;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      min-height:74px; min-width:120px; flex:0 0 auto;
+      box-shadow:0 3px 10px rgba(232,53,122,.10);
+    }
+    .stat-card.cyan   { background:var(--cyan-pale);   border-color:rgba(0,180,216,.5);  box-shadow:0 3px 10px rgba(0,180,216,.10); }
+    .stat-card.vert   { background:var(--vert-pale);   border-color:rgba(22,163,74,.5);   box-shadow:0 3px 10px rgba(22,163,74,.10); }
+    .stat-card.orange { background:var(--orange-pale); border-color:rgba(245,158,11,.5);  box-shadow:0 3px 10px rgba(245,158,11,.10); }
+    .stat-label {
+      font-size:.58rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:.9px; color:var(--rose); margin-bottom:4px; line-height:1;
+    }
+    .stat-card.cyan .stat-label   { color:var(--cyan); }
+    .stat-card.vert .stat-label   { color:var(--vert); }
+    .stat-card.orange .stat-label { color:var(--orange); }
+    .stat-val { font-family:'Barlow Condensed',sans-serif; font-size:1.55rem; font-weight:700; line-height:1.1; }
+
+    /* ── Tableau édition ── */
+    .edit-table { width:100%; border-collapse:collapse; }
+    .edit-table thead th {
+      font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.9px;
+      color:var(--gris); border-bottom:2px solid var(--gris-clair);
+      padding:.5rem .75rem; white-space:nowrap;
+    }
+    .edit-table tbody tr { border-bottom:1px solid var(--gris-clair); }
+    .edit-table tbody tr:last-child { border-bottom:none; }
+    .edit-table tbody td { padding:.6rem .75rem; vertical-align:middle; font-size:.88rem; }
+    .row-label {
+      font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.7px;
+      color:var(--gris); white-space:nowrap;
+    }
+    .row-sep td {
+      background:var(--rose-pale); font-family:'Barlow Condensed',sans-serif;
+      font-size:.8rem; font-weight:700; color:var(--rose); text-transform:uppercase;
+      letter-spacing:1px; padding:.4rem .75rem;
+    }
+    .val-before { color:var(--gris); font-family:'Barlow Condensed',sans-serif; font-size:1rem; font-weight:600; }
+    .val-after  { color:var(--rose);  font-family:'Barlow Condensed',sans-serif; font-size:1rem; font-weight:700; }
+    .val-fixed  { color:var(--gris); font-style:italic; font-size:.82rem; }
+
+    /* ── Inputs ── */
+    .ei {
+      border:1.5px solid var(--rose-border); border-radius:6px;
+      padding:.35rem .7rem; font-family:'Barlow Condensed',sans-serif; font-size:1.1rem;
+      font-weight:700; color:var(--texte); background:var(--blanc);
+      outline:none; transition:border-color .15s; width:100%;
+    }
+    .ei:focus { border-color:var(--rose); }
+    .ei-num  { max-width:110px; text-align:right; }
+    .ei-dt   { max-width:215px; color-scheme:light dark; }
+    .ei-text { max-width:320px; }
+    .input-unit { font-size:.75rem; color:var(--gris); white-space:nowrap; margin-left:4px; }
+
+    /* ── Badge fichier ── */
+    .file-badge {
+      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem;
+      background:var(--rose-pale); border:1px solid var(--rose-border);
+      border-radius:10px; padding:.6rem 1rem;
+    }
+    .file-badge-name { font-family:'Barlow Condensed',sans-serif; font-size:1.05rem; font-weight:700; color:var(--rose); }
+
+    /* ── Erreur ── */
+    #err-box {
+      display:none;
+      background:rgba(220,38,38,.07); border:1px solid rgba(220,38,38,.3);
+      border-radius:8px; padding:.75rem 1rem; color:#dc2626; font-size:.85rem;
+    }
+
+    [data-bs-theme="dark"] nav { background:rgba(232,53,122,.97) !important; }
+    [data-bs-theme="dark"] .edit-table tbody td,
+    [data-bs-theme="dark"] .edit-table thead th { border-color:#2d2d45; }
+    [data-bs-theme="dark"] .ei { border-color:#4a1530; }
+
+    @media print { nav, footer { display:none !important; } }
+  </style>
+</head>
+<body>
+
+<!-- ════ NAV DU CLUB ════ -->
+<nav>
+  <div class="nav-brand">
+    <a href="../index.html" style="display:flex;align-items:center;gap:.75rem;text-decoration:none">
+      <img class="nav-logo-img" src="../images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban">
+      <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban · Côtes-d'Armor</small></div>
+    </a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="../index.html">Accueil</a></li>
+    <li><a href="../le-club.html">Le Club</a></li>
+    <li><a href="../actualites.html">Activités</a></li>
+    <li><a href="../agenda.html">Agenda</a></li>
+    <li><a href="../galerie.html">Galerie</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+    <li><a href="../documents.html">WT 2026</a></li>
+    <li><a href="../news.html">Actu vélo</a></li>
+    <li><a href="../calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
+    <li><a href="../Flora 2026.html">Flora 2026</a></li>
+    <li><a href="../outils.html" class="active">Outils</a></li>
+  </ul>
+  <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- ════ MENU MOBILE ════ -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="../index.html" onclick="closeMenu()">Accueil</a>
+  <a href="../le-club.html" onclick="closeMenu()">Le Club</a>
+  <a href="../actualites.html" onclick="closeMenu()">Activités</a>
+  <a href="../agenda.html" onclick="closeMenu()">Agenda</a>
+  <a href="../galerie.html" onclick="closeMenu()">Galerie</a>
+  <a href="../contact.html" onclick="closeMenu()">Contact</a>
+  <a href="../documents.html" onclick="closeMenu()">WT 2026</a>
+  <a href="../news.html" onclick="closeMenu()">Actu vélo</a>
+  <a href="../calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
+  <a href="../Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
+  <a href="../outils.html" onclick="closeMenu()">Outils</a>
+</div>
+
+<!-- ════ CONTENU ════ -->
+<div class="container py-4" style="max-width:900px">
+
+  <!-- En-tête page -->
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div style="width:46px;height:46px;background:var(--rose);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <i class="bi bi-activity text-white" style="font-size:1.3rem"></i>
+    </div>
+    <div>
+      <div class="page-title">FIT → GPX Editor</div>
+      <div style="font-size:.8rem;color:var(--gris)">Modifiez vos données Garmin avant import Strava — zéro serveur, 100% local</div>
+    </div>
+  </div>
+
+  <!-- Erreur -->
+  <div id="err-box" class="mb-3">
+    <i class="bi bi-exclamation-triangle me-2"></i><span id="err-msg"></span>
+  </div>
+
+  <!-- ── DROP ZONE ── -->
+  <div id="drop-zone" class="drop-zone mb-4">
+    <input type="file" id="file-input" accept=".fit" style="display:none">
+    <div class="dz-icon mb-3"><i class="bi bi-file-earmark-arrow-up"></i></div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.25rem;font-weight:700;color:var(--rose);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem">
+      Déposer un fichier .FIT
+    </div>
+    <div style="font-size:.82rem;color:var(--gris)">ou cliquer pour choisir — fichiers Garmin uniquement</div>
+  </div>
+
+  <!-- ── ÉDITEUR ── -->
+  <div id="editor" style="display:none">
+
+    <!-- Badge fichier -->
+    <div class="file-badge mb-4">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-file-earmark-check text-success fs-5"></i>
+        <span class="file-badge-name" id="fname-lbl"></span>
+        <span id="pts-lbl" style="font-size:.78rem;color:var(--gris)"></span>
+      </div>
+      <button class="btn btn-rose btn-sm" id="change-btn">
+        <i class="bi bi-arrow-left me-1"></i>Changer de fichier
+      </button>
+    </div>
+
+    <!-- Stats résumé -->
+    <div class="section-title">Données originales</div>
+    <div id="stats-grid" class="mb-4"></div>
+
+    <!-- Tableau édition -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius:12px;overflow:hidden">
+      <div class="card-body p-0">
+        <div class="px-3 pt-3">
+          <div class="section-title" style="border:none;margin-bottom:.4rem">Modifier les valeurs</div>
+          <div style="font-size:.78rem;color:var(--gris);margin-bottom:.75rem">
+            <i class="bi bi-info-circle me-1"></i>
+            Entrez directement la <strong>nouvelle valeur souhaitée</strong>. La colonne « Après » se met à jour en temps réel.
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="edit-table">
+            <thead>
+              <tr>
+                <th style="width:28%">Champ</th>
+                <th style="width:20%;text-align:right">Valeur actuelle</th>
+                <th style="width:2px;padding:0"></th>
+                <th style="width:32%">Nouvelle valeur</th>
+                <th style="width:18%">Aperçu après</th>
+              </tr>
+            </thead>
+            <tbody id="edit-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div class="card border-0 shadow-sm mb-5" style="border-radius:12px">
+      <div class="card-body">
+        <div class="section-title">Export GPX</div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label" style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--gris)">
+              Nom de l'activité (affiché sur Strava)
+            </label>
+            <input type="text" id="xname" class="ei ei-text" style="max-width:100%" placeholder="Mon activité" autocomplete="off">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--gris)">
+              Nom du fichier de sortie
+            </label>
+            <div class="d-flex align-items-center gap-1">
+              <input type="text" id="xfile" class="ei" style="max-width:240px;border-radius:6px 0 0 6px;border-right:none" placeholder="activite" autocomplete="off">
+              <span style="font-size:.9rem;background:var(--rose-pale);border:1.5px solid var(--rose-border);border-left:none;border-radius:0 6px 6px 0;padding:.35rem .6rem;color:var(--gris)">.gpx</span>
+            </div>
+          </div>
+        </div>
+        <button id="export-btn" class="btn btn-rose btn-lg w-100" style="font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:700;letter-spacing:.1em">
+          <i class="bi bi-download me-2"></i>Télécharger le GPX modifié
+        </button>
+        <div class="text-center mt-2" style="font-size:.78rem;color:var(--gris)">
+          <i class="bi bi-strava me-1"></i>Importez ensuite sur Strava via « Importer une activité »
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /editor -->
+</div><!-- /container -->
+
+<!-- ════ FOOTER DU CLUB ════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div style="display:flex;gap:1rem;align-items:center;margin-bottom:.5rem;">
+        <img src="../images/logo_ECTA.png?v=20260305" alt="Logo ECTA" class="footer-logo">
+        <img src="../images/logo_ffvelo.png" alt="FFVélo" style="height:auto;max-height:50px;max-width:50px;">
+      </div>
+      <h4>ECTA SAINT-ALBAN</h4>
+      <p>Entente Cyclotouriste Albanaise - club de cyclotourisme fondé en 1985 à Saint-Alban, Côtes-d'Armor.</p>
+    </div>
+    <div class="footer-col" style="grid-column:span 2">
+      <h5>Navigation</h5>
+      <ul style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+        <li><a href="../index.html">Accueil</a></li>
+        <li><a href="../le-club.html">Le Club</a></li>
+        <li><a href="../actualites.html">Activités</a></li>
+        <li><a href="../agenda.html">Agenda</a></li>
+        <li><a href="../galerie.html">Galerie</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+        <li><a href="../documents.html">WT 2026</a></li>
+        <li><a href="../news.html">Actu vélo</a></li>
+        <li><a href="../outils.html">Outils</a></li>
+        <li><a href="https://ecta-saintalban.clubeo.com" target="_blank">Site Clubeo</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Entente Cyclotouriste Albanaise · Saint-Alban 22</span>
+    <a href="../mentions-legales.html" style="color:rgba(255,255,255,.7);text-decoration:underline">Mentions légales</a>
+    <span class="ffct-badge">🚴 Affilié FFVélo / FFCT</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../scripts.js?v=20260501"></script>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════════
+//  FIT PARSER
+// ═══════════════════════════════════════════════════════════
+const FIT_EPOCH = new Date('1989-12-31T00:00:00Z').getTime() / 1000;
+const sc2deg    = v => (v | 0) * (180 / 2147483648);
+const fitTs     = s => new Date((s + FIT_EPOCH) * 1000);
+const clamp     = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const GLOB      = { 0:'file_id', 18:'session', 20:'record' };
+
+function parseFIT(buf) {
+  const dv  = new DataView(buf);
+  const b   = new Uint8Array(buf);
+  const hSz = b[0];
+  const dSz = dv.getUint32(4, true);
+  const magic = String.fromCharCode(b[8], b[9], b[10], b[11]);
+  if (magic !== '.FIT') throw new Error("Ce fichier n'est pas un .FIT Garmin valide");
+
+  let o      = hSz;
+  const end  = hSz + dSz;
+  const defs = {};
+  const recs = [];
+  let session = null;
+  let lastTs  = 0;
+
+  function readField(f, pos) {
+    if (pos + f.sz > b.length) return undefined;
+    if      (f.sz === 1) return b[pos];
+    else if (f.sz === 2) return f.le ? dv.getUint16(pos, true)  : dv.getUint16(pos, false);
+    else if (f.sz === 4) return f.le ? dv.getUint32(pos, true)  : dv.getUint32(pos, false);
+    else if (f.sz === 8) {
+      const lo = f.le ? dv.getUint32(pos,   true) : dv.getUint32(pos+4, false);
+      const hi = f.le ? dv.getUint32(pos+4, true) : dv.getUint32(pos,   false);
+      return lo + hi * 4294967296;
+    } else {
+      let s = '';
+      for (let i = 0; i < f.sz; i++) s += String.fromCharCode(b[pos+i]);
+      return s.replace(/\0/g,'');
+    }
+  }
+
+  function processData(gn, data) {
+    const nm = GLOB[gn];
+    if (nm === 'record') {
+      const lat = (data[0] !== undefined && data[0] !== 0x7FFFFFFF) ? sc2deg(data[0]) : null;
+      const lon = (data[1] !== undefined && data[1] !== 0x7FFFFFFF) ? sc2deg(data[1]) : null;
+      if (lat === null || lon === null) return;
+      recs.push({
+        lat, lon,
+        ts:   data[253] !== undefined ? fitTs(data[253]) : null,
+        alt:  (data[2]  !== undefined && data[2]  !== 0xFFFF)      ? data[2]  / 5 - 500    : null,
+        hr:   (data[3]  !== undefined && data[3]  !== 0xFF)        ? data[3]                : null,
+        cad:  (data[4]  !== undefined && data[4]  !== 0xFF)        ? data[4]                : null,
+        spd:  (data[6]  !== undefined && data[6]  !== 0xFFFF)      ? data[6]  / 1000 * 3.6 : null,
+        pwr:  (data[7]  !== undefined && data[7]  !== 0xFFFF)      ? data[7]                : null,
+        temp: (data[13] !== undefined && data[13] !== 0x7F)        ? data[13]               : null,
+      });
+    } else if (nm === 'session') {
+      session = {
+        startTime:    data[253] !== undefined                                         ? fitTs(data[253]) : null,
+        totalElapsed: (data[7]  !== undefined && data[7]  !== 0xFFFFFFFF)            ? Math.round(data[7] / 1000) : null,
+        totalDist:    (data[9]  !== undefined && data[9]  !== 0xFFFFFFFF)            ? data[9]  / 100   : null,
+        avgSpeed:     (data[14] !== undefined && data[14] !== 0xFFFF)                ? data[14] / 1000 * 3.6 : null,
+        maxSpeed:     (data[15] !== undefined && data[15] !== 0xFFFF)                ? data[15] / 1000 * 3.6 : null,
+        avgHr:        (data[16] !== undefined && data[16] !== 0xFF)                  ? data[16] : null,
+        maxHr:        (data[17] !== undefined && data[17] !== 0xFF)                  ? data[17] : null,
+        avgCad:       (data[18] !== undefined && data[18] !== 0xFF)                  ? data[18] : null,
+        avgPower:     (data[20] !== undefined && data[20] !== 0xFFFF)                ? data[20] : null,
+        totalCalories:(data[11] !== undefined && data[11] !== 0xFFFF)                ? data[11] : null,
+        totalAscent:  (data[22] !== undefined && data[22] !== 0xFFFF)                ? data[22] : null,
+        totalDescent: (data[23] !== undefined && data[23] !== 0xFFFF)                ? data[23] : null,
+      };
+    }
+  }
+
+  while (o < end && o < b.length - 1) {
+    const rh = b[o++];
+
+    // Compressed timestamp
+    if (rh & 0x80) {
+      const ln   = (rh >> 5) & 0x03;
+      const tsOf = rh & 0x1F;
+      const def  = defs[ln];
+      if (!def) continue;
+      const prevOff = lastTs & 0x1F;
+      lastTs = tsOf >= prevOff ? (lastTs & ~0x1F) + tsOf : (lastTs & ~0x1F) + tsOf + 32;
+      const data = { 253: lastTs };
+      for (const f of def.fields) {
+        if (f.n === 253) { o += f.sz; continue; }
+        const val = readField(f, o);
+        if (val !== undefined) data[f.n] = val;
+        o += f.sz;
+      }
+      processData(def.gn, data);
+      continue;
+    }
+
+    // Definition message
+    if (rh & 0x40) {
+      const hasDev = rh & 0x20;
+      const ln     = rh & 0x0F;
+      o++;
+      const le = b[o++] === 0;
+      const gn = le ? dv.getUint16(o, true) : dv.getUint16(o, false); o += 2;
+      const nf = b[o++];
+      const fields = [];
+      for (let i = 0; i < nf; i++) {
+        const n = b[o++]; const sz = b[o++]; b[o++];
+        fields.push({ n, sz, le });
+      }
+      if (hasDev) { const nd = b[o++]; for (let i = 0; i < nd; i++) o += 3; }
+      defs[ln] = { gn, fields };
+      continue;
+    }
+
+    // Data message
+    const ln  = rh & 0x0F;
+    const def = defs[ln];
+    if (!def) { o++; continue; }
+    const data = {};
+    for (const f of def.fields) {
+      const val = readField(f, o);
+      if (val !== undefined) data[f.n] = val;
+      o += f.sz;
+    }
+    if (data[253] !== undefined) lastTs = data[253];
+    processData(def.gn, data);
+  }
+
+  return { records: recs, session };
+}
+
+// ═══════════════════════════════════════════════════════════
+//  GPX BUILDER
+// ═══════════════════════════════════════════════════════════
+function buildGPX(records, mods, name) {
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const { hrOff, cadOff, pwrOff, altOff, spdFac, tsOff, calories } = mods;
+
+  const pts = records.map(r => {
+    const adjAlt = r.alt !== null ? r.alt + altOff                              : null;
+    const adjHr  = r.hr  !== null ? clamp(Math.round(r.hr  + hrOff),  30, 250) : null;
+    const adjCad = r.cad !== null ? Math.max(0, Math.round(r.cad + cadOff))     : null;
+    const adjPwr = r.pwr !== null ? Math.max(0, Math.round(r.pwr + pwrOff))     : null;
+    const adjSpd = r.spd !== null ? Math.max(0, r.spd * spdFac)                 : null;
+    const ts     = r.ts  ? new Date(r.ts.getTime() + tsOff * 1000)              : null;
+
+    let pt = `    <trkpt lat="${r.lat.toFixed(7)}" lon="${r.lon.toFixed(7)}">`;
+    if (adjAlt !== null) pt += `\n      <ele>${adjAlt.toFixed(1)}</ele>`;
+    if (ts)              pt += `\n      <time>${ts.toISOString()}</time>`;
+    const x = [];
+    if (adjHr  !== null) x.push(`          <gpxtpx:hr>${adjHr}</gpxtpx:hr>`);
+    if (adjCad !== null) x.push(`          <gpxtpx:cad>${adjCad}</gpxtpx:cad>`);
+    if (adjPwr !== null) x.push(`          <gpxtpx:power>${adjPwr}</gpxtpx:power>`);
+    if (adjSpd !== null) x.push(`          <gpxtpx:speed>${adjSpd.toFixed(3)}</gpxtpx:speed>`);
+    if (x.length) pt += `\n      <extensions>\n        <gpxtpx:TrackPointExtension>\n${x.join('\n')}\n        </gpxtpx:TrackPointExtension>\n      </extensions>`;
+    return pt + '\n    </trkpt>';
+  }).join('\n');
+
+  const t0 = records[0]?.ts ? new Date(records[0].ts.getTime() + tsOff * 1000) : new Date();
+  const calExt = calories !== null ? `\n    <extensions>\n      <gpxtpx:calories>${calories}</gpxtpx:calories>\n    </extensions>` : '';
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="ECTA FIT-GPX Editor"
+  xmlns="http://www.topografix.com/GPX/1/1"
+  xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <metadata>
+    <name>${esc(name)}</name>
+    <time>${t0.toISOString()}</time>${calExt}
+  </metadata>
+  <trk>
+    <name>${esc(name)}</name>
+    <trkseg>
+${pts}
+    </trkseg>
+  </trk>
+</gpx>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════════
+const pad    = n => String(n).padStart(2, '0');
+const fmtDur = s => s == null ? '—' : `${Math.floor(s/3600)}h${pad(Math.floor((s%3600)/60))}m${pad(s%60)}s`;
+const fmtKm  = m => m != null ? (m/1000).toFixed(2)+' km' : '—';
+const fmtSpd = v => v != null ? v.toFixed(1)+' km/h' : '—';
+const fmtBpm = v => v != null ? v+' bpm' : '—';
+const fmtRpm = v => v != null ? v+' rpm' : '—';
+const fmtW   = v => v != null ? v+' W'   : '—';
+const fmtM   = v => v != null ? v+' m'   : '—';
+const fmtCal = v => v != null ? v+' kcal': '—';
+
+function toDatetimeLocal(d) {
+  if (!d) return '';
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function avgInt(arr, key)  { const p=arr.filter(r=>r[key]!==null); return p.length?Math.round(p.reduce((a,r)=>a+r[key],0)/p.length):null; }
+function maxVal(arr, key)  { const p=arr.filter(r=>r[key]!==null); return p.length?Math.max(...p.map(r=>r[key])):null; }
+function avgFloat(arr,key) { const p=arr.filter(r=>r[key]!==null); return p.length?p.reduce((a,r)=>a+r[key],0)/p.length:null; }
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+const S = { fit:null, fname:'', c:{} };
+
+// ═══════════════════════════════════════════════════════════
+//  STATS RÉSUMÉ
+// ═══════════════════════════════════════════════════════════
+function renderStats() {
+  const { c } = S; const ss = S.fit.session;
+  const f = v => v !== '—';
+  const groups = [
+    { lbl: 'Trajet', items: [
+      { label:'Points GPS', val:String(S.fit.records.length), cls:''     },
+      { label:'Distance',   val:fmtKm(ss?.totalDist),         cls:'cyan' },
+      { label:'Durée',      val:fmtDur(ss?.totalElapsed),     cls:'vert' },
+    ]},
+    { lbl: 'Cardio', items: [
+      { label:'FC moy.', val:fmtBpm(c.avgHr), cls:'orange' },
+      { label:'FC max.', val:fmtBpm(c.maxHr), cls:'orange' },
+    ]},
+    { lbl: 'Performance', items: [
+      { label:'Vitesse moy.',   val:fmtSpd(c.avgSpd), cls:''     },
+      { label:'Vitesse max.',   val:fmtSpd(c.maxSpd), cls:''     },
+      { label:'Cadence moy.',   val:fmtRpm(c.avgCad), cls:'cyan' },
+      { label:'Puissance moy.', val:fmtW(c.avgPwr),   cls:'vert' },
+    ]},
+    { lbl: 'Altitude', items: [
+      { label:'Dénivelé +', val:fmtM(ss?.totalAscent),  cls:'' },
+      { label:'Dénivelé −', val:fmtM(ss?.totalDescent), cls:'' },
+    ]},
+    { lbl: 'Énergie', items: [
+      { label:'Calories', val:fmtCal(ss?.totalCalories), cls:'orange' },
+    ]},
+  ];
+  document.getElementById('stats-grid').innerHTML = groups.map(g => {
+    const cards = g.items.filter(x => f(x.val));
+    if (!cards.length) return '';
+    return `<div class="stat-group">
+      <div class="stat-group-lbl">${g.lbl}</div>
+      <div class="stat-group-cards">${
+        cards.map(({label,val,cls}) =>
+          `<div class="stat-card ${cls}"><div class="stat-label">${label}</div><div class="stat-val">${val}</div></div>`
+        ).join('')
+      }</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TABLEAU ÉDITION
+// ═══════════════════════════════════════════════════════════
+function renderEditTable() {
+  const { c } = S; const ss = S.fit.session;
+  const startD = ss?.startTime || S.fit.records[0]?.ts;
+  const tbody  = document.getElementById('edit-body');
+  tbody.innerHTML = '';
+
+  const sep = lbl => {
+    const tr = document.createElement('tr'); tr.className = 'row-sep';
+    tr.innerHTML = `<td colspan="5">${lbl}</td>`; tbody.appendChild(tr);
+  };
+
+  const row = (label, cur, inputHtml, afterHtml='') => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="row-label">${label}</td>
+      <td style="text-align:right"><span class="val-before">${cur}</span></td>
+      <td style="color:var(--gris);padding:0 4px;font-size:1rem">→</td>
+      <td>${inputHtml}</td>
+      <td>${afterHtml}</td>`;
+    tbody.appendChild(tr);
+  };
+
+  const ni = (id, val, mn, mx, step, unit) =>
+    `<div class="d-flex align-items-center gap-1 flex-wrap">
+       <input type="number" id="${id}" class="ei ei-num" value="${val}" min="${mn}" max="${mx}" step="${step}" autocomplete="off">
+       <span class="input-unit">${unit}</span>
+     </div>`;
+
+  const fixed = txt => `<span class="val-fixed">${txt}</span>`;
+  const after = (id, txt) => `<span id="${id}" class="val-after">${txt}</span>`;
+
+  // ── Départ ───────────────────────────────────────────────
+  sep('<i class="bi bi-clock me-1"></i>Date &amp; Heure de départ');
+  row('Date / Heure',
+    startD ? startD.toLocaleString('fr-FR') : '—',
+    `<input type="datetime-local" id="ndt" class="ei ei-dt" value="${toDatetimeLocal(startD)}" autocomplete="off">`,
+    after('p-dt', startD ? startD.toLocaleString('fr-FR') : '—')
+  );
+
+  // ── Fréquence cardiaque ──────────────────────────────────
+  if (c.avgHr !== null) {
+    sep('<i class="bi bi-heart-pulse me-1"></i>Fréquence cardiaque');
+    row('FC moyenne', fmtBpm(c.avgHr), ni('nhr',c.avgHr,30,250,1,'bpm'), after('p-hr',fmtBpm(c.avgHr)));
+    if (c.maxHr !== null)
+      row('FC max <small style="color:var(--gris)">(ajustée auto)</small>', fmtBpm(c.maxHr), fixed('—'), after('p-maxhr',fmtBpm(c.maxHr)));
+  }
+
+  // ── Cadence ──────────────────────────────────────────────
+  if (c.avgCad !== null) {
+    sep('<i class="bi bi-arrow-repeat me-1"></i>Cadence');
+    row('Cadence moy.', fmtRpm(c.avgCad), ni('ncad',c.avgCad,0,250,1,'rpm'), after('p-cad',fmtRpm(c.avgCad)));
+    if (c.maxCad !== null)
+      row('Cadence max <small style="color:var(--gris)">(ajustée auto)</small>', fmtRpm(c.maxCad), fixed('—'), after('p-maxcad',fmtRpm(c.maxCad)));
+  }
+
+  // ── Puissance ────────────────────────────────────────────
+  if (c.avgPwr !== null) {
+    sep('<i class="bi bi-lightning-charge me-1"></i>Puissance');
+    row('Puissance moy.', fmtW(c.avgPwr), ni('npwr',c.avgPwr,0,3000,1,'W'), after('p-pwr',fmtW(c.avgPwr)));
+    if (c.maxPwr !== null)
+      row('Puissance max <small style="color:var(--gris)">(ajustée auto)</small>', fmtW(c.maxPwr), fixed('—'), after('p-maxpwr',fmtW(c.maxPwr)));
+  }
+
+  // ── Vitesse ──────────────────────────────────────────────
+  if (c.avgSpd !== null) {
+    sep('<i class="bi bi-speedometer2 me-1"></i>Vitesse');
+    row('Vitesse moy.', fmtSpd(c.avgSpd), ni('nspd',c.avgSpd.toFixed(1),0,200,'0.1','km/h'), after('p-spd',fmtSpd(c.avgSpd)));
+    if (c.maxSpd !== null)
+      row('Vitesse max <small style="color:var(--gris)">(ajustée auto)</small>', fmtSpd(c.maxSpd), fixed('—'), after('p-maxspd',fmtSpd(c.maxSpd)));
+  }
+
+  // ── Altitude ─────────────────────────────────────────────
+  if (c.hasAlt) {
+    sep('<i class="bi bi-bar-chart-steps me-1"></i>Altitude');
+    row('Offset global <small style="color:var(--gris)">(+/− appliqué à chaque point)</small>',
+      '0 m', ni('nalt','0',-8000,8000,1,'m'), fixed('trace conservée'));
+  }
+
+  // ── Calories ─────────────────────────────────────────────
+  if (ss?.totalCalories != null) {
+    sep('<i class="bi bi-fire me-1"></i>Calories');
+    row('Calories dépensées', fmtCal(ss.totalCalories),
+      ni('ncal', ss.totalCalories, 0, 20000, 1, 'kcal'),
+      after('p-cal', fmtCal(ss.totalCalories)));
+  }
+
+  // ── Trace GPS ────────────────────────────────────────────
+  sep('<i class="bi bi-map me-1"></i>Trace GPS &amp; Distance');
+  row('Points GPS',      S.fit.records.length+'',   fixed('conservés à l\'identique'), '');
+  row('Distance totale', S.fit.session?.totalDist ? fmtKm(S.fit.session.totalDist) : '—',
+    fixed('calculée depuis la trace GPS'), '');
+
+  // ── Live updates ─────────────────────────────────────────
+  const on = (id, fn) => { const el=document.getElementById(id); if(el) el.addEventListener('input',fn); };
+
+  on('ndt',  () => {
+    const el=document.getElementById('ndt'), pe=document.getElementById('p-dt');
+    if (!el?.value||!pe) return;
+    const d=new Date(el.value); pe.textContent=isNaN(d)?'':d.toLocaleString('fr-FR');
+  });
+  on('nhr',  () => {
+    const v=parseFloat(document.getElementById('nhr')?.value); if(isNaN(v))return;
+    const off=v-c.avgHr;
+    const e1=document.getElementById('p-hr'),    e2=document.getElementById('p-maxhr');
+    if(e1) e1.textContent=fmtBpm(clamp(Math.round(c.avgHr+off),30,250));
+    if(e2&&c.maxHr!==null) e2.textContent=fmtBpm(clamp(Math.round(c.maxHr+off),30,250));
+  });
+  on('ncad', () => {
+    const v=parseFloat(document.getElementById('ncad')?.value); if(isNaN(v))return;
+    const off=v-c.avgCad;
+    const e1=document.getElementById('p-cad'),   e2=document.getElementById('p-maxcad');
+    if(e1) e1.textContent=fmtRpm(Math.max(0,Math.round(c.avgCad+off)));
+    if(e2&&c.maxCad!==null) e2.textContent=fmtRpm(Math.max(0,Math.round(c.maxCad+off)));
+  });
+  on('npwr', () => {
+    const v=parseFloat(document.getElementById('npwr')?.value); if(isNaN(v))return;
+    const off=v-c.avgPwr;
+    const e1=document.getElementById('p-pwr'),   e2=document.getElementById('p-maxpwr');
+    if(e1) e1.textContent=fmtW(Math.max(0,Math.round(c.avgPwr+off)));
+    if(e2&&c.maxPwr!==null) e2.textContent=fmtW(Math.max(0,Math.round(c.maxPwr+off)));
+  });
+  on('nspd', () => {
+    const v=parseFloat(document.getElementById('nspd')?.value); if(isNaN(v)||!c.avgSpd)return;
+    const fac=v/c.avgSpd;
+    const e1=document.getElementById('p-spd'),   e2=document.getElementById('p-maxspd');
+    if(e1) e1.textContent=fmtSpd(v);
+    if(e2&&c.maxSpd!==null) e2.textContent=fmtSpd(c.maxSpd*fac);
+  });
+  on('ncal', () => {
+    const v=parseFloat(document.getElementById('ncal')?.value);
+    const el=document.getElementById('p-cal');
+    if(el) el.textContent=isNaN(v)?'—':fmtCal(Math.max(0,Math.round(v)));
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  LOAD FILE
+// ═══════════════════════════════════════════════════════════
+function computeStats() {
+  const { records, session:ss } = S.fit;
+  S.c = {
+    avgHr:  ss?.avgHr    ?? avgInt(records,  'hr'),
+    maxHr:  ss?.maxHr    ?? maxVal(records,  'hr'),
+    avgCad: ss?.avgCad   ?? avgInt(records,  'cad'),
+    maxCad:                 maxVal(records,  'cad'),
+    avgPwr: ss?.avgPower ?? avgInt(records,  'pwr'),
+    maxPwr:                 maxVal(records,  'pwr'),
+    avgSpd: ss?.avgSpeed ?? avgFloat(records,'spd'),
+    maxSpd: ss?.maxSpeed ?? maxVal(records,  'spd'),
+    hasAlt: records.some(r => r.alt !== null),
+    calories: ss?.totalCalories ?? null,
+  };
+}
+
+function showErr(msg) {
+  document.getElementById('err-msg').textContent = msg;
+  document.getElementById('err-box').style.display = 'block';
+}
+
+async function loadFile(file) {
+  if (!file) return;
+  document.getElementById('err-box').style.display = 'none';
+  if (!file.name.toLowerCase().endsWith('.fit')) { showErr('Fichier invalide — choisissez un fichier .FIT Garmin'); return; }
+  try {
+    const buf = await file.arrayBuffer();
+    const fit = parseFIT(buf);
+    if (!fit.records.length) throw new Error('Aucun point GPS trouvé dans ce fichier FIT');
+    S.fit = fit; S.fname = file.name;
+    computeStats();
+    document.getElementById('drop-zone').style.display = 'none';
+    document.getElementById('editor').style.display    = 'block';
+    document.getElementById('fname-lbl').textContent   = file.name;
+    document.getElementById('pts-lbl').textContent     = `— ${fit.records.length} pts GPS`;
+    const base = file.name.replace(/\.fit$/i,'').replace(/_/g,' ');
+    document.getElementById('xname').value = base || 'Mon activité';
+    document.getElementById('xfile').value = file.name.replace(/\.fit$/i,'');
+    renderStats();
+    renderEditTable();
+  } catch(e) { showErr(e.message); }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CALCUL MODIFICATIONS
+// ═══════════════════════════════════════════════════════════
+function getMods() {
+  const { c, fit } = S; const { records, session:ss } = fit;
+  const gv = id => parseFloat(document.getElementById(id)?.value);
+  const nHr=gv('nhr'), nCad=gv('ncad'), nPwr=gv('npwr'), nSpd=gv('nspd'), nAlt=gv('nalt'), nCal=gv('ncal');
+
+  const hrOff  = (c.avgHr  !== null && !isNaN(nHr))  ? nHr  - c.avgHr  : 0;
+  const cadOff = (c.avgCad !== null && !isNaN(nCad))  ? nCad - c.avgCad : 0;
+  const pwrOff = (c.avgPwr !== null && !isNaN(nPwr))  ? nPwr - c.avgPwr : 0;
+  const spdFac = (c.avgSpd > 0 && !isNaN(nSpd) && nSpd > 0) ? nSpd / c.avgSpd : 1;
+  const altOff = !isNaN(nAlt) ? nAlt : 0;
+  const calories = !isNaN(nCal) ? Math.max(0, Math.round(nCal)) : (ss?.totalCalories ?? null);
+
+  let tsOff = 0;
+  const ndtEl = document.getElementById('ndt');
+  const origTs = ss?.startTime || records[0]?.ts;
+  if (ndtEl?.value && origTs) {
+    const nd = new Date(ndtEl.value);
+    if (!isNaN(nd)) tsOff = (nd.getTime() - origTs.getTime()) / 1000;
+  }
+  return { hrOff, cadOff, pwrOff, altOff, spdFac, tsOff, calories };
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ÉVÉNEMENTS
+// ═══════════════════════════════════════════════════════════
+const dropEl = document.getElementById('drop-zone');
+const fileEl = document.getElementById('file-input');
+
+dropEl.addEventListener('click',    () => fileEl.click());
+fileEl.addEventListener('change',   e  => { loadFile(e.target.files[0]); fileEl.value=''; });
+dropEl.addEventListener('dragover', e  => { e.preventDefault(); dropEl.classList.add('drag-over'); });
+dropEl.addEventListener('dragleave',()  => dropEl.classList.remove('drag-over'));
+dropEl.addEventListener('drop',     e  => { e.preventDefault(); dropEl.classList.remove('drag-over'); loadFile(e.dataTransfer.files[0]); });
+
+document.getElementById('change-btn').addEventListener('click', () => {
+  S.fit = null;
+  document.getElementById('drop-zone').style.display = '';
+  document.getElementById('editor').style.display    = 'none';
+  document.getElementById('err-box').style.display   = 'none';
+});
+
+document.getElementById('export-btn').addEventListener('click', () => {
+  if (!S.fit?.records?.length) return;
+  const mods    = getMods();
+  const name    = document.getElementById('xname').value || 'Mon activité';
+  const rawFile = document.getElementById('xfile').value || 'activite';
+  const fname   = rawFile.replace(/\.gpx$/i,'') + '.gpx';
+  const gpx     = buildGPX(S.fit.records, mods, name);
+  const url     = URL.createObjectURL(new Blob([gpx], { type:'application/gpx+xml' }));
+  const a       = Object.assign(document.createElement('a'), { href:url, download:fname });
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+});
+</script>
+</body>
+</html>
