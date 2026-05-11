@@ -128,6 +128,7 @@
             width: 60%; background: rgba(255,255,255,0.97); border-radius: 15px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.15); z-index: 2400;
             padding: 8px 12px 6px; overflow: hidden;
+            pointer-events: none; /* laisse passer les clics/touches vers la carte */
         }
         #elev-placeholder {
             position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
@@ -136,6 +137,19 @@
         }
         #elev-chart-wrap { position: relative; height: 100px; }
         #elevationChart { display: block; }
+
+        /* ---- RESPONSIVE MOBILE ---- */
+        @media (max-width: 768px) {
+            #elevation-container {
+                width: calc(100vw - 30px);
+                bottom: 8px;
+                left: 15px;
+                transform: none;
+            }
+            #elev-chart-wrap { height: 75px; }
+            .dashboard-top { right: 8px; }
+            .right-toolbar  { right: 8px; width: 72px; }
+        }
 
         #map { height: calc(100vh - var(--nav-h)); width: 100vw; margin-top: var(--nav-h); z-index: 1; }
         .poi-auto-icon {
@@ -262,6 +276,9 @@
     <button id="btn-reset" class="btn-saas danger" onclick="confirmReset()" disabled>
         <i class="fa-solid fa-trash-can"></i><span>Tout effacer</span>
     </button>
+    <button id="btn-elev" class="btn-saas" onclick="calcElevation()" disabled style="color:#9b59b6">
+        <i class="fa-solid fa-mountain"></i><span>Profil altim.</span>
+    </button>
 </div>
 
 <!-- PROFIL ALTIMÉTRIQUE -->
@@ -317,7 +334,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Scripts du club (toggleMenu, closeMenu) -->
 <script src="../scripts.js" defer></script>
 
@@ -356,28 +372,109 @@
     const polyline = L.polyline([], { color: '#e8357a', weight: 5, opacity: 0.9 }).addTo(map);
 
     // ================================================================
-    //  PROFIL ALTIMÉTRIQUE (Chart.js)
+    //  PROFIL ALTIMÉTRIQUE — canvas 2D pur (aucune lib externe)
     // ================================================================
-    const ctx = document.getElementById('elevationChart').getContext('2d');
-    const elevChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                data: [], borderColor: '#00b4d8', fill: true, pointRadius: 0,
-                backgroundColor: 'rgba(0,180,216,0.08)', tension: 0.4, borderWidth: 2
-            }]
-        },
-        options: {
-            maintainAspectRatio: false,
-            responsive: true,
-            plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
-            scales: {
-                x: { display: false },
-                y: { ticks: { font: { size: 9 }, callback: v => v + ' m' }, grid: { color: 'rgba(0,0,0,0.04)' } }
-            }
+    const elevCanvas = document.getElementById('elevationChart');
+    const elevWrap   = document.getElementById('elev-chart-wrap');
+    const elevCtx2d  = elevCanvas.getContext('2d');
+    let   _lastElevs = null;   // derniers points reçus
+
+    function drawElevation(elevs, totalKm) {
+        const w = elevWrap.clientWidth  || 400;
+        const h = elevWrap.clientHeight || 100;
+        elevCanvas.width  = w;
+        elevCanvas.height = h;
+
+        if (!elevs || elevs.length < 2) { elevCtx2d.clearRect(0,0,w,h); return; }
+
+        const pad = { top: 6, right: 8, bottom: 18, left: 36 };
+        const cw  = w - pad.left - pad.right;
+        const ch  = h - pad.top  - pad.bottom;
+
+        const minE = Math.min(...elevs);
+        const maxE = Math.max(...elevs);
+        const rng  = maxE - minE || 1;
+
+        const xOf = i => pad.left + (i / (elevs.length - 1)) * cw;
+        const yOf = e => pad.top  + ch - ((e - minE) / rng) * ch;
+
+        elevCtx2d.clearRect(0, 0, w, h);
+
+        // Zone de remplissage
+        elevCtx2d.beginPath();
+        elevCtx2d.moveTo(xOf(0), yOf(elevs[0]));
+        for (let i = 1; i < elevs.length; i++) {
+            // courbe de Bézier douce
+            const xp = xOf(i - 1), yp = yOf(elevs[i - 1]);
+            const xc = xOf(i),     yc = yOf(elevs[i]);
+            const mx = (xp + xc) / 2;
+            elevCtx2d.bezierCurveTo(mx, yp, mx, yc, xc, yc);
         }
+        elevCtx2d.lineTo(xOf(elevs.length - 1), h - pad.bottom);
+        elevCtx2d.lineTo(xOf(0), h - pad.bottom);
+        elevCtx2d.closePath();
+        const grad = elevCtx2d.createLinearGradient(0, pad.top, 0, h - pad.bottom);
+        grad.addColorStop(0,   'rgba(0,180,216,0.25)');
+        grad.addColorStop(1,   'rgba(0,180,216,0.02)');
+        elevCtx2d.fillStyle = grad;
+        elevCtx2d.fill();
+
+        // Ligne de profil
+        elevCtx2d.beginPath();
+        elevCtx2d.moveTo(xOf(0), yOf(elevs[0]));
+        for (let i = 1; i < elevs.length; i++) {
+            const xp = xOf(i - 1), yp = yOf(elevs[i - 1]);
+            const xc = xOf(i),     yc = yOf(elevs[i]);
+            const mx = (xp + xc) / 2;
+            elevCtx2d.bezierCurveTo(mx, yp, mx, yc, xc, yc);
+        }
+        elevCtx2d.strokeStyle = '#00b4d8';
+        elevCtx2d.lineWidth   = 2;
+        elevCtx2d.stroke();
+
+        // Axe Y — 3 étiquettes
+        elevCtx2d.fillStyle  = '#888';
+        elevCtx2d.font       = '9px Nunito, sans-serif';
+        elevCtx2d.textAlign  = 'right';
+        [0, 0.5, 1].forEach(t => {
+            const e = minE + rng * t;
+            const y = yOf(e);
+            elevCtx2d.fillText(Math.round(e) + 'm', pad.left - 3, y + 3);
+            elevCtx2d.beginPath();
+            elevCtx2d.moveTo(pad.left, y);
+            elevCtx2d.lineTo(w - pad.right, y);
+            elevCtx2d.strokeStyle = 'rgba(0,0,0,0.05)';
+            elevCtx2d.lineWidth   = 1;
+            elevCtx2d.stroke();
+        });
+
+        // Axe X — distance début / milieu / fin
+        elevCtx2d.fillStyle  = '#aaa';
+        elevCtx2d.textAlign  = 'center';
+        [[0, '0 km'], [0.5, (totalKm / 2).toFixed(1) + ' km'], [1, totalKm.toFixed(1) + ' km']]
+            .forEach(([t, lbl]) => {
+                const x = pad.left + t * cw;
+                elevCtx2d.fillText(lbl, x, h - 2);
+            });
+    }
+
+    // Rafraîchit le profil si la fenêtre est redimensionnée
+    window.addEventListener('resize', () => {
+        if (_lastElevs) drawElevation(_lastElevs.elevs, _lastElevs.totalKm);
     });
+
+    function clearElevation() {
+        // Annule tout fetch en cours
+        if (window._elevAbortCtrl) { window._elevAbortCtrl.abort(); window._elevAbortCtrl = null; }
+        window._elevGeneration = (window._elevGeneration || 0) + 1;
+        _lastElevs = null;
+        elevCtx2d.clearRect(0, 0, elevCanvas.width, elevCanvas.height);
+        document.getElementById('dplus-pill').style.display = 'none';
+        document.getElementById('dminus-pill').style.display = 'none';
+        const ph = document.getElementById('elev-placeholder');
+        ph.textContent = 'Tracez un itinéraire pour voir le profil altimétrique';
+        ph.style.display = '';
+    }
 
     // ================================================================
     //  COUCHES DE CARTE
@@ -422,56 +519,103 @@
     }
 
     // ================================================================
-    //  FILE D'ATTENTE — tous les clics sont enregistrés et traités dans l'ordre
+    //  DÉCODEUR Polyline6 (format Valhalla — précision 1e-6)
     // ================================================================
-    let routeQueue = Promise.resolve();
+    function decodePolyline6(encoded) {
+        const coords = [];
+        let index = 0, lat = 0, lng = 0;
+        while (index < encoded.length) {
+            let b, shift = 0, result = 0;
+            do { b = encoded.charCodeAt(index++) - 63; result |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20);
+            lat += (result & 1) ? ~(result >> 1) : (result >> 1);
+            shift = 0; result = 0;
+            do { b = encoded.charCodeAt(index++) - 63; result |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20);
+            lng += (result & 1) ? ~(result >> 1) : (result >> 1);
+            coords.push([lat / 1e6, lng / 1e6]);
+        }
+        return coords;
+    }
+
+    // ================================================================
+    //  CLIC CARTE — ajout immédiat + raffinement Valhalla en arrière-plan
+    //  Valhalla (instance publique OSM) respecte toutes les restrictions
+    //  d'accès OSM : bicycle=no, access=private, motorway, voies express…
+    // ================================================================
+    let _osrmCtrl = null;
 
     map.on('click', (e) => {
         if (poiMode) { placePOI(e.latlng); return; }
-        // Chaîne chaque clic à la fin de la promesse précédente → jamais perdu
-        routeQueue = routeQueue.then(() => addPoint(e.latlng));
+        addPoint(e.latlng);
     });
 
-    // ================================================================
-    //  ROUTAGE OSRM (profil bicycle évite nativement autoroutes/voies express)
-    // ================================================================
-    async function addPoint(latlng) {
-        setLoading(true);
-        let segment = [];
+    function addPoint(latlng) {
+        const newWp = { lat: latlng.lat, lng: latlng.lng };
 
+        // 1. Ajoute le point IMMÉDIATEMENT avec une ligne droite provisoire
         if (waypoints.length > 0) {
-            const prev    = waypoints[waypoints.length - 1];
-            const profile = document.getElementById('routeProfile').value;
-            // bicycle et mtb → profil OSRM bicycle (évite motorway/trunk)
-            // hiking        → profil OSRM foot
-            const osrmProfile = profile === 'hiking' ? 'foot' : 'bicycle';
-            const url = `https://router.project-osrm.org/route/v1/${osrmProfile}/`
-                      + `${prev.lng},${prev.lat};${latlng.lng},${latlng.lat}`
-                      + `?overview=full&geometries=geojson&annotations=false`;
-            try {
-                const ctrl = new AbortController();
-                const tid  = setTimeout(() => ctrl.abort(), 12000);
-                const res  = await fetch(url, { signal: ctrl.signal });
-                clearTimeout(tid);
-                if (!res.ok) throw new Error('OSRM HTTP ' + res.status);
-                const data = await res.json();
-                if (data.routes && data.routes[0]) {
-                    segment = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
-                }
-            } catch {
-                // Fallback ligne droite si réseau indisponible
-                segment = [[prev.lat, prev.lng], [latlng.lat, latlng.lng]];
-            }
+            const prev = waypoints[waypoints.length - 1];
+            segments.push([[prev.lat, prev.lng], [newWp.lat, newWp.lng]]);
         }
-
-        waypoints.push({ lat: latlng.lat, lng: latlng.lng });
-        if (segment.length > 0) segments.push(segment);
-
+        waypoints.push(newWp);
         refreshMarkers();
         updateButtons();
-        updateDistanceUI();          // rapide, synchrone
-        fetchElevations(getFullPath()); // lent, détaché — ne bloque pas la file
-        setLoading(false);
+        updateDistanceUI();
+
+        // 2. Raffine le dernier segment avec Valhalla en arrière-plan
+        if (waypoints.length < 2) return;
+        const segIdx = segments.length - 1;
+        const prev   = waypoints[waypoints.length - 2];
+        const profile = document.getElementById('routeProfile').value;
+
+        // Profils Valhalla :
+        //  bicycle     → route (Road bike, respecte toutes les restrictions)
+        //  pedestrian  → randonnée / marche
+        //  mountain_bicycle → VTT / gravel (emprunts chemin acceptés)
+        let vCost, vOptions;
+        if (profile === 'hiking') {
+            vCost    = 'pedestrian';
+            vOptions = {};
+        } else if (profile === 'mtb') {
+            vCost    = 'bicycle';
+            vOptions = { bicycle: { bicycle_type: 'Mountain', use_roads: 0.3, avoid_bad_surfaces: 0.2 } };
+        } else {
+            vCost    = 'bicycle';
+            vOptions = { bicycle: { bicycle_type: 'Road', use_roads: 0.9, avoid_bad_surfaces: 0.8 } };
+        }
+
+        const body = JSON.stringify({
+            locations: [
+                { lon: prev.lng,    lat: prev.lat },
+                { lon: latlng.lng,  lat: latlng.lat }
+            ],
+            costing: vCost,
+            costing_options: vOptions,
+            units: 'km'
+        });
+
+        if (_osrmCtrl) _osrmCtrl.abort();
+        const ctrl = new AbortController();
+        _osrmCtrl = ctrl;
+        setLoading(true);
+        const tid = setTimeout(() => ctrl.abort(), 8000);
+
+        fetch('https://valhalla1.openstreetmap.de/route', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body,
+            signal: ctrl.signal
+        })
+        .then(r => { clearTimeout(tid); return r.ok ? r.json() : null; })
+        .then(data => {
+            if (ctrl.signal.aborted) return;
+            if (data && data.trip && data.trip.legs && data.trip.legs[0]) {
+                const coords = decodePolyline6(data.trip.legs[0].shape);
+                segments[segIdx] = coords;
+                updateDistanceUI();
+            }
+        })
+        .catch(() => { clearTimeout(tid); })
+        .finally(() => { if (_osrmCtrl === ctrl) { _osrmCtrl = null; setLoading(false); } });
     }
 
     // ================================================================
@@ -521,42 +665,75 @@
     }
 
     // compaté avec les appels existants (undo, reset)
-    async function updateUI() {
+    function updateUI() {
         updateDistanceUI();
-        await fetchElevations(getFullPath());
+        // Pas de fetchElevations ici — uniquement au bouclage
     }
 
     // ================================================================
-    //  ÉLÉVATION VIA OPEN-METEO (gratuit, fiable, pas de clé API)
+    //  ÉLÉVATION VIA OPEN-METEO — déclenchée uniquement par le bouton
     // ================================================================
-    async function fetchElevations(fullPath) {
-        if (fullPath.length < 2) return;
-        const MAX_PTS = 100;
-        const step    = Math.max(1, Math.floor(fullPath.length / MAX_PTS));
+    async function fetchElevations(fullPath, onDone) {
+        const placeholder = document.getElementById('elev-placeholder');
+        if (fullPath.length < 2) {
+            placeholder.textContent = 'Pas assez de points pour calculer le profil.';
+            placeholder.style.display = '';
+            if (onDone) onDone();
+            return;
+        }
+
+        // Annule tout fetch précédent et incrémente la génération
+        if (window._elevAbortCtrl) window._elevAbortCtrl.abort();
+        const ctrl = new AbortController();
+        window._elevAbortCtrl = ctrl;
+        window._elevGeneration = (window._elevGeneration || 0) + 1;
+        const myGen = window._elevGeneration;
+
+        placeholder.textContent = 'Calcul du profil en cours…';
+        placeholder.style.display = '';
+
+        // Échantillonnage régulier : exactement N points (premier + N-2 intermédiaires + dernier)
+        const MAX_PTS = 99; // sécurité : Open-Meteo limite à 100
+        const n       = Math.min(fullPath.length, MAX_PTS);
         const sampled = [];
-        for (let i = 0; i < fullPath.length; i += step) sampled.push(fullPath[i]);
+        for (let i = 0; i < n; i++) {
+            const idx = Math.round(i * (fullPath.length - 1) / (n - 1));
+            sampled.push(fullPath[idx]);
+        }
+
+        const lats = sampled.map(p => parseFloat(p[0]).toFixed(6)).join(',');
+        const lngs = sampled.map(p => parseFloat(p[1]).toFixed(6)).join(',');
+        console.log(`[Élévation] ${sampled.length} pts — URL:`, `https://api.open-meteo.com/v1/elevation?latitude=${lats}&longitude=${lngs}`);
+
         try {
-            const lats = sampled.map(p => p[0].toFixed(6)).join(',');
-            const lngs = sampled.map(p => p[1].toFixed(6)).join(',');
-            const ctrl = new AbortController();
-            const tid  = setTimeout(() => ctrl.abort(), 10000);
-            const res  = await fetch(
+            const res = await fetch(
                 `https://api.open-meteo.com/v1/elevation?latitude=${lats}&longitude=${lngs}`,
                 { signal: ctrl.signal }
             );
-            clearTimeout(tid);
-            if (!res.ok) throw new Error('Open-Meteo HTTP ' + res.status);
+            // Si une annulation ou un fetch plus récent a eu lieu, on ignore
+            if (myGen !== window._elevGeneration) return;
+            if (!res.ok) throw new Error('HTTP ' + res.status);
             const data = await res.json();
-            const elevs = Array.isArray(data.elevation) ? data.elevation : [data.elevation];
-            renderElevationChart(elevs, parseFloat(document.getElementById('dist-val').innerText));
+            if (myGen !== window._elevGeneration) return;
+            if (!data.elevation) throw new Error('Réponse inattendue : ' + JSON.stringify(data));
+
+            const elevs   = Array.isArray(data.elevation) ? data.elevation : [data.elevation];
+            const totalKm = parseFloat(document.getElementById('dist-val').innerText) || 0;
+            renderElevationChart(elevs, totalKm);
         } catch (err) {
-            console.warn('Élévation indisponible :', err.message);
+            if (err.name === 'AbortError') return; // annulation volontaire, ne rien afficher
+            if (myGen !== window._elevGeneration) return;
+            console.error('Profil altimétrique :', err);
+            placeholder.textContent = '⚠ Profil indisponible (' + err.message + ')';
+            placeholder.style.display = '';
+        } finally {
+            if (window._elevAbortCtrl === ctrl) window._elevAbortCtrl = null;
+            if (onDone) onDone();
         }
     }
 
     function renderElevationChart(elevs, totalKm) {
-        // Labels km
-        const labels = elevs.map((_, i) => ((i / (elevs.length - 1)) * totalKm).toFixed(1));
+        if (!elevs || elevs.length < 2) return;
 
         // D+ / D-
         let dPlus = 0, dMinus = 0;
@@ -565,15 +742,13 @@
             if (diff > 0) dPlus += diff; else dMinus += Math.abs(diff);
         }
 
-        elevChart.data.labels = labels;
-        elevChart.data.datasets[0].data = elevs;
-        elevChart.update();
+        _lastElevs = { elevs, totalKm };
+        drawElevation(elevs, totalKm);
 
-        document.getElementById('dplus-val').innerText = Math.round(dPlus);
+        document.getElementById('dplus-val').innerText  = Math.round(dPlus);
         document.getElementById('dminus-val').innerText = Math.round(dMinus);
-        document.getElementById('dplus-pill').style.display = '';
+        document.getElementById('dplus-pill').style.display  = '';
         document.getElementById('dminus-pill').style.display = '';
-        // Cache le placeholder (canvas est toujours affiché)
         document.getElementById('elev-placeholder').style.display = 'none';
     }
 
@@ -586,6 +761,7 @@
         document.getElementById('btn-undo').disabled  = !hasPoints;
         document.getElementById('btn-loop').disabled  = !hasTwo;
         document.getElementById('btn-reset').disabled = !hasPoints;
+        document.getElementById('btn-elev').disabled  = !hasTwo;
     }
 
     // ================================================================
@@ -596,14 +772,7 @@
         waypoints.pop();
         if (segments.length > 0) segments.pop();
 
-        // Réinitialise le graphique d'élévation
-        elevChart.data.labels = [];
-        elevChart.data.datasets[0].data = [];
-        elevChart.update();
-        document.getElementById('dplus-pill').style.display = 'none';
-        document.getElementById('dminus-pill').style.display = 'none';
-        document.getElementById('elev-placeholder').style.display = '';
-
+        clearElevation();
         refreshMarkers();
         updateButtons();
         updateUI();
@@ -621,23 +790,38 @@
         markers = [];
         polyline.setLatLngs([]);
 
-        elevChart.data.labels = [];
-        elevChart.data.datasets[0].data = [];
-        elevChart.update();
+        clearElevation();
 
         document.getElementById('dist-val').innerText  = '0.0';
-        ['dplus-pill','dminus-pill'].forEach(id => {
-            document.getElementById(id).style.display = 'none';
-        });
-        document.getElementById('elev-placeholder').style.display = '';
         updateButtons();
     };
 
     // ================================================================
     //  BOUCLER
     // ================================================================
-    window.closeLoop = async function () {
-        if (waypoints.length > 1) await addPoint(waypoints[0]);
+    window.closeLoop = function () {
+        if (waypoints.length < 2) return;
+        addPoint(L.latLng(waypoints[0].lat, waypoints[0].lng));
+    };
+
+    // ================================================================
+    //  CALCULER LE PROFIL ALTIMÉTRIQUE (bouton dédié)
+    // ================================================================
+    window.calcElevation = function () {
+        const path = getFullPath();
+        if (path.length < 2) return;
+
+        // Si OSRM est encore en cours, on annule et on travaille avec ce qu'on a
+        if (_osrmCtrl) { _osrmCtrl.abort(); _osrmCtrl = null; setLoading(false); }
+
+        const btn = document.getElementById('btn-elev');
+        btn.disabled = true;
+        btn.querySelector('i').className = 'fa-solid fa-spinner fa-spin';
+
+        fetchElevations(path, () => {
+            btn.disabled = false;
+            btn.querySelector('i').className = 'fa-solid fa-mountain';
+        });
     };
 
     // ================================================================
