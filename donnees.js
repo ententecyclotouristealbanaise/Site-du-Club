@@ -17,7 +17,21 @@ const ECTA_DATA = {
       "image": ""
     }
   ],
-  "agenda": [],
+  "agenda": [
+    {
+      "date": "Dim. 17 mai.",
+      "dateSort": "2026-05-17",
+      "titre": "Randonnée de la flora ( Pas de Sortie Club)",
+      "videos": [],
+      "locked": true,
+      "parcours": [
+        {
+          "distance": " ",
+          "lien": ""
+        }
+      ]
+    }
+  ],
   "motDePasse": "ZWN0YTE5ODU=",
   "galerie": [
     {
