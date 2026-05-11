@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joindre GPX / FIT · ECTA Saint-Alban</title>
+    <meta name="description" content="Fusionnez deux fichiers GPX ou FIT en un seul fichier GPX. Outil gratuit du club ECTA Saint-Alban." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e8357a'/></svg>" />
+    <link rel="apple-touch-icon" href="../icon-192x192.png" />
+    <link rel="manifest" href="../manifest.json" />
+    <meta name="theme-color" content="#e8357a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css?v=20260501">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --rose:   #e8357a;
+            --cyan:   #00b4d8;
+            --vert:   #27ae60;
+            --orange: #e67e22;
+            --gris:   #6b7280;
+            --gris-clair: #f3f4f6;
+            --nav-h:  54px;
+        }
+        body { font-family: 'Nunito', sans-serif; background: #f4f7f6; padding-top: var(--nav-h); min-height: 100vh; }
+        .btn { padding:.375rem .75rem; font-size:.875rem; letter-spacing:0; transform:none !important; }
+        .btn:hover { transform:none !important; box-shadow:none; }
+
+        /* ─── HERO ─── */
+        .hero {
+            background: linear-gradient(135deg, var(--rose) 0%, #b5006e 100%);
+            color: white; padding: 2.5rem 1rem 2rem; text-align: center;
+        }
+        .hero h1 { font-family: 'Barlow Condensed', sans-serif; font-size: 2.4rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .4rem; }
+        .hero p  { font-size: 1rem; opacity: .9; margin: 0; }
+
+        /* ─── CARTES DE ZONE DE DÉPÔT ─── */
+        .drop-card {
+            background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,.08);
+            padding: 1.5rem; height: 100%;
+        }
+        .drop-card .card-label {
+            font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: .05em; margin-bottom: 1rem;
+            display: flex; align-items: center; gap: .5rem;
+        }
+        .drop-zone {
+            border: 2.5px dashed #d1d5db; border-radius: 12px;
+            padding: 2.5rem 1rem; text-align: center; cursor: pointer;
+            background: #fafafa; transition: border-color .2s, background .2s;
+            position: relative;
+        }
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: var(--rose); background: #fde8f1;
+        }
+        .drop-zone.loaded  { border-color: var(--vert); background: #f0fdf4; }
+        .drop-zone .dz-icon { font-size: 2.4rem; margin-bottom: .6rem; }
+        .drop-zone input[type=file] {
+            position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+        }
+        .drop-zone .dz-info { font-size: .85rem; color: var(--gris); }
+        .drop-zone .dz-name { font-weight: 700; color: #1c1c2e; font-size: .9rem; margin-top: .4rem; word-break: break-all; }
+        .drop-zone .dz-stats { font-size: .8rem; color: var(--gris); margin-top: .2rem; }
+
+        /* ─── FLÈCHE CENTRALE ─── */
+        .merge-arrow {
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; color: var(--rose); height: 100%;
+            padding: 1rem 0;
+        }
+
+        /* ─── RÉSUMÉ ─── */
+        .summary-card {
+            background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,.08);
+            padding: 1.5rem; margin-top: 1.5rem;
+        }
+        .summary-row {
+            display: flex; gap: 1rem; flex-wrap: wrap;
+        }
+        .stat-box {
+            flex: 1; min-width: 120px; background: #f9fafb; border-radius: 10px;
+            padding: .75rem 1rem; text-align: center;
+            border: 1.5px solid #e5e7eb;
+        }
+        .stat-box .val { font-size: 1.5rem; font-weight: 900; color: var(--rose); line-height: 1; }
+        .stat-box .val.green { color: var(--vert); }
+        .stat-box .val.blue  { color: var(--cyan); }
+        .stat-box .lbl { font-size: .7rem; font-weight: 700; text-transform: uppercase; color: var(--gris); letter-spacing: .05em; margin-top: .2rem; }
+
+        /* ─── OPTIONS ─── */
+        .options-card {
+            background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,.08);
+            padding: 1.5rem; margin-top: 1.5rem;
+        }
+        .options-card h6 {
+            font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+            text-transform: uppercase; letter-spacing: .05em; font-size: 1rem; margin-bottom: 1rem;
+        }
+
+        /* ─── BOUTON FUSION ─── */
+        #btn-merge {
+            background: linear-gradient(135deg, var(--rose), #b5006e);
+            color: white; border: none; border-radius: 50px;
+            padding: .9rem 2.5rem; font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em;
+            box-shadow: 0 6px 20px rgba(232,53,122,.4); transition: transform .2s, box-shadow .2s;
+            cursor: pointer; width: 100%;
+        }
+        #btn-merge:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; transform: none !important; }
+        #btn-merge:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(232,53,122,.5); }
+
+        /* ─── ALERTE ─── */
+        .alert-zone { margin-top: 1rem; display: none; }
+        .alert-zone.show { display: block; }
+
+        /* ─── SÉQUENCE (ordre des fichiers) ─── */
+        .seq-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 24px; height: 24px; border-radius: 50%;
+            font-size: .75rem; font-weight: 900; flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV ECTA -->
+<nav>
+  <div class="nav-brand">
+    <a href="../index.html" style="display:flex;align-items:center;gap:.75rem;text-decoration:none">
+      <img class="nav-logo-img" src="../images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
+      <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban · Côtes-d'Armor</small></div>
+    </a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="../index.html">Accueil</a></li>
+    <li><a href="../le-club.html">Le Club</a></li>
+    <li><a href="../actualites.html">Activités</a></li>
+    <li><a href="../agenda.html">Agenda</a></li>
+    <li><a href="../galerie.html">Galerie</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+    <li><a href="../documents.html">WT 2026</a></li>
+    <li><a href="../news.html">Actu vélo</a></li>
+    <li><a href="../calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
+    <li><a href="../Flora 2026.html">Flora 2026</a></li>
+    <li><a href="../outils.html" class="active">Outils</a></li>
+  </ul>
+  <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="../index.html" onclick="closeMenu()">Accueil</a>
+  <a href="../le-club.html" onclick="closeMenu()">Le Club</a>
+  <a href="../actualites.html" onclick="closeMenu()">Activités</a>
+  <a href="../agenda.html" onclick="closeMenu()">Agenda</a>
+  <a href="../galerie.html" onclick="closeMenu()">Galerie</a>
+  <a href="../contact.html" onclick="closeMenu()">Contact</a>
+  <a href="../documents.html" onclick="closeMenu()">WT 2026</a>
+  <a href="../news.html" onclick="closeMenu()">Actu vélo</a>
+  <a href="../calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
+  <a href="../Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
+  <a href="../outils.html" onclick="closeMenu()">Outils</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+    <h1><i class="fa-solid fa-code-merge me-2"></i>Joindre GPX / FIT</h1>
+    <p>Fusionnez deux fichiers GPX ou FIT en un seul fichier GPX — dans l'ordre de votre choix</p>
+</div>
+
+<!-- CONTENU PRINCIPAL -->
+<div class="container py-4" style="max-width:900px">
+
+    <!-- ZONES DE DÉPÔT -->
+    <div class="row g-3 align-items-stretch">
+
+        <!-- Fichier 1 -->
+        <div class="col-12 col-md-5">
+            <div class="drop-card">
+                <div class="card-label">
+                    <span class="seq-badge" style="background:#e8357a;color:white">1</span>
+                    Fichier 1 <small class="text-muted fw-normal ms-1" style="font-size:.75rem">(début)</small>
+                </div>
+                <div class="drop-zone" id="dz1">
+                    <input type="file" id="file1" accept=".gpx,.fit" onchange="loadFile(1, this.files[0])">
+                    <div class="dz-icon">📂</div>
+                    <div class="dz-info">Glissez-déposez un fichier<br><strong>.GPX</strong> ou <strong>.FIT</strong></div>
+                    <div class="dz-name" id="dz1-name" style="display:none"></div>
+                    <div class="dz-stats" id="dz1-stats" style="display:none"></div>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary mt-2 w-100" onclick="clearFile(1)" id="clear1" style="display:none">
+                    <i class="fa-solid fa-xmark me-1"></i>Retirer
+                </button>
+            </div>
+        </div>
+
+        <!-- Flèche -->
+        <div class="col-12 col-md-2 d-flex">
+            <div class="merge-arrow w-100">
+                <i class="fa-solid fa-arrow-right d-none d-md-block"></i>
+                <i class="fa-solid fa-arrow-down d-md-none"></i>
+            </div>
+        </div>
+
+        <!-- Fichier 2 -->
+        <div class="col-12 col-md-5">
+            <div class="drop-card">
+                <div class="card-label">
+                    <span class="seq-badge" style="background:#00b4d8;color:white">2</span>
+                    Fichier 2 <small class="text-muted fw-normal ms-1" style="font-size:.75rem">(suite)</small>
+                </div>
+                <div class="drop-zone" id="dz2">
+                    <input type="file" id="file2" accept=".gpx,.fit" onchange="loadFile(2, this.files[0])">
+                    <div class="dz-icon">📂</div>
+                    <div class="dz-info">Glissez-déposez un fichier<br><strong>.GPX</strong> ou <strong>.FIT</strong></div>
+                    <div class="dz-name" id="dz2-name" style="display:none"></div>
+                    <div class="dz-stats" id="dz2-stats" style="display:none"></div>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary mt-2 w-100" onclick="clearFile(2)" id="clear2" style="display:none">
+                    <i class="fa-solid fa-xmark me-1"></i>Retirer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ALERTE ERREUR -->
+    <div class="alert alert-danger alert-zone" id="alert-err" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i><span id="alert-msg"></span>
+    </div>
+
+    <!-- OPTIONS -->
+    <div class="options-card">
+        <h6><i class="fa-solid fa-sliders me-2" style="color:var(--rose)"></i>Options de fusion</h6>
+        <div class="row g-3">
+            <div class="col-12 col-sm-6">
+                <label class="form-label small fw-bold">Nom du fichier de sortie</label>
+                <input type="text" class="form-control form-control-sm" id="outName" value="fusion.gpx" placeholder="fusion.gpx">
+            </div>
+            <div class="col-12 col-sm-6">
+                <label class="form-label small fw-bold">Nom du tracé GPX</label>
+                <input type="text" class="form-control form-control-sm" id="trackName" value="Itinéraire fusionné" placeholder="Itinéraire fusionné">
+            </div>
+            <div class="col-12">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="keepWaypoints" checked>
+                    <label class="form-check-label small" for="keepWaypoints">Conserver les waypoints (POI) des deux fichiers</label>
+                </div>
+                <div class="form-check form-switch mt-1">
+                    <input class="form-check-input" type="checkbox" id="addJunction">
+                    <label class="form-check-label small" for="addJunction">Ajouter un waypoint à la jonction des deux fichiers</label>
+                </div>
+                <div class="form-check form-switch mt-1">
+                    <input class="form-check-input" type="checkbox" id="singleTrack" checked>
+                    <label class="form-check-label small" for="singleTrack">Fusionner en un seul segment (recommandé)</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RÉSUMÉ (visible seulement quand les 2 fichiers sont chargés) -->
+    <div class="summary-card" id="summary" style="display:none">
+        <h6 class="fw-bold mb-3" style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;text-transform:uppercase;letter-spacing:.05em">
+            <i class="fa-solid fa-chart-line me-2" style="color:var(--rose)"></i>Résumé de la fusion
+        </h6>
+        <div class="summary-row">
+            <div class="stat-box">
+                <div class="val" id="s-pts">—</div>
+                <div class="lbl">Points GPS</div>
+            </div>
+            <div class="stat-box">
+                <div class="val blue" id="s-dist">—</div>
+                <div class="lbl">Distance (km)</div>
+            </div>
+            <div class="stat-box">
+                <div class="val green" id="s-f1">—</div>
+                <div class="lbl">Fichier 1</div>
+            </div>
+            <div class="stat-box">
+                <div class="val" style="color:var(--cyan)" id="s-f2">—</div>
+                <div class="lbl">Fichier 2</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOUTON FUSION -->
+    <div class="mt-4">
+        <button id="btn-merge" disabled onclick="doMerge()">
+            <i class="fa-solid fa-code-merge me-2"></i>Fusionner et télécharger le GPX
+        </button>
+    </div>
+
+    <!-- AIDE -->
+    <div class="mt-4 p-3 rounded-3" style="background:#fff;border:1.5px solid #e5e7eb;font-size:.83rem;color:var(--gris)">
+        <strong style="color:#1c1c2e"><i class="fa-solid fa-circle-info me-1" style="color:var(--cyan)"></i>Comment ça marche</strong>
+        <ul class="mb-0 mt-2 ps-3" style="line-height:1.8">
+            <li>Déposez deux fichiers <strong>GPX</strong> ou <strong>FIT</strong> (Garmin / Wahoo…)</li>
+            <li>Le fichier 1 est placé <strong>en premier</strong>, le fichier 2 à la suite</li>
+            <li>Le résultat est téléchargé en <strong>GPX standard</strong> compatible Garmin, Strava, Komoot…</li>
+            <li>Les fichiers ne quittent <strong>jamais votre appareil</strong> — tout le traitement se fait localement</li>
+        </ul>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div style="display:flex;gap:1rem;align-items:center;margin-bottom:.5rem;">
+        <img src="../images/logo_ECTA.png?v=20260305" alt="Logo ECTA" class="footer-logo">
+      </div>
+      <h4>ECTA SAINT-ALBAN</h4>
+      <p>Club de cyclotourisme fondé en 1985 à Saint-Alban, Côtes-d'Armor.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Outils</h5>
+      <ul>
+        <li><a href="gpx-pro.html">GPX Pro</a></li>
+        <li><a href="calculateur-gpx.html">Calculateur GPX</a></li>
+        <li><a href="fit-gpx-editor.html">FIT → GPX Editor</a></li>
+        <li><a href="gpx-fit-joindre.html">Joindre GPX / FIT</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../scripts.js" defer></script>
+
+<script>
+(function () {
+'use strict';
+
+// ═══════════════════════════════════════════════════════════════════════
+//  ÉTAT
+// ═══════════════════════════════════════════════════════════════════════
+const state = { 1: null, 2: null }; // { points:[[lat,lng,ele?,time?],...], wpts:[...], name, raw }
+
+// ═══════════════════════════════════════════════════════════════════════
+//  DRAG & DROP
+// ═══════════════════════════════════════════════════════════════════════
+[1, 2].forEach(n => {
+    const dz = document.getElementById('dz' + n);
+    dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('drag-over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+    dz.addEventListener('drop', e => {
+        e.preventDefault(); dz.classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (file) loadFile(n, file);
+    });
+});
+
+// ═══════════════════════════════════════════════════════════════════════
+//  CHARGEMENT D'UN FICHIER
+// ═══════════════════════════════════════════════════════════════════════
+window.loadFile = function (n, file) {
+    if (!file) return;
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!['gpx', 'fit'].includes(ext)) {
+        showError('Format non supporté : ' + file.name + '. Utilisez .gpx ou .fit');
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+        try {
+            let parsed;
+            if (ext === 'gpx') {
+                parsed = parseGPX(e.target.result, file.name);
+            } else {
+                parsed = parseFIT(new Uint8Array(e.target.result), file.name);
+            }
+            state[n] = parsed;
+            updateDropZone(n, file.name, parsed);
+            updateSummary();
+            hideError();
+        } catch (err) {
+            showError('Erreur de lecture (' + file.name + ') : ' + err.message);
+            console.error(err);
+        }
+    };
+    if (ext === 'gpx') reader.readAsText(file);
+    else               reader.readAsArrayBuffer(file);
+};
+
+window.clearFile = function (n) {
+    state[n] = null;
+    const dz = document.getElementById('dz' + n);
+    dz.classList.remove('loaded');
+    document.getElementById('dz' + n + '-name').style.display  = 'none';
+    document.getElementById('dz' + n + '-stats').style.display = 'none';
+    document.getElementById('clear' + n).style.display = 'none';
+    document.getElementById('file' + n).value = '';
+    updateSummary();
+    hideError();
+};
+
+function updateDropZone(n, filename, parsed) {
+    const dz    = document.getElementById('dz' + n);
+    const elName  = document.getElementById('dz' + n + '-name');
+    const elStats = document.getElementById('dz' + n + '-stats');
+    dz.classList.add('loaded');
+    elName.textContent  = '✔ ' + filename;
+    elStats.textContent = parsed.points.length + ' points';
+    if (parsed.distKm) elStats.textContent += ' · ' + parsed.distKm.toFixed(1) + ' km';
+    elName.style.display  = '';
+    elStats.style.display = '';
+    document.getElementById('clear' + n).style.display = '';
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//  RÉSUMÉ + ACTIVATION DU BOUTON
+// ═══════════════════════════════════════════════════════════════════════
+function updateSummary() {
+    const s1 = state[1], s2 = state[2];
+    const btn = document.getElementById('btn-merge');
+    const sumEl = document.getElementById('summary');
+
+    if (!s1 || !s2) { btn.disabled = true; sumEl.style.display = 'none'; return; }
+
+    btn.disabled = false;
+    sumEl.style.display = '';
+    const totalPts  = s1.points.length + s2.points.length;
+    const totalDist = (s1.distKm || 0) + (s2.distKm || 0);
+    document.getElementById('s-pts').textContent  = totalPts.toLocaleString('fr');
+    document.getElementById('s-dist').textContent = totalDist.toFixed(1);
+    document.getElementById('s-f1').textContent   = s1.points.length + ' pts';
+    document.getElementById('s-f2').textContent   = s2.points.length + ' pts';
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//  PARSEUR GPX
+// ═══════════════════════════════════════════════════════════════════════
+function parseGPX(xmlText, filename) {
+    const parser = new DOMParser();
+    const doc    = parser.parseFromString(xmlText, 'application/xml');
+    if (doc.querySelector('parsererror')) throw new Error('XML invalide');
+
+    const points = [];
+    const wpts   = [];
+
+    // Track points (trkpt)
+    doc.querySelectorAll('trkpt').forEach(pt => {
+        const lat = parseFloat(pt.getAttribute('lat'));
+        const lon = parseFloat(pt.getAttribute('lon'));
+        if (isNaN(lat) || isNaN(lon)) return;
+        const eleEl  = pt.querySelector('ele');
+        const timeEl = pt.querySelector('time');
+        points.push({
+            lat, lon,
+            ele:  eleEl  ? parseFloat(eleEl.textContent)  : null,
+            time: timeEl ? timeEl.textContent.trim()       : null
+        });
+    });
+
+    // Route points (rtept) si pas de trkpt
+    if (points.length === 0) {
+        doc.querySelectorAll('rtept').forEach(pt => {
+            const lat = parseFloat(pt.getAttribute('lat'));
+            const lon = parseFloat(pt.getAttribute('lon'));
+            if (isNaN(lat) || isNaN(lon)) return;
+            const eleEl  = pt.querySelector('ele');
+            const timeEl = pt.querySelector('time');
+            points.push({
+                lat, lon,
+                ele:  eleEl  ? parseFloat(eleEl.textContent) : null,
+                time: timeEl ? timeEl.textContent.trim()      : null
+            });
+        });
+    }
+
+    // Waypoints
+    doc.querySelectorAll('wpt').forEach(wpt => {
+        const lat  = parseFloat(wpt.getAttribute('lat'));
+        const lon  = parseFloat(wpt.getAttribute('lon'));
+        const name = wpt.querySelector('name')?.textContent?.trim() || 'WPT';
+        const desc = wpt.querySelector('desc')?.textContent?.trim() || '';
+        if (!isNaN(lat) && !isNaN(lon)) wpts.push({ lat, lon, name, desc });
+    });
+
+    if (points.length === 0) throw new Error('Aucun point GPS trouvé dans le fichier GPX');
+    return { points, wpts, distKm: calcDist(points), name: filename };
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//  PARSEUR FIT (binaire Garmin)
+//  Implémentation légère — lit les enregistrements Record (lat/lon/alt/time)
+// ═══════════════════════════════════════════════════════════════════════
+function parseFIT(buf, filename) {
+    // Vérification en-tête FIT
+    if (buf.length < 14) throw new Error('Fichier FIT trop court');
+    const magic = String.fromCharCode(buf[8], buf[9], buf[10], buf[11]);
+    if (magic !== '.FIT') throw new Error('Pas un fichier FIT valide (magic: ' + magic + ')');
+
+    const view  = new DataView(buf.buffer);
+    const headerSize = buf[0];
+    let   offset     = headerSize;
+    const dataSize   = view.getUint32(4, true);
+    const dataEnd    = headerSize + dataSize;
+
+    // Table des définitions de messages locaux (0..15)
+    const defs = {};
+
+    const FIT_TYPE_RECORD = 20; // global message number pour Record
+
+    // Facteur de conversion semicircle → degrés
+    const SC = 180 / Math.pow(2, 31);
+
+    const points = [];
+
+    while (offset < dataEnd) {
+        if (offset >= buf.length) break;
+        const recHdr = buf[offset];
+        offset++;
+
+        const isCompressedTimestamp = (recHdr & 0x80) !== 0;
+        if (isCompressedTimestamp) {
+            // Message de données compressé — on saute (timestamp implicite)
+            const localNum = (recHdr >> 5) & 0x03;
+            const def = defs[localNum];
+            if (!def) break;
+            offset += def.totalSize;
+            continue;
+        }
+
+        const isDefinition = (recHdr & 0x40) !== 0;
+        const localNum     = recHdr & 0x0F;
+
+        if (isDefinition) {
+            // Octet réservé + architecture
+            offset++; // reserved
+            const arch = buf[offset++]; // 0=little-endian, 1=big-endian
+            const littleEndian = arch === 0;
+            const globalMsgNum = littleEndian
+                ? view.getUint16(offset, true)
+                : view.getUint16(offset, false);
+            offset += 2;
+            const numFields = buf[offset++];
+            const fields = [];
+            let totalSize = 0;
+            for (let f = 0; f < numFields; f++) {
+                const fieldNum  = buf[offset++];
+                const fieldSize = buf[offset++];
+                const baseType  = buf[offset++];
+                fields.push({ fieldNum, fieldSize, baseType });
+                totalSize += fieldSize;
+            }
+            // Developer fields
+            if (recHdr & 0x20) {
+                const numDev = buf[offset++];
+                for (let f = 0; f < numDev; f++) {
+                    const sz = buf[offset + 1];
+                    offset += 3;
+                    totalSize += sz;
+                }
+            }
+            defs[localNum] = { globalMsgNum, fields, totalSize, littleEndian };
+        } else {
+            // Message de données
+            const def = defs[localNum];
+            if (!def) { offset++; continue; }
+
+            if (def.globalMsgNum === FIT_TYPE_RECORD) {
+                let lat = null, lon = null, alt = null, timestamp = null;
+                const startOff = offset;
+                for (const f of def.fields) {
+                    const val = readFitField(view, offset, f.fieldSize, f.baseType, def.littleEndian);
+                    // Field numbers : 0=lat, 1=lon, 2=alt (raw), 253=timestamp
+                    if      (f.fieldNum === 0)   lat       = val;
+                    else if (f.fieldNum === 1)   lon       = val;
+                    else if (f.fieldNum === 2)   alt       = val;
+                    else if (f.fieldNum === 253) timestamp = val;
+                    offset += f.fieldSize;
+                }
+                // Valeurs invalides FIT = 0x7FFFFFFF
+                if (lat !== null && lon !== null && lat !== 0x7FFFFFFF && lon !== 0x7FFFFFFF) {
+                    const latDeg = lat * SC;
+                    const lonDeg = lon * SC;
+                    if (latDeg >= -90 && latDeg <= 90 && lonDeg >= -180 && lonDeg <= 180) {
+                        const elM = (alt !== null && alt !== 0xFFFF) ? (alt / 5 - 500) : null; // altitude FIT : val/5 - 500 m
+                        // Timestamp FIT : secondes depuis 31 déc 1989 00:00:00 UTC
+                        let isoTime = null;
+                        if (timestamp !== null && timestamp < 0xFFFFFFFF) {
+                            const FIT_EPOCH = 631065600; // secondes Unix au 31/12/1989
+                            isoTime = new Date((timestamp + FIT_EPOCH) * 1000).toISOString();
+                        }
+                        points.push({ lat: latDeg, lon: lonDeg, ele: elM, time: isoTime });
+                    }
+                }
+            } else {
+                offset += def.totalSize;
+            }
+        }
+    }
+
+    if (points.length === 0) throw new Error('Aucun point GPS trouvé dans le fichier FIT');
+    return { points, wpts: [], distKm: calcDist(points), name: filename };
+}
+
+function readFitField(view, offset, size, baseType, le) {
+    try {
+        if (size === 1) return view.getUint8(offset);
+        if (size === 2) return view.getUint16(offset, le);
+        if (size === 4) {
+            const base = baseType & 0x9F;
+            if (base === 0x85) return view.getInt32(offset, le);  // SINT32
+            return view.getUint32(offset, le);
+        }
+        return 0;
+    } catch { return 0; }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//  CALCUL DISTANCE (haversine)
+// ═══════════════════════════════════════════════════════════════════════
+function calcDist(points) {
+    const R = 6371;
+    let d = 0;
+    for (let i = 1; i < points.length; i++) {
+        const p1 = points[i-1], p2 = points[i];
+        const dLat = (p2.lat - p1.lat) * Math.PI / 180;
+        const dLon = (p2.lon - p1.lon) * Math.PI / 180;
+        const a = Math.sin(dLat/2)**2 +
+                  Math.cos(p1.lat * Math.PI/180) * Math.cos(p2.lat * Math.PI/180) * Math.sin(dLon/2)**2;
+        d += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+    return d;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+//  FUSION & EXPORT GPX
+// ═══════════════════════════════════════════════════════════════════════
+window.doMerge = function () {
+    const s1 = state[1], s2 = state[2];
+    if (!s1 || !s2) return;
+
+    const trackName     = document.getElementById('trackName').value.trim()   || 'Itinéraire fusionné';
+    const outName       = document.getElementById('outName').value.trim()     || 'fusion.gpx';
+    const keepWpts      = document.getElementById('keepWaypoints').checked;
+    const addJunction   = document.getElementById('addJunction').checked;
+    const singleTrack   = document.getElementById('singleTrack').checked;
+    const now           = new Date().toISOString();
+
+    // Waypoints
+    const allWpts = [];
+    if (keepWpts) {
+        s1.wpts.forEach(w => allWpts.push(w));
+        s2.wpts.forEach(w => allWpts.push(w));
+    }
+    if (addJunction && s1.points.length > 0) {
+        const jp = s1.points[s1.points.length - 1];
+        allWpts.push({ lat: jp.lat, lon: jp.lon, name: 'Jonction', desc: 'Fin fichier 1 / Début fichier 2' });
+    }
+
+    const wptXml = allWpts.map(w =>
+        `  <wpt lat="${w.lat.toFixed(7)}" lon="${w.lon.toFixed(7)}">\n` +
+        `    <name>${escXml(w.name)}</name>\n` +
+        (w.desc ? `    <desc>${escXml(w.desc)}</desc>\n` : '') +
+        `  </wpt>`
+    ).join('\n');
+
+    // Segments
+    function pointsToTrkpts(pts) {
+        return pts.map(p => {
+            let s = `      <trkpt lat="${p.lat.toFixed(7)}" lon="${p.lon.toFixed(7)}">`;
+            if (p.ele !== null && p.ele !== undefined) s += `\n        <ele>${p.ele.toFixed(1)}</ele>`;
+            if (p.time) s += `\n        <time>${p.time}</time>`;
+            s += '\n      </trkpt>';
+            return s;
+        }).join('\n');
+    }
+
+    let trkXml;
+    if (singleTrack) {
+        // Un seul segment contenant tous les points
+        const allPts = [...s1.points, ...s2.points];
+        trkXml =
+            `  <trk>\n    <name>${escXml(trackName)}</name>\n    <trkseg>\n` +
+            pointsToTrkpts(allPts) +
+            `\n    </trkseg>\n  </trk>`;
+    } else {
+        // Deux segments distincts dans un même track
+        trkXml =
+            `  <trk>\n    <name>${escXml(trackName)}</name>\n` +
+            `    <trkseg>\n${pointsToTrkpts(s1.points)}\n    </trkseg>\n` +
+            `    <trkseg>\n${pointsToTrkpts(s2.points)}\n    </trkseg>\n  </trk>`;
+    }
+
+    const gpx =
+`<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="ECTA Joindre GPX/FIT"
+     xmlns="http://www.topografix.com/GPX/1/1"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <metadata>
+    <name>${escXml(trackName)}</name>
+    <time>${now}</time>
+    <desc>Fusion de : ${escXml(s1.name)} + ${escXml(s2.name)}</desc>
+  </metadata>
+${wptXml ? wptXml + '\n' : ''}${trkXml}
+</gpx>`;
+
+    download(gpx, outName.endsWith('.gpx') ? outName : outName + '.gpx', 'application/gpx+xml');
+};
+
+function escXml(s) {
+    return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+}
+
+function download(content, filename, mime) {
+    const blob = new Blob([content], { type: mime });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+function showError(msg) {
+    const el = document.getElementById('alert-err');
+    document.getElementById('alert-msg').textContent = msg;
+    el.classList.add('show');
+}
+function hideError() {
+    document.getElementById('alert-err').classList.remove('show');
+}
+
+})();
+</script>
+</body>
+</html>
