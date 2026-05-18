@@ -81,6 +81,110 @@
     <a class="circuit-link" href="https://drive.google.com/drive/folders/1MFtAMK8eJzBpKcZrZbuoqPb_WXU3rD1R" target="_blank" rel="noopener">Télécharger les photos de la randonnée Flora 2026</a>
   </section>
 
+  <section id="flora-gallery" style="max-width:1100px;margin:0 auto 2.2rem;padding:0 1rem;">
+    <h2 style="margin:.5rem 0 1rem;font-size:1.1rem;">Galerie Flora 2026</h2>
+    <div id="gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;">
+      <!-- miniatures chargées dynamiquement -->
+    </div>
+    <div style="text-align:center;margin-top:.9rem;">
+      <button id="loadMoreBtn" style="background:var(--rose);color:#fff;border:none;padding:.6rem 1rem;border-radius:8px;cursor:pointer;">Charger plus</button>
+    </div>
+  </section>
+
+  <div id="flora-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);align-items:center;justify-content:center;z-index:1200;padding:20px;"> 
+    <div style="max-width:1100px;width:100%;background:#fff;border-radius:12px;overflow:hidden;position:relative;"> 
+      <button id="modalClose" style="position:absolute;right:10px;top:10px;background:#fff;border-radius:6px;border:0;padding:.4rem;cursor:pointer">✕</button>
+      <img id="modalImg" src="" alt="" style="width:100%;height:auto;display:block;max-height:80vh;object-fit:contain;background:#000;"/>
+      <div style="display:flex;gap:8px;align-items:center;justify-content:center;padding:.8rem;border-top:1px solid #eee;">
+        <a id="modalDownload" href="#" target="_blank" rel="noopener" style="background:var(--rose);color:#fff;padding:.5rem .8rem;border-radius:8px;text-decoration:none;">Télécharger</a>
+        <span id="modalCounter" style="color:#333;font-size:.95rem"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    const CSV = 'tools/flora_drive_ids_1MFtAMK8eJzBpKcZrZbuoqPb_WXU3rD1R.csv';
+    const perPage = 60;
+    let items = [];
+    let index = 0;
+
+    function parseCSV(text){
+      const lines = text.split('\n').map(l=>l.trim()).filter(Boolean);
+      const out = [];
+      for(let i=1;i<lines.length;i++){
+        const cols = lines[i].split(',');
+        if(cols.length>=3){ out.push({id:cols[0],view:cols[1],download:cols[2]}); }
+      }
+      return out;
+    }
+
+    function createThumb(item,i){
+      const a = document.createElement('a');
+      a.href = item.view;
+      a.style.display = 'block';
+      a.style.borderRadius = '8px';
+      a.style.overflow = 'hidden';
+      a.style.background = '#f6f6f6';
+      a.style.textDecoration = 'none';
+      a.dataset.index = i;
+
+      const img = document.createElement('img');
+      img.dataset.src = item.view;
+      img.alt = '';
+      img.loading = 'lazy';
+      img.style.width = '100%';
+      img.style.height = '120px';
+      img.style.objectFit = 'cover';
+      img.style.display = 'block';
+
+      a.appendChild(img);
+
+      a.addEventListener('click', function(ev){
+        ev.preventDefault();
+        openModal(i);
+      });
+      return a;
+    }
+
+    function renderMore(){
+      const grid = document.getElementById('gallery-grid');
+      const end = Math.min(index+perPage, items.length);
+      for(let i=index;i<end;i++){
+        grid.appendChild(createThumb(items[i], i));
+      }
+      index = end;
+      if(index>=items.length) document.getElementById('loadMoreBtn').style.display='none';
+      // lazy load imgs
+      const imgs = grid.querySelectorAll('img[data-src]');
+      imgs.forEach(img=>{ if(!img.src) img.src = img.dataset.src; });
+    }
+
+    function openModal(i){
+      const it = items[i];
+      document.getElementById('modalImg').src = it.view;
+      document.getElementById('modalDownload').href = it.download;
+      document.getElementById('modalCounter').textContent = (i+1) + ' / ' + items.length;
+      document.getElementById('flora-modal').style.display = 'flex';
+    }
+
+    function closeModal(){ document.getElementById('flora-modal').style.display = 'none'; }
+
+    document.getElementById('loadMoreBtn').addEventListener('click', renderMore);
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('flora-modal').addEventListener('click', function(e){ if(e.target.id==='flora-modal') closeModal(); });
+
+    fetch(CSV).then(r=>r.text()).then(t=>{
+      items = parseCSV(t);
+      if(items.length===0){ document.getElementById('gallery-grid').innerHTML='<p>Aucune image trouvée.</p>'; document.getElementById('loadMoreBtn').style.display='none'; return; }
+      renderMore();
+    }).catch(err=>{
+      document.getElementById('gallery-grid').innerHTML='<p>Impossible de charger la galerie.</p>';
+      console.error(err);
+    });
+  })();
+  </script>
+
   <section style="margin:0 auto 3rem;max-width:720px;">
     <div style="background:rgba(0,161,204,.08);border:1px solid rgba(0,161,204,.18);border-radius:18px;padding:1.5rem 1.6rem;box-shadow:0 18px 40px rgba(0,161,204,.08);">
       <p style="margin:0 0 1rem;font-size:1rem;font-weight:700;color:#1c1c2e;letter-spacing:.02em;">Suggestions ou remerciements</p>
