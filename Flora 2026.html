@@ -147,9 +147,9 @@
       a.dataset.index = i;
 
       const img = document.createElement('img');
-      // Ajouter &sz=w300 pour forcer le chargement direct depuis Google Drive
-      const imageSrc = item.view.includes('sz=') ? item.view : item.view + '&sz=w300';
-      img.src = imageSrc;
+      // Utiliser l'endpoint /thumbnail pour les miniatures Google Drive
+      const thumbSrc = 'https://drive.google.com/thumbnail?id=' + item.id + '&sz=w300';
+      img.src = thumbSrc;
       img.alt = '';
       img.loading = 'lazy';
       img.style.width = '100%';
@@ -178,8 +178,8 @@
 
     function openModal(i){
       const it = items[i];
-      // Ajouter &sz pour la grande image aussi
-      const modalImageSrc = it.view.includes('sz=') ? it.view : it.view + '&sz=w800';
+      // Utiliser l'endpoint /thumbnail pour les grandes images aussi
+      const modalImageSrc = 'https://drive.google.com/thumbnail?id=' + it.id + '&sz=w800';
       document.getElementById('modalImg').src = modalImageSrc;
       document.getElementById('modalDownload').href = it.download;
       document.getElementById('modalCounter').textContent = (i+1) + ' / ' + items.length;
