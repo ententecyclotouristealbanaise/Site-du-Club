@@ -147,7 +147,9 @@
       a.dataset.index = i;
 
       const img = document.createElement('img');
-      img.dataset.src = item.view;
+      // Ajouter &sz=w300 pour forcer le chargement direct depuis Google Drive
+      const imageSrc = item.view.includes('sz=') ? item.view : item.view + '&sz=w300';
+      img.src = imageSrc;
       img.alt = '';
       img.loading = 'lazy';
       img.style.width = '100%';
@@ -172,14 +174,13 @@
       }
       index = end;
       if(index>=items.length) document.getElementById('loadMoreBtn').style.display='none';
-      // lazy load imgs
-      const imgs = grid.querySelectorAll('img[data-src]');
-      imgs.forEach(img=>{ if(!img.src) img.src = img.dataset.src; });
     }
 
     function openModal(i){
       const it = items[i];
-      document.getElementById('modalImg').src = it.view;
+      // Ajouter &sz pour la grande image aussi
+      const modalImageSrc = it.view.includes('sz=') ? it.view : it.view + '&sz=w800';
+      document.getElementById('modalImg').src = modalImageSrc;
       document.getElementById('modalDownload').href = it.download;
       document.getElementById('modalCounter').textContent = (i+1) + ' / ' + items.length;
       document.getElementById('flora-modal').style.display = 'flex';
