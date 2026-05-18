@@ -104,7 +104,24 @@
 
   <script>
   (function(){
-    const CSV = 'tools/flora_drive_ids_1MFtAMK8eJzBpKcZrZbuoqPb_WXU3rD1R.csv';
+    // JSON embarqué (fallback) — petit échantillon pour test côté client
+    const EMBEDDED = [
+      {id:'1-GcC3Nx1yV4r_HWtMyzo7QtlZGCFik9j',view:'https://drive.google.com/uc?export=view&id=1-GcC3Nx1yV4r_HWtMyzo7QtlZGCFik9j',download:'https://drive.google.com/uc?export=download&id=1-GcC3Nx1yV4r_HWtMyzo7QtlZGCFik9j'},
+      {id:'1-JoXU6_2PgCllO13N6OOv574fMMJNn7-',view:'https://drive.google.com/uc?export=view&id=1-JoXU6_2PgCllO13N6OOv574fMMJNn7-',download:'https://drive.google.com/uc?export=download&id=1-JoXU6_2PgCllO13N6OOv574fMMJNn7-'},
+      {id:'1-XLyWZxr8Q6igrneYIt5WXxOipXDqJKJ',view:'https://drive.google.com/uc?export=view&id=1-XLyWZxr8Q6igrneYIt5WXxOipXDqJKJ',download:'https://drive.google.com/uc?export=download&id=1-XLyWZxr8Q6igrneYIt5WXxOipXDqJKJ'},
+      {id:'1-w6SlHj6z6GbljT84RblNFtBFolSY7kf',view:'https://drive.google.com/uc?export=view&id=1-w6SlHj6z6GbljT84RblNFtBFolSY7kf',download:'https://drive.google.com/uc?export=download&id=1-w6SlHj6z6GbljT84RblNFtBFolSY7kf'},
+      {id:'1-xMp3BjL8sbje7wR_dCJ5dGGa-jonlmA',view:'https://drive.google.com/uc?export=view&id=1-xMp3BjL8sbje7wR_dCJ5dGGa-jonlmA',download:'https://drive.google.com/uc?export=download&id=1-xMp3BjL8sbje7wR_dCJ5dGGa-jonlmA'},
+      {id:'1-zirwSl4Sfab7Du3vRhwhzd8_jotBEJM',view:'https://drive.google.com/uc?export=view&id=1-zirwSl4Sfab7Du3vRhwhzd8_jotBEJM',download:'https://drive.google.com/uc?export=download&id=1-zirwSl4Sfab7Du3vRhwhzd8_jotBEJM'},
+      {id:'105F5pYa-658hnnI6Pc-ebl_dTJgQWrEM',view:'https://drive.google.com/uc?export=view&id=105F5pYa-658hnnI6Pc-ebl_dTJgQWrEM',download:'https://drive.google.com/uc?export=download&id=105F5pYa-658hnnI6Pc-ebl_dTJgQWrEM'},
+      {id:'10FiO-vK0vnU62k3gNmNMwRQNWOhRDMjS',view:'https://drive.google.com/uc?export=view&id=10FiO-vK0vnU62k3gNmNMwRQNWOhRDMjS',download:'https://drive.google.com/uc?export=download&id=10FiO-vK0vnU62k3gNmNMwRQNWOhRDMjS'},
+      {id:'10LDyQtYwQLoptDY_LGhsHXArns8tqVJH',view:'https://drive.google.com/uc?export=view&id=10LDyQtYwQLoptDY_LGhsHXArns8tqVJH',download:'https://drive.google.com/uc?export=download&id=10LDyQtYwQLoptDY_LGhsHXArns8tqVJH'},
+      {id:'10aftDFyTLt_6HynOSS8gNA5yIkA_HO2u',view:'https://drive.google.com/uc?export=view&id=10aftDFyTLt_6HynOSS8gNA5yIkA_HO2u',download:'https://drive.google.com/uc?export=download&id=10aftDFyTLt_6HynOSS8gNA5yIkA_HO2u'},
+      {id:'10mJehhm_qTmPzKAmy48MTOHfhCDPRBWb',view:'https://drive.google.com/uc?export=view&id=10mJehhm_qTmPzKAmy48MTOHfhCDPRBWb',download:'https://drive.google.com/uc?export=download&id=10mJehhm_qTmPzKAmy48MTOHfhCDPRBWb'},
+      {id:'11ENNaJ-64cqMNz_xHZ2YG40ZVh8aiyQJ',view:'https://drive.google.com/uc?export=view&id=11ENNaJ-64cqMNz_xHZ2YG40ZVh8aiyQJ',download:'https://drive.google.com/uc?export=download&id=11ENNaJ-64cqMNz_xHZ2YG40ZVh8aiyQJ'}
+    ];
+
+    const DATA_JSON = 'tools/flora_drive_ids.json';
+    const DATA_CSV = 'tools/flora_drive_ids_1MFtAMK8eJzBpKcZrZbuoqPb_WXU3rD1R.csv';
     const perPage = 60;
     let items = [];
     let index = 0;
@@ -174,14 +191,25 @@
     document.getElementById('modalClose').addEventListener('click', closeModal);
     document.getElementById('flora-modal').addEventListener('click', function(e){ if(e.target.id==='flora-modal') closeModal(); });
 
-    fetch(CSV).then(r=>r.text()).then(t=>{
-      items = parseCSV(t);
-      if(items.length===0){ document.getElementById('gallery-grid').innerHTML='<p>Aucune image trouvée.</p>'; document.getElementById('loadMoreBtn').style.display='none'; return; }
-      renderMore();
-    }).catch(err=>{
-      document.getElementById('gallery-grid').innerHTML='<p>Impossible de charger la galerie.</p>';
-      console.error(err);
-    });
+    // Try external JSON, then CSV, else use embedded fallback
+    (async function loadData(){
+      try{
+        const r = await fetch(DATA_JSON);
+        if(r.ok){ items = await r.json(); renderMore(); return; }
+      }catch(e){ /* ignore */ }
+      try{
+        const r2 = await fetch(DATA_CSV);
+        if(r2.ok){ const txt = await r2.text(); items = parseCSV(txt); if(items.length) { renderMore(); return; } }
+      }catch(e){ /* ignore */ }
+      // fallback
+      items = EMBEDDED.slice();
+      if(items.length===0){
+        document.getElementById('gallery-grid').innerHTML='<p>Aucune image trouvée.</p>';
+        document.getElementById('loadMoreBtn').style.display='none';
+      } else {
+        renderMore();
+      }
+    })();
   })();
   </script>
 
