@@ -3,61 +3,108 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flora 2026 · ECTA Saint-Alban 22</title>
+  <title>Flora 2026 · Entente Cyclotouriste Albanaise</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e8357a'/></svg>" />
+  <link rel="apple-touch-icon" href="icon-192x192.png" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#e8357a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ECTA Saint-Alban" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
-  <style>
-    :root{--rose:#e8357a;--cyan:#00b4d8;--gris-clair:#e8e4ed;--texte:#1c1c2e;--blanc:#ffffff;--radius:14px}
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{min-height:100%;font-family:'Nunito',sans-serif;background:#f8f7fb;color:var(--texte)}
-    body{padding:1.5rem;display:flex;justify-content:center}
-    .page-wrapper{width:min(940px,100%);}
-    .panel{background:#ffffff;border:1px solid var(--gris-clair);border-radius:var(--radius);box-shadow:0 18px 40px rgba(0,0,0,0.08);padding:2rem;}
-    .panel h1{font-family:'Barlow Condensed',sans-serif;font-size:2rem;letter-spacing:.05em;margin-bottom:1.35rem;color:#1f1f35}
-    .filter-panel{display:grid;gap:1rem;margin-bottom:2rem;padding:1.5rem;border:1px solid #f0f0f4;border-radius:var(--radius);background:rgba(232,53,122,0.05)}
-    .filter-panel label{display:block;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#4e4e66;margin-bottom:.35rem}
-    .filter-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:flex-end}
-    .filter-row input,.filter-row select{width:100%;padding:.95rem 1rem;border:1px solid #d7d3db;border-radius:12px;background:#fff;font-size:1rem;color:#1c1c2e}
-    .filter-help{font-size:.95rem;color:#4a4a5a;line-height:1.6}
-    .video-wrap{position:relative;padding-top:56.25%;border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,0.1);margin-bottom:1.5rem}
-    .video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
-    .download-box{display:flex;justify-content:center}
-    .download-link a{display:inline-flex;align-items:center;justify-content:center;padding:.95rem 1.4rem;border-radius:999px;background:linear-gradient(135deg,#e8357a 0%,#00b4d8 100%);color:#fff;font-weight:700;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 12px 24px rgba(232,53,122,0.2)}
-    .download-link a:hover{transform:translateY(-2px);box-shadow:0 18px 30px rgba(232,53,122,0.25)}
-    @media(max-width:760px){.filter-row{grid-template-columns:1fr;}}
-  </style>
+  <link rel="stylesheet" href="styles.css?v=20260405" />
 </head>
 <body>
-  <div class="page-wrapper">
-    <main class="panel">
-      <h1>Flora 2026</h1>
-      <section class="filter-panel" aria-label="Tri et recherche">
-        <div class="filter-row">
-          <div>
-            <label for="sortBy">Trier</label>
-            <select id="sortBy" name="sortBy">
-              <option value="recent">Plus récent</option>
-              <option value="ancien">Plus ancien</option>
-              <option value="alphabetique">A → Z</option>
-            </select>
-          </div>
-          <div>
-            <label for="searchText">Rechercher</label>
-            <input id="searchText" name="searchText" type="text" placeholder="Tapez un mot-clé…" />
-          </div>
-        </div>
-        <p class="filter-help">Utilisez ce tri et cette recherche pour retrouver rapidement les photos et les informations de la randonnée.</p>
-      </section>
-      <section class="video-section">
-        <div class="video-wrap">
-          <iframe src="https://www.youtube.com/embed/97z-c_4Gkvo" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-        </div>
-        <div class="download-box download-link">
-          <a href="https://drive.google.com/drive/folders/1MFtAMK8eJzBpKcZrZbuoqPb_WXU3rD1R" target="_blank" rel="noopener">Télécharger les photos de la randonnée Flora 2026</a>
-        </div>
-      </section>
-    </main>
+
+<nav>
+  <div class="nav-brand">
+    <img class="nav-logo-img" src="images/logo_ECTA.png" alt="Logo ECTA" />
+    <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban · Côtes-d'Armor</small></div>
   </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="le-club.html">Le Club</a></li>
+    <li><a href="actualites.html">Activités</a></li>
+    <li><a href="agenda.html">Agenda</a></li>
+    <li><a href="galerie.html">Galerie</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="documents.html">WT 2026</a></li>
+    <li><a href="news.html">Actu vélo</a></li>
+    <li><a href="calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
+    <li><a href="Flora 2026.html" class="active">Flora 2026</a></li>
+    <li><a href="outils.html">Outils</a></li>
+  </ul>
+  <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+
+<header class="hero" style="background: linear-gradient(150deg, rgba(232, 53, 122, 0.75) 0%, rgba(240, 111, 160, 0.55) 48%, rgba(0, 161, 204, 0.75) 100%);">
+  <div class="hero-badge">Flora 2026 · ECTA Saint-Alban</div>
+  <h1>Flora <span>2026</span></h1>
+  <p>Retrouvez la vidéo et les photos de la randonnée Flora 2026.</p>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" onclick="closeMenu()">Accueil</a>
+  <a href="le-club.html" onclick="closeMenu()">Le Club</a>
+  <a href="actualites.html" onclick="closeMenu()">Activités</a>
+  <a href="agenda.html" onclick="closeMenu()">Agenda</a>
+  <a href="galerie.html" onclick="closeMenu()">Galerie</a>
+  <a href="contact.html" onclick="closeMenu()">Contact</a>
+  <a href="documents.html" onclick="closeMenu()">WT 2026</a>
+  <a href="news.html" onclick="closeMenu()">Actu vélo</a>
+  <a href="calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
+  <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
+  <a href="outils.html" onclick="closeMenu()">Outils</a>
+</div>
+
+<main class="container">
+  <section class="video-grid" style="margin-top:2rem;">
+    <div class="video-container">
+      <iframe src="https://www.youtube.com/embed/97z-c_4Gkvo" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+  </section>
+
+  <section class="download-box" style="justify-content:center; margin-bottom:3rem;">
+    <a class="circuit-link" href="https://drive.google.com/drive/folders/1MFtAMK8eJzBpKcZrZbuoqPb_WXU3rD1R" target="_blank" rel="noopener">Télécharger les photos de la randonnée Flora 2026</a>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div style="display:flex;gap:1rem;align-items:center;margin-bottom:.5rem;">
+        <img src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA" class="footer-logo">
+        <img src="images/logo_ffvelo.png" alt="FFVélo" style="height:auto;max-height:50px;max-width:50px;">
+      </div>
+      <h4>ECTA SAINT-ALBAN</h4>
+      <p>Entente Cyclotouriste Albanaise - club de cyclotourisme fondé en 1985 à Saint-Alban, Côtes-d'Armor.</p>
+    </div>
+    <div class="footer-col" style="grid-column: span 2;">
+      <h5>Navigation</h5>
+      <ul style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="le-club.html">Le Club</a></li>
+        <li><a href="actualites.html">Activités</a></li>
+        <li><a href="agenda.html">Agenda</a></li>
+        <li><a href="galerie.html">Galerie</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="documents.html">WT 2026</a></li>
+        <li><a href="news.html">Actu vélo</a></li>
+        <li><a href="calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
+        <li><a href="outils.html">Outils</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span id="footer-year">© 2026 Entente Cyclotouriste Albanaise · Saint-Alban 22</span>
+    <a href="mentions-legales.html" style="color:rgba(255,255,255,.7);text-decoration:underline;">Mentions légales</a>
+    <span class="ffct-badge">🚴 Affilié FFVélo / FFCT</span>
+  </div>
+</footer>
+
+<script src="scripts.js" defer></script>
 </body>
 </html>
