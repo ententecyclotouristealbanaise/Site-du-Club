@@ -281,14 +281,15 @@
         <h1>ECTA · Tableau de bord</h1>
         <p>Gérez les actualités et l'agenda du club en toute simplicité.</p>
         <div style="margin-top:0.75rem;"><a href="../index.html" style="color:var(--rose); font-size:0.85rem; font-weight:700; text-decoration:none;">← Retour au site</a></div>
-        <div id="save-status" style="margin-top:1rem; font-size:0.75rem; font-weight:700; color:var(--cyan); opacity:0; transition:opacity 0.5s;">✓ SAUVEGARDÉ LOCALEMENT</div>
+        <div id="save-status" style="margin-top:1rem; font-size:0.75rem; font-weight:700; color:var(--cyan); opacity:0; transition:opacity 0.5s;">✓ Brouillon sauvé</div>
+        <div id="data-source" style="margin-top:0.5rem; font-size:0.8rem; color:var(--text-muted); opacity:0.9;">Source : chargement en cours...</div>
     </header>
 
     <div class="dashboard-card">
         <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('actu')">🗞 Actualités</button>
-            <button class="tab-btn" onclick="showTab('agenda')">📆 Agenda</button>
-            <button class="tab-btn" onclick="showTab('galerie')">🖼 Galerie</button>
+            <button class="tab-btn active" onclick="showTab('actu', event)">🗞 Actualités</button>
+            <button class="tab-btn" onclick="showTab('agenda', event)">📆 Agenda</button>
+            <button class="tab-btn" onclick="showTab('galerie', event)">🖼 Galerie</button>
         </div>
 
         <!-- SECTION ACTUALITÉS -->
@@ -416,12 +417,15 @@
         <button class="btn-generate" style="width:100%;" onclick="generateCode()">🚀 Générer donnees.js</button>
     </div>
 
-    <div style="background:#fff; border:1px solid var(--border); border-radius:15px; padding:1rem; display:flex; justify-content:space-between; align-items:center;">
-        <p style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">Gestion des données du navigateur :</p>
-        <div style="display:flex; gap:0.5rem;">
+    <div style="background:#fff; border:1px solid var(--border); border-radius:15px; padding:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+        <p style="font-size:0.8rem; font-weight:600; color:var(--text-muted); margin:0;">Gestion des données du navigateur :</p>
+        <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
             <button class="btn-sub" style="margin-bottom:0;" onclick="syncFromFile()">🔄 Recharger depuis le fichier</button>
+            <button class="btn-sub" style="margin-bottom:0;" onclick="triggerImport()">📁 Importer JSON/JS</button>
+            <button class="btn-sub" style="margin-bottom:0;" onclick="exportJson()">⬇️ Télécharger JSON</button>
             <button class="btn-sub" style="margin-bottom:0; background:#fee2e2; color:#b91c1c;" onclick="clearSync()">🗑️ Effacer le brouillon</button>
         </div>
+        <input type="file" id="import-file" accept=".json,.js" style="display:none;" onchange="handleImportFile(event)">
     </div>
 </div>
 
@@ -450,28 +454,37 @@
     // Initialisation intelligente des données
     let localData = { actualites: [], agenda: [], galerie: [], motDePasse: "" };
     
-    // 1. On tente d'abord de charger depuis le brouillon navigateur (localStorage)
     const draft = localStorage.getItem('ecta_draft');
     if (draft) {
         try {
             localData = JSON.parse(draft);
-            console.log("Chargé depuis le brouillon locale");
+            updateStatusInfo('Brouillon chargé depuis le navigateur', 'Source : brouillon local');
+            console.log("Chargé depuis le brouillon local");
         } catch (e) {
             console.error("Erreur de chargement du brouillon", e);
+            updateStatusInfo('Impossible de charger le brouillon', 'Source : brouillon local');
         }
+    } else if (typeof ECTA_DATA !== 'undefined') {
+        localData = JSON.parse(JSON.stringify(ECTA_DATA));
+        updateStatusInfo('Données chargées depuis donnees.js', 'Source : fichier');
+        console.log("Initialisé depuis le fichier donnees.js");
     } else {
-        // 2. Si pas de brouillon, on prend ce qui est dans donnees.js
-        if (typeof ECTA_DATA !== 'undefined') {
-            localData = JSON.parse(JSON.stringify(ECTA_DATA));
-            console.log("Initialisé depuis le fichier donnees.js");
-        }
+        updateStatusInfo('Aucune donnée trouvée, créez du contenu.', 'Source : vide');
     }
 
     function saveDraft() {
         localStorage.setItem('ecta_draft', JSON.stringify(localData));
+        updateStatusInfo('Brouillon enregistré localement', 'Source : brouillon local');
+    }
+
+    function updateStatusInfo(message, source) {
         const status = document.getElementById('save-status');
+        const sourceEl = document.getElementById('data-source');
+        status.textContent = `✓ ${message}`;
         status.style.opacity = '1';
-        setTimeout(() => { status.style.opacity = '0'; }, 2000);
+        sourceEl.textContent = source;
+        clearTimeout(updateStatusInfo.timeoutId);
+        updateStatusInfo.timeoutId = setTimeout(() => { status.style.opacity = '0'; }, 2500);
     }
 
     function syncFromFile() {
@@ -490,10 +503,59 @@
         }
     }
 
-    function showTab(tab) {
+    function triggerImport() {
+        document.getElementById('import-file').click();
+    }
+
+    function handleImportFile(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            importData(reader.result, file.name);
+            event.target.value = '';
+        };
+        reader.readAsText(file, 'UTF-8');
+    }
+
+    function importData(content, name) {
+        try {
+            const trimmed = content.trim();
+            const json = trimmed.startsWith('const ECTA_DATA') || trimmed.startsWith('let ECTA_DATA')
+                ? trimmed.replace(/^[^=]*=\s*/, '').replace(/;?\s*$/, '')
+                : trimmed;
+            const data = JSON.parse(json);
+            if (!data || typeof data !== 'object') throw new Error('Format invalide');
+            localData = data;
+            saveDraft();
+            renderLists();
+            updateStatusInfo(`Données importées depuis ${name}`, 'Source : import JSON/JS');
+            toast('Import réussi.');
+        } catch (e) {
+            console.error('Erreur d’import', e);
+            toast('Impossible d’importer le fichier. Format non valide.');
+        }
+    }
+
+    function exportJson() {
+        const blob = new Blob([JSON.stringify(localData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'donnees.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast('Téléchargement JSON lancé !');
+    }
+
+    function showTab(tab, event) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.content').forEach(c => c.classList.add('hidden'));
-        event.target.classList.add('active');
+        if (event && event.target) {
+            event.target.classList.add('active');
+        }
         document.getElementById('tab-' + tab).classList.remove('hidden');
     }
 
