@@ -168,6 +168,7 @@ function renderActu() {
 
 /* --- AGENDA --- */
 let circuitsDeblocked = sessionStorage.getItem('ecta_unlocked') === '1';
+let openAgendaIndex = null;
 
 function renderAgenda() {
   const list = document.getElementById('agendaList');
@@ -177,7 +178,7 @@ function renderAgenda() {
     const distBadges = parcours.map(p => `<span class="badge-dist">🚴 ${p.distance}</span>`).join(' ');
     const hasLien = parcours.some(p => p.lien);
     return `
-      <div class="agenda-item" id="ag${i}">
+      <div class="agenda-item${openAgendaIndex === i ? ' open' : ''}" id="ag${i}">
         <div class="agenda-item-header" onclick="toggleAgenda(${i})">
           <div class="agenda-meta">
             <span class="agenda-date">${s.date}</span>
@@ -241,7 +242,10 @@ function circuitUnlocked(sortie) {
 }
 
 function toggleAgenda(i) {
-  document.getElementById(`ag${i}`).classList.toggle('open');
+  const item = document.getElementById(`ag${i}`);
+  if (!item) return;
+  item.classList.toggle('open');
+  openAgendaIndex = item.classList.contains('open') ? i : null;
 }
 
 function checkPwd(i) {
@@ -249,6 +253,7 @@ function checkPwd(i) {
   if (btoa(input) === ECTA_DATA.motDePasse) {
     circuitsDeblocked = true;
     sessionStorage.setItem('ecta_unlocked', '1');
+    openAgendaIndex = i;
     renderAgenda();
   } else {
     document.getElementById(`err${i}`).style.display = 'block';
