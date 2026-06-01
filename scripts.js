@@ -117,6 +117,7 @@ async function loadMeteo(){
   const el = document.getElementById('meteoDays');
   if (!el) return;
   try {
+    const windyUrl = 'https://www.windy.com/fr/-?48.5554,-2.5384,9';
     const url = 'https://api.open-meteo.com/v1/forecast?latitude=48.5554&longitude=-2.5384&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max&timezone=Europe%2FParis&forecast_days=7';
     const r = await fetch(url);
     const d = await r.json();
@@ -133,13 +134,13 @@ async function loadMeteo(){
       const jour = JOURS[date.getDay()];
       const isD = date.getDay() === 0;
       const isJ = date.getDay() === 4;
-      return `<div class="meteo-day${isD?' is-sunday':''}">
+      return `<a class="meteo-day${isD?' is-sunday':''}" href="${windyUrl}" target="_blank" rel="noopener">
         <div class="m-label">${jour}${isD?' 🚴':isJ?' 🚴':''}</div>
         <div class="m-icon">${wmoIcon(weathercode[i])}</div>
         <div class="m-temps">${Math.round(temperature_2m_max[i])}° / ${Math.round(temperature_2m_min[i])}°</div>
         <div class="m-pluie">💧 ${precipitation_probability_max[i]}%</div>
         <div class="m-vent">💨 ${Math.round(windspeed_10m_max[i])} km/h</div>
-      </div>`;
+      </a>`;
     }).join('');
   } catch(e){
     el.innerHTML = '<span style="color:var(--gris);font-size:.85rem;">Météo temporairement indisponible.</span>';

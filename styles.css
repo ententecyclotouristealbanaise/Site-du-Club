@@ -110,7 +110,8 @@ section{padding:5rem 1.5rem}
 .meteo-widget{background:linear-gradient(135deg,#e0f7fa,var(--rose-pale));border-radius:16px;padding:2rem;margin-bottom:2.5rem;box-shadow:0 4px 24px rgba(0,180,216,.12);border:1px solid rgba(0,180,216,.15)}
 .meteo-title{font-family:'Barlow Condensed',sans-serif;font-size:1.25rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--texte);margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem}
 .meteo-days{display:flex;gap:1rem;flex-wrap:wrap}
-.meteo-day{background:var(--blanc);border-radius:var(--radius);padding:1rem;flex:1;min-width:120px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.meteo-day{display:block;background:var(--blanc);border-radius:var(--radius);padding:1rem;flex:1;min-width:120px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);color:inherit;text-decoration:none;transition:transform .2s,box-shadow .2s}
+.meteo-day:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.1)}
 .meteo-day.is-sunday{border:2px solid var(--rose)}
 .meteo-day .m-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gris)}
 .meteo-day.is-sunday .m-label{color:var(--rose)}
