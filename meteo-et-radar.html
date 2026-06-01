@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agenda & Circuits · Entente Cyclotouriste Albanaise</title>
+  <title>Météo et Radar · Entente Cyclotouriste Albanaise</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e8357a'/></svg>" />
   <link rel="apple-touch-icon" href="icon-192x192.png" />
   <link rel="manifest" href="manifest.json" />
@@ -12,7 +12,6 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="ECTA Saint-Alban" />
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=20260405">
@@ -21,31 +20,24 @@
 
 <nav>
   <div class="nav-brand">
-    <img class="nav-logo-img" src="images/logo_ECTA.png" alt="Logo ECTA" />
+    <img class="nav-logo-img" src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
     <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban · Côtes-d'Armor</small></div>
   </div>
   <ul class="nav-links">
     <li><a href="index.html">Accueil</a></li>
     <li><a href="le-club.html">Le Club</a></li>
     <li><a href="actualites.html">Activités</a></li>
-    <li><a href="agenda.html" class="active">Agenda</a></li>
+    <li><a href="agenda.html">Agenda</a></li>
     <li><a href="galerie.html">Galerie</a></li>
     <li><a href="contact.html">Contact</a></li>
     <li><a href="documents.html">WT 2026</a></li>
     <li><a href="news.html">Actu vélo</a></li>
     <li><a href="calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
     <li><a href="Flora 2026.html">Flora 2026</a></li>
-    <li><a href="meteo-et-radar.html">Météo & Radar</a></li>
     <li><a href="outils.html">Outils</a></li>
   </ul>
   <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
 </nav>
-
-<header class="hero" style="background: linear-gradient(150deg, rgba(232, 53, 122, 0.75) 0%, rgba(240, 111, 160, 0.55) 48%, rgba(0, 161, 204, 0.75) 100%);">
-  <div class="hero-badge">Agenda & Circuits · ECTA Saint-Alban</div>
-  <h1>Agenda & <span>Circuits</span></h1>
-  <p>Retrouvez toutes les sorties et événements du club.</p>
-</header>
 
 <div class="mobile-menu" id="mobileMenu">
   <a href="index.html" onclick="closeMenu()">Accueil</a>
@@ -62,13 +54,27 @@
   <a href="outils.html" onclick="closeMenu()">Outils</a>
 </div>
 
-<section id="agenda">
-  <div class="container">
-    <div class="agenda-list" id="agendaList"></div>
-  </div>
-</section>
+<header class="hero" style="background: linear-gradient(150deg, rgba(232, 53, 122, 0.75) 0%, rgba(240, 111, 160, 0.55) 48%, rgba(0, 161, 204, 0.75) 100%), url('images/Cap%20Frehel.jpg') center/cover no-repeat; padding: 8rem 2rem 4rem 2rem;">
+  <div class="hero-badge">Météo & Radar · ECTA Saint-Alban</div>
+  <h1>Météo <span>et</span> Carte Radar</h1>
+  <p>Suivez en direct les précipitations près de Saint-Alban et consultez la météo locale en un seul endroit.</p>
+</header>
 
-<!-- FOOTER -->
+<main class="container" style="padding: 3rem 2rem;">
+  <section class="meteo-widget" style="padding:2rem;">
+    <div class="meteo-title">🌧 Carte radar météo</div>
+    <div style="position:relative;width:100%;height:420px;overflow:hidden;border-radius:16px;background:#000;">
+      <iframe src="https://embed.windy.com/embed2.html?lat=48.555&lon=-2.538&zoom=8&level=surface&overlay=radar&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default" frameborder="0" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"></iframe>
+    </div>
+    <p style="margin-top:1.2rem;font-size:.95rem;color:var(--gris);max-width:720px;">Si la carte ne s’affiche pas, ouvrez-la directement sur <a href="https://www.windy.com/?48.555,-2.538,8" target="_blank" rel="noopener">Windy</a>. Le radar est centré sur Saint-Alban et affiche les précipitations actuelles.</p>
+  </section>
+
+  <section class="meteo-widget" style="padding:2rem;">
+    <div class="meteo-title">🌤 Prévision locale</div>
+    <p style="margin-top:1rem;color:var(--gris);max-width:720px;">Cette page affiche uniquement la carte radar. Pour des prévisions plus détaillées (températures, vent et pluie), consultez la page <a href="agenda.html">Agenda</a> ou le site <a href="https://www.windy.com/?48.555,-2.538,8" target="_blank" rel="noopener">Windy</a>.</p>
+  </section>
+</main>
+
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
@@ -94,8 +100,6 @@
         <li><a href="Flora 2026.html">Flora 2026</a></li>
         <li><a href="meteo-et-radar.html">Météo & Radar</a></li>
         <li><a href="outils.html">Outils</a></li>
-        <li><a href="https://ecta-saintalban.clubeo.com" target="_blank">Site Clubeo</a></li>
-        <li><a href="https://www.ffvelo.fr" target="_blank">FFVélo (FFCT)</a></li>
       </ul>
     </div>
   </div>
@@ -108,6 +112,5 @@
 
 <script src="donnees.js" defer></script>
 <script src="scripts.js" defer></script>
-
 </body>
 </html>
