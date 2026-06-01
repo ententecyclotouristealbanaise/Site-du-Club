@@ -4,7 +4,7 @@ const ECTA_DATA = {
       "date": "Dimanche 7 Juin 2026",
       "dateSort": "2026-06-07",
       "titre": "La Transménéene (Tredaniel)",
-      "texte": "Les départs s’effectueront à partir de 8 heures à allure libre de la salle Polyvalente de Trédaniel.\nVoici le lien pour imprimer le bulletin d'inscription pour ceux qui voudraient gagner du temps au départ 😁\nhttps://alslplemy.jimdofree.com/app/download/12525003121/bulletinparticipation2026.pdf?t=1776011440",
+      "texte": "Les départs s’effectueront à partir de 8 heures à allure libre de la salle Polyvalente de Trédaniel.<br>Voici le lien pour imprimer le bulletin d'inscription pour ceux qui voudraient gagner du temps au départ 😁<br><a href=\"https://alslplemy.jimdofree.com/app/download/12525003121/bulletinparticipation2026.pdf?t=1776011440\" target=\"_blank\" rel=\"noopener\">Télécharger le bulletin d'inscription</a>",
       "tag": "Rando extérieure",
       "image": ""
     },
