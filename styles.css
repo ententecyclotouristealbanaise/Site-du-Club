@@ -102,6 +102,8 @@ section{padding:5rem 1.5rem}
 .actu-date{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--rose);margin-bottom:.5rem}
 .actu-card h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem}
 .actu-card p{font-size:.9rem;color:var(--gris);line-height:1.6}
+.actu-card-body a.actu-link{display:inline-block;margin-top:1rem;color:var(--cyan);font-weight:800;font-family:'Barlow Condensed',sans-serif;text-decoration:underline;letter-spacing:.02em;background:rgba(0,161,204,.08);padding:.45rem .75rem;border-radius:1rem;transition:transform .2s,box-shadow .2s;}
+.actu-card-body a.actu-link:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.12);background:rgba(0,161,204,.12)}
 .actu-tag{display:inline-block;margin-top:.75rem;background:var(--rose-pale);color:var(--rose);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .7rem;border-radius:2rem}
 
 /* --- MÉTÉO --- */
