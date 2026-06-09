@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Road Wind - Vents sur route · ECTA Saint-Alban</title>
+    <meta name="description" content="Carte interactive des vents pour planifier vos parcours cyclistes avec l'ECTA Saint-Alban." />
+    <meta name="keywords" content="cyclotourisme, vent, météo, road wind, ECTA, Saint-Alban" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e8357a'/></svg>" />
+    <link rel="apple-touch-icon" href="../icon-192x192.png" />
+    <link rel="manifest" href="../manifest.json" />
+    <meta name="theme-color" content="#e8357a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ECTA Saint-Alban" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../styles.css?v=20260501">
+
+    <style>
+        .windy-container {
+            width: 100%;
+            height: calc(100vh - 250px);
+            min-height: 500px;
+            margin-top: 2rem;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: relative;
+        }
+        .windy-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .page-header {
+            padding: 3rem 1.5rem 0;
+            text-align: center;
+        }
+        .page-header h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--texte, #1c1c2e);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        .page-header p {
+            color: var(--gris, #6b7280);
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+        main {
+            padding: 0 1.5rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV ECTA -->
+<nav>
+  <div class="nav-brand">
+    <a href="../index.html" style="display:flex;align-items:center;gap:.75rem;text-decoration:none">
+      <img class="nav-logo-img" src="../images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
+      <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban · Côtes-d'Armor</small></div>
+    </a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="../index.html">Accueil</a></li>
+    <li><a href="../le-club.html">Le Club</a></li>
+    <li><a href="../actualites.html">Activités</a></li>
+    <li><a href="../agenda.html">Agenda</a></li>
+    <li><a href="../galerie.html">Galerie</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+    <li><a href="../documents.html">WT 2026</a></li>
+    <li><a href="../news.html">Actu vélo</a></li>
+    <li><a href="../calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
+    <li><a href="../Flora 2026.html">Flora 2026</a></li>
+    <li><a href="../outils.html" class="active">Outils</a></li>
+  </ul>
+  <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- MENU MOBILE -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="../index.html" onclick="closeMenu()">Accueil</a>
+  <a href="../le-club.html" onclick="closeMenu()">Le Club</a>
+  <a href="../actualites.html" onclick="closeMenu()">Activités</a>
+  <a href="../agenda.html" onclick="closeMenu()">Agenda</a>
+  <a href="../galerie.html" onclick="closeMenu()">Galerie</a>
+  <a href="../contact.html" onclick="closeMenu()">Contact</a>
+  <a href="../documents.html" onclick="closeMenu()">WT 2026</a>
+  <a href="../news.html" onclick="closeMenu()">Actu vélo</a>
+  <a href="../calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
+  <a href="../Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
+  <a href="../outils.html" onclick="closeMenu()">Outils</a>
+</div>
+
+<div style="height: 70px;"></div>
+
+<main>
+    <div class="page-header">
+        <h1>Road Wind</h1>
+        <p>Consultez la météo et la direction du vent en temps réel pour optimiser vos parcours et anticiper les conditions de votre sortie.</p>
+    </div>
+
+    <div class="windy-container">
+        <iframe class="windy-iframe" 
+                src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=%C2%B0C&metricWind=km%2Fh&zoom=10&overlay=wind&product=ecmwf&level=surface&lat=48.556&lon=-2.534&detailLat=48.556&detailLon=-2.534&marker=true&message=true" 
+                title="Carte des vents Windy">
+        </iframe>
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div style="display:flex;gap:1rem;align-items:center;margin-bottom:.5rem;">
+        <img src="../images/logo_ECTA.png?v=20260305" alt="Logo ECTA" class="footer-logo">
+        <img src="../images/logo_ffvelo.png" alt="FFVélo" style="height:auto;max-height:50px;max-width:50px;">
+      </div>
+      <h4>ECTA SAINT-ALBAN</h4>
+      <p>Entente Cyclotouriste Albanaise - club de cyclotourisme fondé en 1985 à Saint-Alban, Côtes-d'Armor.</p>
+    </div>
+    <div class="footer-col" style="grid-column: span 2;">
+      <h5>Navigation</h5>
+      <ul style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+        <li><a href="../index.html">Accueil</a></li>
+        <li><a href="../le-club.html">Le Club</a></li>
+        <li><a href="../actualites.html">Activités</a></li>
+        <li><a href="../agenda.html">Agenda</a></li>
+        <li><a href="../galerie.html">Galerie</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+        <li><a href="../documents.html">WT 2026</a></li>
+        <li><a href="../news.html">Actu vélo</a></li>
+        <li><a href="../calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
+        <li><a href="../Flora 2026.html">Flora 2026</a></li>
+        <li><a href="../outils.html">Outils</a></li>
+        <li><a href="https://ecta-saintalban.clubeo.com" target="_blank">Site Clubeo</a></li>
+        <li><a href="https://www.ffvelo.fr" target="_blank">FFVélo (FFCT)</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span id="footer-year">© 2026 Entente Cyclotouriste Albanaise · Saint-Alban 22</span>
+    <a href="../mentions-legales.html" style="color:rgba(255,255,255,.7);text-decoration:underline;">Mentions légales</a>
+    <span class="ffct-badge">🚴 Affilié FFVélo / FFCT</span>
+  </div>
+</footer>
+
+<script src="../scripts.js" defer></script>
+</body>
+</html>
