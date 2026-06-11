@@ -1,0 +1,671 @@
+/*
+  RoadWind - Premium Modern Stylesheet
+  Focus: Glassmorphism, modern typography, vibrant accents.
+*/
+
+:root {
+  /* Colors */
+  --bg-color: #f8fafc;
+  --surface-color: rgba(255, 255, 255, 0.85);
+  --surface-solid: #ffffff;
+  --surface-hover: rgba(241, 245, 249, 0.8);
+  --border-color: rgba(203, 213, 225, 0.6);
+
+  /* Text */
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+
+  /* Accents */
+  --accent-blue: #3b82f6;
+  --accent-blue-hover: #2563eb;
+  --accent-orange: #f97316;
+  --green: #10b981;
+  --red: #ef4444;
+  --yellow: #f59e0b;
+
+  /* Typography */
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-data: 'DM Mono', monospace;
+
+  /* Dimensions & Effects */
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --shadow-float: 0 12px 32px rgba(15, 23, 42, 0.1);
+  --glass-blur: blur(12px);
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset for the widget to ensure embeddability without conflict */
+.roadwind-app {
+  box-sizing: border-box;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text-main);
+  background: var(--bg-color);
+
+  /* Fit below the site fixed nav (54px) */
+  width: 100%;
+  height: calc(100vh - 54px);
+  margin-top: 54px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.roadwind-app *, .roadwind-app *::before, .roadwind-app *::after {
+  box-sizing: inherit;
+}
+
+body { margin: 0; padding: 0; }
+
+/* ── HEADER ── */
+.roadwind-app .app-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 20px;
+  height: 64px;
+  background: var(--surface-solid);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+  z-index: 1000;
+  box-shadow: var(--shadow-sm);
+}
+
+.roadwind-app .logo {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+.roadwind-app .logo span { color: var(--accent-blue); }
+
+.roadwind-app .header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none; /* Hide scrollbar for neatness */
+}
+.roadwind-app .header-controls::-webkit-scrollbar { display: none; }
+
+/* Buttons */
+.roadwind-app .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--surface-solid);
+  color: var(--text-main);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+.roadwind-app .btn:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+.roadwind-app .btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+.roadwind-app .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.roadwind-app .btn.primary {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+.roadwind-app .btn.primary:hover {
+  background: var(--accent-blue-hover);
+  border-color: var(--accent-blue-hover);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
+}
+
+.roadwind-app .btn.danger {
+  color: var(--red);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.roadwind-app .btn.danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--red);
+}
+
+.roadwind-app .icon-btn {
+  padding: 8px;
+  width: 36px;
+  height: 36px;
+}
+
+/* Mode Toggle */
+.roadwind-app .mode-toggle {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: var(--radius-md);
+  padding: 3px;
+  border: 1px solid var(--border-color);
+}
+.roadwind-app .mode-toggle button {
+  padding: 6px 14px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.roadwind-app .mode-toggle button.active {
+  background: var(--surface-solid);
+  color: var(--text-main);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Inputs */
+.roadwind-app .datetime-input {
+  background: var(--surface-solid);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.roadwind-app .datetime-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.roadwind-app #gpx-input { display: none; }
+
+.roadwind-app .speed-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 6px 12px;
+  background: var(--surface-solid);
+  height: 36px;
+}
+.roadwind-app .speed-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  width: 50px;
+}
+.roadwind-app .speed-slider {
+  width: 80px;
+  accent-color: var(--accent-blue);
+  cursor: pointer;
+}
+
+/* ── MAIN LAYOUT ── */
+.roadwind-app .main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Glass Panels */
+.roadwind-app .glass-panel {
+  background: var(--surface-color);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+/* ── SIDEBAR ── */
+.roadwind-app .sidebar {
+  width: 320px;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 16px;
+  overflow: hidden;
+  flex-shrink: 0;
+  z-index: 100;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none; /* Let clicks pass through empty areas */
+}
+
+.roadwind-app .sidebar > * {
+  pointer-events: auto; /* Re-enable clicks on panels */
+}
+
+.roadwind-app .sidebar-section {
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.roadwind-app .sidebar-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* Stats Grid */
+.roadwind-app .stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.roadwind-app .stat-box {
+  background: rgba(255,255,255,0.6);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,0.8);
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.5);
+}
+.roadwind-app .stat-box.full-width {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(241,245,249,0.5) 100%);
+}
+.roadwind-app .stat-box .label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.roadwind-app .stat-box .value {
+  font-family: var(--font-data);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+.roadwind-app .stat-box .highlight-val {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accent-blue);
+  font-family: var(--font-ui);
+}
+.roadwind-app .stat-box .unit {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: 2px;
+  font-weight: 400;
+}
+
+/* Weather Panel */
+.roadwind-app .sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.roadwind-app .weather-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.roadwind-app .weather-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.6);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255,255,255,0.8);
+  transition: var(--transition);
+}
+.roadwind-app .weather-row:hover {
+  background: rgba(255,255,255,0.9);
+  transform: translateX(2px);
+}
+
+.roadwind-app .weather-row .wlabel {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+.roadwind-app .weather-row .wvalue {
+  font-family: var(--font-data);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Legends */
+.roadwind-app .wind-legend {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+.roadwind-app .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.roadwind-app .legend-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.roadwind-app .legend-dot.green { background: var(--green); box-shadow: 0 0 8px rgba(16,185,129,0.4); }
+.roadwind-app .legend-dot.yellow { background: var(--yellow); box-shadow: 0 0 8px rgba(245,158,11,0.4); }
+.roadwind-app .legend-dot.red { background: var(--red); box-shadow: 0 0 8px rgba(239,68,68,0.4); }
+
+
+/* ── MAP ── */
+/* NB : le styles.css du site définit aussi une classe .map-container
+   (width:min(100%,420px)) ; on écrase largeur et décorations héritées. */
+.roadwind-app .map-container {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  max-width: none;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  z-index: 10; /* Base layer */
+}
+
+.roadwind-app #map {
+  width: 100%;
+  height: 100%;
+  background: #e2e8f0;
+}
+
+.roadwind-app .map-hint {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-color);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  border-radius: 30px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+  pointer-events: none;
+  z-index: 500;
+  white-space: nowrap;
+  box-shadow: var(--shadow-float);
+  transition: opacity 0.3s;
+}
+
+.roadwind-app .map-overlay {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+}
+
+.roadwind-app .map-badge {
+  background: var(--surface-color);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-md);
+}
+.roadwind-app .map-badge .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(16,185,129,0); }
+  100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+}
+
+/* ── CHARTS PANEL ── */
+.roadwind-app .charts-panel {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  bottom: 16px;
+  width: 380px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.roadwind-app .charts-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(255,255,255,0.5);
+  padding: 0 4px;
+}
+.roadwind-app .chart-tab {
+  flex: 1;
+  text-align: center;
+  padding: 14px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: var(--transition);
+}
+.roadwind-app .chart-tab.active {
+  color: var(--accent-blue);
+  border-bottom-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.05);
+}
+.roadwind-app .chart-tab:hover:not(.active) {
+  color: var(--text-main);
+  background: rgba(0,0,0,0.02);
+}
+
+.roadwind-app .charts-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scrollbar-width: thin;
+}
+
+.roadwind-app .chart-card {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.8);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: none;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.5);
+  animation: fadeIn 0.4s ease-out forwards;
+}
+.roadwind-app .chart-card.visible { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.roadwind-app .chart-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.roadwind-app .chart-wrapper {
+  position: relative;
+  height: 160px;
+  width: 100%;
+}
+
+/* ── UI HELPERS ── */
+.roadwind-app .loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(248, 250, 252, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 900;
+  gap: 16px;
+  transition: opacity 0.3s;
+}
+.roadwind-app .loading-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.roadwind-app .spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(59, 130, 246, 0.2);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.roadwind-app .loading-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.roadwind-app .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  gap: 12px;
+  height: 100%;
+}
+.roadwind-app .empty-state .icon { font-size: 48px; opacity: 0.8; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+.roadwind-app .empty-state p { font-size: 13px; line-height: 1.6; max-width: 240px; }
+
+/* ── LEAFLET OVERRIDES ── */
+.leaflet-popup-content-wrapper {
+  background: var(--surface-color) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-float) !important;
+  border-radius: var(--radius-md) !important;
+}
+.leaflet-popup-tip { background: var(--surface-solid) !important; }
+.leaflet-popup-close-button { color: var(--text-muted) !important; right: 8px !important; top: 8px !important; }
+.leaflet-control-zoom { border: none !important; box-shadow: var(--shadow-md) !important; }
+.leaflet-control-zoom a {
+  background: var(--surface-solid) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-color) !important;
+}
+.leaflet-control-zoom a:hover { background: var(--surface-hover) !important; }
+
+/* Le site définit une règle globale img{max-width:100%;object-fit:cover}
+   qui rétrécit/déforme les tuiles Leaflet : on la neutralise sur la carte. */
+.roadwind-app .leaflet-container img {
+  max-width: none !important;
+  object-fit: fill !important;
+}
+
+/* Wind Arrow on map */
+.wind-arrow-icon { background: none; border: none; }
+
+/* Toast */
+.roadwind-app .toast {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #1e293b;
+  color: white;
+  border-radius: 30px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 9999;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: var(--shadow-float);
+  pointer-events: none;
+  opacity: 0;
+}
+.roadwind-app .toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ── RESPONSIVE DESIGN ── */
+@media (max-width: 1024px) {
+  .roadwind-app .sidebar {
+    width: 280px;
+  }
+  .roadwind-app .charts-panel {
+    width: 320px;
+  }
+}
+
+@media (max-width: 768px) {
+  .roadwind-app .app-header { padding: 0 10px; }
+  .roadwind-app .logo { display: none; }
+  .roadwind-app .sidebar { display: none; /* Can be toggled in mobile UI */ }
+  .roadwind-app .charts-panel {
+    right: 0; top: auto; bottom: 0; left: 0;
+    width: 100%; height: 40vh;
+    border-radius: 20px 20px 0 0;
+  }
+}
