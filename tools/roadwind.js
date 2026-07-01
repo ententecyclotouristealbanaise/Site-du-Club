@@ -392,7 +392,14 @@ function renderWeatherPanel(data, pts) {
 
 function renderWindArrows(data, pts) {
   clearWindMarkers();
-  for (let i = 0; i < data.length; i++) {
+
+  const maxMarkers = 40;
+  const step = Math.max(1, Math.round(data.length / maxMarkers));
+  const arrowIndexes = [];
+  for (let i = 0; i < data.length; i += step) arrowIndexes.push(i);
+  if (arrowIndexes[arrowIndexes.length - 1] !== data.length - 1) arrowIndexes.push(data.length - 1);
+
+  for (const i of arrowIndexes) {
     const d = data[i];
     const bearing = i < pts.length - 1
       ? bearingBetween(pts[i], pts[i + 1])
@@ -400,9 +407,14 @@ function renderWindArrows(data, pts) {
 
     const hw = windComponent(bearing, d.windDir, d.windSpeed);
     const color = windArrowColor(hw);
+    const arrowAngle = hw > 3
+      ? (bearing + 180) % 360
+      : hw < -3
+        ? bearing
+        : windDirectionIcon(d.windDir);
 
     const arrowHtml = `
-      <svg viewBox="0 0 24 24" width="28" height="28" style="transform:rotate(${windDirectionIcon(d.windDir)}deg); display:block;">
+      <svg viewBox="0 0 24 24" width="28" height="28" style="transform:rotate(${arrowAngle}deg); display:block;">
         <path d="M4 12h14M14 6l6 6-6 6" stroke="${color}" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
       </svg>`;
 
@@ -423,7 +435,7 @@ function renderWindArrows(data, pts) {
           <div style="display:grid;gap:6px;font-size:13px;color:var(--text-main);">
             <div>🌡️ Temp : <b>${d.temp.toFixed(1)} °C</b></div>
             <div>💨 Vent : <b>${d.windSpeed.toFixed(0)} km/h</b> (${dirToText(d.windDir)})</div>
-            <div>🧭 Sens : <b>${dirToText(windDirectionIcon(d.windDir))}</b></div>
+            <div>🧭 Sens : <b>${dirToText(arrowAngle)}</b></div>
             <div style="margin-top:4px;padding:6px 10px;border-radius:6px;background:rgba(0,0,0,0.04);border-left:3px solid ${color};">
               <b>${hwText}</b> (${Math.abs(hw).toFixed(0)} km/h)
             </div>
@@ -609,14 +621,7 @@ function downloadHtmlReport() {
     const hw = windComponent(travelBearing, item.windDir, item.windSpeed);
     return `<tr>
       <td>${i + 1}</td>
-      <td><a href="https://www.google.com/maps?q=${item.lat.toFixed(6)},${item.lng.toFixed(6)}" target="_blank" rel="noopener noreferrer">${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}</a></td>
-      <td>${item.temp.toFixed(1)} °C</td>
-      <td>${item.windSpeed.toFixed(0)} km/h</td>
-      <td>${dirToText(item.windDir)}</td>
-      <td>${dirToText(windDirectionIcon(item.windDir))}</td>
-      <td>${Math.abs(hw).toFixed(0)} km/h</td>
-      <td>${hw > 3 ? 'Face' : hw < -3 ? 'Dos' : 'Latéral'}</td>
-      <td>${item.precip.toFixed(0)} %</td>
+      <td><a href="https://www.google.com/maps/@?api=1&map_action=map&center=${item.lat.toFixed(6)},${item.lng.toFixed(6)}&zoom=18&basemap=satellite" target="_blank" rel="noopener noreferrer">${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}</a></td>
     </tr>`;
   }).join('');
 
