@@ -95,12 +95,12 @@
       </div>
 
       <div class="speed-control" title="Points d'analyse">
-        <span class="speed-label" id="pts-label">5 pts</span>
-        <input type="range" class="speed-slider" id="pts-slider" min="5" max="40" value="5" step="1" oninput="document.getElementById('pts-label').textContent = this.value + ' pts'">
+        <span class="speed-label" id="pts-label">30 pts</span>
+        <input type="range" class="speed-slider" id="pts-slider" min="5" max="35" value="30" step="1" oninput="document.getElementById('pts-label').textContent = this.value + ' pts'">
       </div>
 
-      <button class="btn icon-btn" id="btn-export" onclick="exportResume()" title="Copier résumé (Markdown)" style="display:none;">
-        📋
+      <button class="btn primary icon-btn" id="btn-export" onclick="downloadHtmlReport()" title="Exporter rapport HTML" style="display:none;">
+        📄
       </button>
 
       <button class="btn danger icon-btn" id="btn-reset" onclick="resetParcours()" title="Effacer tout">
@@ -166,6 +166,19 @@
         <div class="map-badge" id="status-badge">
           <div class="dot"></div>
           <span id="status-text">Prêt</span>
+        </div>
+        <div class="wind-rose" id="windRose" style="display:none;">
+          <div class="rose-head">Rose des vents</div>
+          <div class="rose-circle">
+            <div class="rose-arrow" id="windRoseArrow">➤</div>
+            <div class="rose-labels">
+              <span>N</span>
+              <span>E</span>
+              <span>S</span>
+              <span>O</span>
+            </div>
+          </div>
+          <div class="rose-info" id="windRoseInfo">—</div>
         </div>
       </div>
 

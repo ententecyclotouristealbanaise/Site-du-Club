@@ -334,6 +334,10 @@ function windComponent(travelBearing, windDir, windSpeed) {
   return windSpeed * Math.cos(rad); // >0 = headwind, <0 = tailwind
 }
 
+function windDirectionIcon(windDir) {
+  return (windDir + 180) % 360; // Convert from source direction to arrow pointing to where wind blows
+}
+
 function bearingBetween(a, b) {
   const lat1 = a.lat * Math.PI / 180, lat2 = b.lat * Math.PI / 180;
   const dLon = (b.lng - a.lng) * Math.PI / 180;
@@ -396,7 +400,7 @@ function renderWindArrows(data, pts) {
     const color = windArrowColor(hw);
 
     const arrowHtml = `
-      <div style="transform:rotate(${d.windDir}deg); font-size:24px; color:${color}; text-shadow:0 2px 4px rgba(0,0,0,0.4); line-height:1;">
+      <div style="transform:rotate(${windDirectionIcon(d.windDir)}deg); font-size:24px; color:${color}; text-shadow:0 2px 4px rgba(0,0,0,0.4); line-height:1;">
         ➤
       </div>`;
 
@@ -417,6 +421,7 @@ function renderWindArrows(data, pts) {
           <div style="display:grid;gap:6px;font-size:13px;color:var(--text-main);">
             <div>🌡️ Temp : <b>${d.temp.toFixed(1)} °C</b></div>
             <div>💨 Vent : <b>${d.windSpeed.toFixed(0)} km/h</b> (${dirToText(d.windDir)})</div>
+            <div>🧭 Sens : <b>${dirToText(windDirectionIcon(d.windDir))}</b></div>
             <div style="margin-top:4px;padding:6px 10px;border-radius:6px;background:rgba(0,0,0,0.04);border-left:3px solid ${color};">
               <b>${hwText}</b> (${Math.abs(hw).toFixed(0)} km/h)
             </div>
@@ -426,11 +431,35 @@ function renderWindArrows(data, pts) {
       `);
     windMarkers.push(marker);
   }
+  updateWindRose(data);
 }
 
 function dirToText(deg) {
   const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
   return dirs[Math.round(deg / 45) % 8];
+}
+
+function circularMeanDirection(degrees) {
+  const rad = degrees.map(d => d * Math.PI / 180);
+  const x = rad.reduce((sum, a) => sum + Math.cos(a), 0);
+  const y = rad.reduce((sum, a) => sum + Math.sin(a), 0);
+  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+}
+
+function updateWindRose(data) {
+  const rose = document.getElementById('windRose');
+  const arrow = document.getElementById('windRoseArrow');
+  const info = document.getElementById('windRoseInfo');
+  if (!rose || !arrow || !info || !data || !data.length) {
+    if (rose) rose.style.display = 'none';
+    return;
+  }
+
+  const meanDir = circularMeanDirection(data.map(d => windDirectionIcon(d.windDir)));
+  const meanSpeed = avg(data.map(d => d.windSpeed)).toFixed(0);
+  arrow.style.transform = `rotate(${meanDir}deg)`;
+  info.textContent = `${meanSpeed} km/h • ${dirToText(meanDir)}`;
+  rose.style.display = 'block';
 }
 
 function clearWindMarkers() {
@@ -543,6 +572,118 @@ function switchTab(name) {
 //  UTILS & EXPORT
 // ──────────────────────────────────────────────────────
 function avg(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length; }
+
+function downloadHtmlReport() {
+  if (!lastWeatherData || !lastWeatherPts) return;
+  const dStr = document.getElementById('depart-datetime').value;
+  const depart = dStr ? new Date(dStr).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+  const arrival = document.getElementById('stat-arrival').textContent || '—';
+  const dist = document.getElementById('stat-dist').textContent || '— km';
+  const duration = document.getElementById('stat-time').textContent || '—';
+  const avgTemp = avg(lastWeatherData.map(d => d.temp)).toFixed(1);
+  const avgWind = avg(lastWeatherData.map(d => d.windSpeed)).toFixed(0);
+  const avgPrecip = avg(lastWeatherData.map(d => d.precip)).toFixed(0);
+
+  let head = 0, tail = 0, cross = 0;
+  lastWeatherData.forEach((item, i) => {
+    const bearing = i < lastWeatherPts.length - 1
+      ? bearingBetween(lastWeatherPts[i], lastWeatherPts[i + 1])
+      : (i > 0 ? bearingBetween(lastWeatherPts[i - 1], lastWeatherPts[i]) : 0);
+    const hw = windComponent(bearing, item.windDir, item.windSpeed);
+    if (hw > 3) head++;
+    else if (hw < -3) tail++;
+    else cross++;
+  });
+
+  const total = lastWeatherData.length;
+  const pHead = Math.round((head / total) * 100);
+  const pTail = Math.round((tail / total) * 100);
+  const pCross = Math.round((cross / total) * 100);
+
+  const rows = lastWeatherData.map((item, i) => {
+    const travelBearing = i < lastWeatherPts.length - 1
+      ? bearingBetween(lastWeatherPts[i], lastWeatherPts[i + 1])
+      : (i > 0 ? bearingBetween(lastWeatherPts[i - 1], lastWeatherPts[i]) : 0);
+    const hw = windComponent(travelBearing, item.windDir, item.windSpeed);
+    return `<tr>
+      <td>${i + 1}</td>
+      <td>${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}</td>
+      <td>${item.temp.toFixed(1)} °C</td>
+      <td>${item.windSpeed.toFixed(0)} km/h</td>
+      <td>${dirToText(item.windDir)}</td>
+      <td>${dirToText(windDirectionIcon(item.windDir))}</td>
+      <td>${Math.abs(hw).toFixed(0)} km/h</td>
+      <td>${hw > 3 ? 'Face' : hw < -3 ? 'Dos' : 'Latéral'}</td>
+      <td>${item.precip.toFixed(0)} %</td>
+    </tr>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>RoadWind - Rapport météo</title>
+<style>
+  body{font-family:Arial,Helvetica,sans-serif;color:#0f172a;background:#f8fafc;padding:24px;}
+  h1,h2{color:#0f172a;margin:0 0 12px 0;}
+  .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;}
+  .meta .card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px;box-shadow:0 8px 24px rgba(15,23,42,0.05);}
+  .card strong{display:block;font-size:0.9rem;color:#64748b;margin-bottom:6px;}
+  table{width:100%;border-collapse:collapse;background:#fff;box-shadow:0 12px 36px rgba(15,23,42,0.08);}
+  th,td{padding:12px 10px;border-bottom:1px solid #e2e8f0;font-size:13px;text-align:left;}
+  th{background:#f1f5f9;color:#0f172a;font-weight:700;}
+  tr:nth-child(even){background:#f8fafc;}
+  .summary{margin:24px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;}
+  .summary div{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px;}
+  .summary strong{display:block;font-size:0.9rem;color:#64748b;margin-bottom:6px;}
+  .rose{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:14px;}
+  .rose-circle{position:relative;width:100px;height:100px;border:1px solid #dbeafe;border-radius:50%;background:radial-gradient(circle at center,rgba(59,130,246,.08)0%,transparent 70%);}
+  .rose-circle div{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:32px;color:#3b82f6;transform-origin:center;}
+  .rose-desc{font-size:0.95rem;color:#0f172a;}
+</style>
+</head>
+<body>
+  <h1>RoadWind — Rapport météo</h1>
+  <p>Analyse du parcours et du vent pour l'heure de départ <strong>${depart}</strong>.</p>
+  <div class="meta">
+    <div class="card"><strong>Arrivée estimée</strong>${arrival}</div>
+    <div class="card"><strong>Distance</strong>${dist}</div>
+    <div class="card"><strong>Durée estimée</strong>${duration}</div>
+    <div class="card"><strong>Points analysés</strong>${lastWeatherData.length}</div>
+  </div>
+  <div class="summary">
+    <div><strong>Température moyenne</strong>${avgTemp} °C</div>
+    <div><strong>Vitesse moyenne du vent</strong>${avgWind} km/h</div>
+    <div><strong>Précipitations moyennes</strong>${avgPrecip} %</div>
+    <div><strong>Vent de face</strong>${pHead} %</div>
+    <div><strong>Vent de dos</strong>${pTail} %</div>
+    <div><strong>Vent latéral</strong>${pCross} %</div>
+  </div>
+  <div class="rose">
+    <div class="rose-circle"><div style="transform:rotate(${Math.round(avg(lastWeatherData.map(d => windDirectionIcon(d.windDir))))}deg);">➤</div></div>
+    <div class="rose-desc">Direction moyenne du vent: <strong>${dirToText(Math.round(avg(lastWeatherData.map(d => windDirectionIcon(d.windDir)))) )}</strong></div>
+  </div>
+  <h2>Détails par point</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Coord.</th><th>Temp.</th><th>Vent</th><th>Origine</th><th>Destination</th><th>Force</th><th>Type</th><th>Pluie</th></tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'roadwind-report.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📄 Rapport HTML prêt au téléchargement');
+}
 
 function exportResume() {
   if (!lastWeatherData || !lastWeatherPts) return;
