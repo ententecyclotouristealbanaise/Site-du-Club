@@ -190,7 +190,7 @@ async function parseGPX(text) {
     return;
   }
 
-  const step = Math.max(1, Math.floor(trkpts.length / 80)); // Limit points
+  const step = 1; // Keep imported track points; analysis sampling is handled adaptively later.
   trkpts.forEach((pt, i) => {
     if (i % step !== 0 && i !== trkpts.length - 1) return;
     const lat = parseFloat(pt.getAttribute('lat'));
@@ -269,7 +269,7 @@ function computeRouteDistance(pts) {
 
 function calculateAdaptivePoints(distKm) {
   const points = Math.round(distKm * 6);
-  return Math.min(80, Math.max(5, points || 5));
+  return Math.max(5, points || 5);
 }
 // ──────────────────────────────────────────────────────
 //  WEATHER API
@@ -664,54 +664,108 @@ function switchTab(name) {
 // ──────────────────────────────────────────────────────
 function avg(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length; }
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getWindType(hw) {
+  if (hw > 3) return 'Face';
+  if (hw < -3) return 'Dos';
+  return 'Latéral';
+}
+
+function getForceStyle(hw) {
+  const absHw = Math.abs(hw);
+  if (absHw >= 20) return 'background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;';
+  if (absHw >= 10) return 'background:#fef3c7;color:#92400e;font-weight:700;text-align:center;';
+  return 'background:#dcfce7;color:#166534;font-weight:700;text-align:center;';
+}
+
 function downloadHtmlReport() {
   if (!lastWeatherData || !lastWeatherPts) return;
+
   const dStr = document.getElementById('depart-datetime').value;
   const depart = dStr ? formatFrenchDateTime(parseDateTimeInput(dStr), { dateStyle: 'short', timeStyle: 'short' }) : '—';
   const arrival = document.getElementById('stat-arrival').textContent || '—';
   const dist = document.getElementById('stat-dist').textContent || '— km';
   const duration = document.getElementById('stat-time').textContent || '—';
-  const avgTemp = avg(lastWeatherData.map(d => d.temp)).toFixed(1);
-  const avgWind = avg(lastWeatherData.map(d => d.windSpeed)).toFixed(0);
-  const avgPrecip = avg(lastWeatherData.map(d => d.precip)).toFixed(0);
 
-  let head = 0, tail = 0, cross = 0;
-  lastWeatherData.forEach((item, i) => {
-    const bearing = i < lastWeatherPts.length - 1
-      ? bearingBetween(lastWeatherPts[i], lastWeatherPts[i + 1])
-      : (i > 0 ? bearingBetween(lastWeatherPts[i - 1], lastWeatherPts[i]) : 0);
-    const hw = windComponent(bearing, item.windDir, item.windSpeed);
-    if (hw > 3) head++;
-    else if (hw < -3) tail++;
-    else cross++;
-  });
-
-  const total = lastWeatherData.length;
-  const pHead = Math.round((head / total) * 100);
-  const pTail = Math.round((tail / total) * 100);
-  const pCross = Math.round((cross / total) * 100);
-
-  const rows = lastWeatherData.map((item, i) => {
+  const reportData = lastWeatherData.map((item, i) => {
     const travelBearing = i < lastWeatherPts.length - 1
       ? bearingBetween(lastWeatherPts[i], lastWeatherPts[i + 1])
       : (i > 0 ? bearingBetween(lastWeatherPts[i - 1], lastWeatherPts[i]) : 0);
     const hw = windComponent(travelBearing, item.windDir, item.windSpeed);
-    const type = hw > 3 ? 'Face' : hw < -3 ? 'Dos' : 'Latéral';
-    const origin = dirToText(item.windDir);
-    const destination = dirToText(windDirectionIcon(item.windDir));
-    const pkKm = (lastWeatherPts[i]?.cumulDist ?? 0).toFixed(1);
-    return `<tr>
-      <td>${i + 1}</td>
-      <td>${pkKm} km</td>
-      <td>${item.temp.toFixed(1)} °C</td>
-      <td>${item.windSpeed.toFixed(0)} km/h</td>
-      <td>${origin}</td>
-      <td>${destination}</td>
-      <td>${Math.abs(hw).toFixed(0)} km/h</td>
-      <td>${type}</td>
-      <td>${item.precip.toFixed(0)} %</td>
-    </tr>`;
-  }).join('');
+    return {
+      index: i + 1,
+      temp: item.temp,
+      windSpeed: item.windSpeed,
+      precip: item.precip,
+      windDir: item.windDir,
+      hw,
+      type: getWindType(hw),
+      coord: `${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}`,
+      pkKm: (lastWeatherPts[i]?.cumulDist ?? 0).toFixed(1)
+    };
+  });
+
+  const avgTemp = avg(reportData.map(d => d.temp)).toFixed(1);
+  const avgWind = avg(reportData.map(d => d.windSpeed)).toFixed(0);
+  const avgPrecip = avg(reportData.map(d => d.precip)).toFixed(0);
+
+  const faceCount = reportData.filter(d => d.type === 'Face').length;
+  const tailCount = reportData.filter(d => d.type === 'Dos').length;
+  const crossCount = reportData.filter(d => d.type === 'Latéral').length;
+  const total = reportData.length;
+  const pHead = Math.round((faceCount / total) * 100);
+  const pTail = Math.round((tailCount / total) * 100);
+  const pCross = Math.round((crossCount / total) * 100);
+
+  const strongestFace = reportData.reduce((best, d) => (!best || d.hw > best.hw ? d : best), null);
+  const strongestTail = reportData.reduce((best, d) => (!best || d.hw < best.hw ? d : best), null);
+
+  let longestRun = { start: 0, end: 0, length: 0 };
+  let currentStart = 0;
+  let currentLength = 0;
+  reportData.forEach((d, index) => {
+    if (d.type === 'Face') {
+      if (currentLength === 0) currentStart = index;
+      currentLength += 1;
+    } else {
+      if (currentLength > longestRun.length) {
+        longestRun = { start: currentStart, end: index - 1, length: currentLength };
+      }
+      currentLength = 0;
+    }
+  });
+  if (currentLength > longestRun.length) {
+    longestRun = { start: currentStart, end: total - 1, length: currentLength };
+  }
+
+  const earlyCount = Math.min(total, Math.max(5, Math.floor(total * 0.35)));
+  const earlySlice = reportData.slice(0, earlyCount);
+  const earlyTailRatio = earlySlice.filter(d => d.type === 'Dos').length / earlySlice.length;
+  const earlyLabel = earlyTailRatio >= 0.6 ? 'favorable' : 'mitigé';
+
+  const meanDir = circularMeanDirection(reportData.map(d => windDirectionIcon(d.windDir)));
+  const meanDirText = dirToText(meanDir);
+  const meanDirRotation = Math.round(meanDir);
+  const hardestPeak = Math.max(...reportData.slice(longestRun.start, longestRun.end + 1).map(d => d.windSpeed));
+
+  const rows = reportData.map(d => `
+    <tr>
+      <td>${d.index}</td>
+      <td>${escapeHtml(d.coord)}</td>
+      <td>${d.temp.toFixed(1)} °C</td>
+      <td>${d.windSpeed.toFixed(0)} km/h</td>
+      <td>${d.type}</td>
+      <td style="${getForceStyle(d.hw)}">${Math.abs(d.hw).toFixed(0)} km/h</td>
+      <td>${d.precip.toFixed(0)} %</td>
+    </tr>`).join('');
 
   const html = `<!DOCTYPE html>
 <html lang="fr">
@@ -731,21 +785,32 @@ function downloadHtmlReport() {
   .summary{margin:24px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;}
   .summary div{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px;}
   .summary strong{display:block;font-size:0.9rem;color:#64748b;margin-bottom:6px;}
-  .rose{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:14px;}
+  .rose{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:14px;margin-bottom:24px;}
   .rose-circle{position:relative;width:100px;height:100px;border:1px solid #dbeafe;border-radius:50%;background:radial-gradient(circle at center,rgba(59,130,246,.08)0%,transparent 70%);}
   .rose-circle div{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:32px;color:#3b82f6;transform-origin:center;}
   .rose-desc{font-size:0.95rem;color:#0f172a;}
+  .analysis{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin-bottom:24px;box-shadow:0 8px 24px rgba(15,23,42,0.05);}
+  .analysis h2{margin-bottom:14px;}
+  .analysis ul{margin:0;padding-left:20px;}
+  .analysis li{margin-bottom:8px;line-height:1.5;}
+  .highlight-hard{background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:6px;font-weight:700;}
+  .highlight-easy{background:#dcfce7;color:#166534;padding:2px 8px;border-radius:6px;font-weight:700;}
+  .legend{display:flex;gap:16px;margin:12px 0 20px 0;font-size:13px;flex-wrap:wrap;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend .dot{width:14px;height:14px;border-radius:4px;display:inline-block;}
 </style>
 </head>
 <body>
   <h1>RoadWind — Rapport météo</h1>
-  <p>Analyse du parcours et du vent pour l'heure de départ <strong>${depart}</strong>.</p>
+  <p>Analyse du parcours et du vent pour l'heure de départ <strong>${escapeHtml(depart)}</strong>.</p>
+
   <div class="meta">
-    <div class="card"><strong>Arrivée estimée</strong>${arrival}</div>
-    <div class="card"><strong>Distance</strong>${dist}</div>
-    <div class="card"><strong>Durée estimée</strong>${duration}</div>
-    <div class="card"><strong>Points analysés</strong>${lastWeatherData.length}</div>
+    <div class="card"><strong>Arrivée estimée</strong>${escapeHtml(arrival)}</div>
+    <div class="card"><strong>Distance</strong>${escapeHtml(dist)}</div>
+    <div class="card"><strong>Durée estimée</strong>${escapeHtml(duration)}</div>
+    <div class="card"><strong>Points analysés</strong>${total}</div>
   </div>
+
   <div class="summary">
     <div><strong>Température moyenne</strong>${avgTemp} °C</div>
     <div><strong>Vitesse moyenne du vent</strong>${avgWind} km/h</div>
@@ -754,14 +819,33 @@ function downloadHtmlReport() {
     <div><strong>Vent de dos</strong>${pTail} %</div>
     <div><strong>Vent latéral</strong>${pCross} %</div>
   </div>
+
   <div class="rose">
-    <div class="rose-circle"><div style="transform:rotate(${Math.round(avg(lastWeatherData.map(d => windDirectionIcon(d.windDir))))}deg);">➤</div></div>
-    <div class="rose-desc">Direction moyenne du vent: <strong>${dirToText(Math.round(avg(lastWeatherData.map(d => windDirectionIcon(d.windDir)))) )}</strong></div>
+    <div class="rose-circle"><div style="transform:rotate(${meanDirRotation}deg);">➤</div></div>
+    <div class="rose-desc">Direction moyenne du vent: <strong>${escapeHtml(meanDirText)}</strong></div>
   </div>
+
+  <div class="analysis">
+    <h2>🔍 Analyse du parcours</h2>
+    <ul>
+      <li>La partie la plus difficile du trajet se situe entre les points <span class="highlight-hard">${longestRun.start + 1} et ${longestRun.end + 1}</span> : <strong>${longestRun.length} points d'affilée avec du vent de face</strong>, avec des pointes jusqu'à <span class="highlight-hard">${Math.round(hardestPeak)} km/h</span> de vent.</li>
+      <li>Le début du parcours (points 2 à ${earlyCount}) est globalement <span class="highlight-easy">${earlyLabel}</span>, avec du vent de dos sur la majorité des points — bon moment pour rouler vite sans trop forcer.</li>
+      <li>Le point le plus exposé au vent de face est le <strong>point ${strongestFace.index}</strong> avec <span class="highlight-hard">${Math.abs(strongestFace.hw).toFixed(0)} km/h</span> de vent de face.</li>
+      <li>Le meilleur point de vent de dos est le <strong>point ${strongestTail.index}</strong> avec <span class="highlight-easy">${Math.abs(strongestTail.hw).toFixed(0)} km/h</span> dans le dos.</li>
+      <li>Globalement : ${pHead}% du trajet en vent de face, ${pTail}% en vent de dos, et ${pCross}% en vent latéral.</li>
+      <li>${avgPrecip < 5 ? 'Aucune pluie prévue sur l’ensemble du parcours — les conditions restent sèches.' : 'Des précipitations sont possibles sur une partie du parcours, à surveiller.'}</li>
+    </ul>
+  </div>
+
   <h2>Détails par point</h2>
+  <div class="legend">
+    <span><span class="dot" style="background:#dcfce7;"></span> Vent faible (&lt; 10 km/h)</span>
+    <span><span class="dot" style="background:#fef3c7;"></span> Vent modéré (10-20 km/h)</span>
+    <span><span class="dot" style="background:#fee2e2;"></span> Vent fort (&gt; 20 km/h)</span>
+  </div>
   <table>
     <thead>
-      <tr><th>#</th><th>Point kilométrique</th><th>Temp.</th><th>Vent</th><th>Origine</th><th>Destination</th><th>Force</th><th>Type</th><th>Pluie</th></tr>
+      <tr><th>#</th><th>Coord.</th><th>Temp.</th><th>Vent</th><th>Type</th><th>Force ressentie</th><th>Pluie</th></tr>
     </thead>
     <tbody>${rows}</tbody>
   </table>
