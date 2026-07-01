@@ -207,8 +207,8 @@ async function parseGPX(text) {
     if (doSnap) {
       const snapped = await snapToRoads(waypoints);
       if (snapped && snapped.length) {
-        // Replace waypoints with snapped coordinates (ele lost)
-        waypoints = snapped.map(p => ({ lat: p.lat, lng: p.lng, ele: null }));
+        // Replace waypoints with snapped coordinates while preserving elevation values.
+        waypoints = snapped.map(p => ({ lat: p.lat, lng: p.lng, ele: p.ele ?? null }));
       }
     }
   } catch (e) {
@@ -348,12 +348,17 @@ async function snapToRoads(pts) {
     if (!resp.ok) throw new Error('OSRM route failed');
     const j = await resp.json();
     if (j && j.routes && j.routes.length && j.routes[0].geometry && j.routes[0].geometry.coordinates) {
-      return j.routes[0].geometry.coordinates.map(c => ({ lat: c[1], lng: c[0] }));
+      const coordsArr = j.routes[0].geometry.coordinates;
+      const total = coordsArr.length;
+      return coordsArr.map((c, idx) => {
+        const sourceIndex = Math.round(idx * (sample.length - 1) / Math.max(1, total - 1));
+        return { lat: c[1], lng: c[0], ele: sample[sourceIndex]?.ele ?? null };
+      });
     }
   } catch (err) {
     console.warn('snapToRoads failed:', err);
   }
-  return pts.map(p => ({ lat: p.lat, lng: p.lng, ele: p.ele || null }));
+  return pts.map(p => ({ lat: p.lat, lng: p.lng, ele: p.ele ?? null }));
 }
 
 async function fetchWeatherForPoints(pts, startTime) {
