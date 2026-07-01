@@ -609,7 +609,7 @@ function downloadHtmlReport() {
     const hw = windComponent(travelBearing, item.windDir, item.windSpeed);
     return `<tr>
       <td>${i + 1}</td>
-      <td>${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}</td>
+      <td><a href="https://www.google.com/maps?q=${item.lat.toFixed(6)},${item.lng.toFixed(6)}" target="_blank" rel="noopener noreferrer">${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}</a></td>
       <td>${item.temp.toFixed(1)} °C</td>
       <td>${item.windSpeed.toFixed(0)} km/h</td>
       <td>${dirToText(item.windDir)}</td>
