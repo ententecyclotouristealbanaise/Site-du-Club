@@ -433,12 +433,13 @@ body { margin: 0; padding: 0; }
 .roadwind-app .map-overlay {
   position: absolute;
   top: 16px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 16px;
+  left: auto;
+  transform: none;
   z-index: 500;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   gap: 12px;
 }
 

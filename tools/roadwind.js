@@ -335,7 +335,9 @@ function windComponent(travelBearing, windDir, windSpeed) {
 }
 
 function windDirectionIcon(windDir) {
-  return (windDir + 180) % 360; // Convert from source direction to arrow pointing to where wind blows
+  // Open-Meteo gives wind direction as the direction the wind comes from.
+  // The arrow should point toward the direction the wind blows.
+  return (windDir + 90) % 360;
 }
 
 function bearingBetween(a, b) {
@@ -400,9 +402,9 @@ function renderWindArrows(data, pts) {
     const color = windArrowColor(hw);
 
     const arrowHtml = `
-      <div style="transform:rotate(${windDirectionIcon(d.windDir)}deg); font-size:24px; color:${color}; text-shadow:0 2px 4px rgba(0,0,0,0.4); line-height:1;">
-        ➤
-      </div>`;
+      <svg viewBox="0 0 24 24" width="28" height="28" style="transform:rotate(${windDirectionIcon(d.windDir)}deg); display:block;">
+        <path d="M4 12h14M14 6l6 6-6 6" stroke="${color}" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>`;
 
     const icon = L.divIcon({
       html: arrowHtml,
