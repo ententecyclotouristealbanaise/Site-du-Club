@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>RoadWind · Météo de parcours · ECTA Saint-Alban</title>
   <meta name="description" content="Analysez la météo et le vent (de face, de dos, latéral) tout au long de votre parcours vélo. Outil gratuit du club ECTA Saint-Alban." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e8357a'/></svg>" />
@@ -11,6 +14,18 @@
   <meta name="theme-color" content="#e8357a" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <script>
+    (function() {
+      const currentVersion = '20260701e';
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('v') !== currentVersion) {
+        url.searchParams.set('v', currentVersion);
+        window.location.replace(url.toString());
+        return;
+      }
+    })();
+  </script>
 
   <!-- Site fonts (nav) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -249,6 +264,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="../scripts.js" defer></script>
-<script src="roadwind.js?v=20260701d"></script>
+<script src="roadwind.js?v=20260701e"></script>
 </body>
 </html>
