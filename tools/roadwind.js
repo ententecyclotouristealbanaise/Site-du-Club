@@ -6,6 +6,7 @@ let speedKmh = 25;
 let waypoints = [];
 let routePolyline = null;
 let windMarkers = [];
+let routePointMarkers = [];
 let chartInstances = {};
 let lastWeatherData = null;
 let lastWeatherPts = null;
@@ -308,6 +309,7 @@ async function analyserParcours() {
 
     renderWeatherPanel(weatherData, pts);
     renderWindArrows(weatherData, pts);
+    renderRoutePointMarkers(weatherData, pts);
     renderCharts(weatherData, pts);
 
     document.getElementById('wind-legend').style.display = 'flex';
@@ -519,6 +521,52 @@ function renderWeatherPanel(data, pts) {
   `;
 }
 
+function renderRoutePointMarkers(data, pts) {
+  clearRoutePointMarkers();
+
+  if (!data || !data.length || !pts || !pts.length) return;
+
+  const maxMarkers = 40;
+  const step = Math.max(1, Math.round(pts.length / maxMarkers));
+  const pointIndexes = [];
+  for (let i = 0; i < pts.length; i += step) pointIndexes.push(i);
+  if (pointIndexes[pointIndexes.length - 1] !== pts.length - 1) pointIndexes.push(pts.length - 1);
+
+  pointIndexes.forEach((index) => {
+    const pt = pts[index];
+    const d = data[index];
+    const bearing = index < pts.length - 1
+      ? bearingBetween(pts[index], pts[index + 1])
+      : (index > 0 ? bearingBetween(pts[index - 1], pts[index]) : 0);
+
+    const hw = windComponent(bearing, d?.windDir ?? 0, d?.windSpeed ?? 0);
+    const color = windArrowColor(hw);
+    const arrowAngle = hw > 3
+      ? (bearing + 180) % 360
+      : hw < -3
+        ? bearing
+        : windDirectionIcon(d?.windDir ?? 0);
+
+    const icon = L.divIcon({
+      html: `
+        <div class="route-point-marker">
+          <svg viewBox="0 0 24 24" width="16" height="16" style="transform:rotate(${arrowAngle}deg); display:block; flex-shrink:0;">
+            <path d="M4 12h14M14 6l6 6-6 6" stroke="${color}" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span class="route-point-label">${(pt.cumulDist ?? 0).toFixed(1)} km</span>
+        </div>`,
+      className: 'route-point-marker-wrapper',
+      iconSize: [96, 28],
+      iconAnchor: [48, 14]
+    });
+
+    const marker = L.marker([pt.lat, pt.lng], { icon })
+      .addTo(map)
+      .bindTooltip(`Point ${index + 1} • ${(pt.cumulDist ?? 0).toFixed(1)} km`);
+    routePointMarkers.push(marker);
+  });
+}
+
 function renderWindArrows(data, pts) {
   clearWindMarkers();
 
@@ -608,6 +656,11 @@ function updateWindRose(data) {
 function clearWindMarkers() {
   windMarkers.forEach(m => map.removeLayer(m));
   windMarkers = [];
+}
+
+function clearRoutePointMarkers() {
+  routePointMarkers.forEach(m => map.removeLayer(m));
+  routePointMarkers = [];
 }
 
 // ──────────────────────────────────────────────────────
@@ -738,6 +791,71 @@ function getForceStyle(hw) {
   return 'background:#dcfce7;color:#166534;font-weight:700;text-align:center;';
 }
 
+function buildRouteSvgMarkup(pts, data) {
+  if (!pts || !pts.length) return '';
+
+  const width = 900;
+  const height = 420;
+  const padding = 60;
+  const latMin = Math.min(...pts.map(p => p.lat));
+  const latMax = Math.max(...pts.map(p => p.lat));
+  const lngMin = Math.min(...pts.map(p => p.lng));
+  const lngMax = Math.max(...pts.map(p => p.lng));
+  const latSpan = Math.max(latMax - latMin, 0.0001);
+  const lngSpan = Math.max(lngMax - lngMin, 0.0001);
+
+  const toX = p => padding + ((p.lng - lngMin) / lngSpan) * (width - padding * 2);
+  const toY = p => height - padding - ((p.lat - latMin) / latSpan) * (height - padding * 2);
+
+  const routePoints = pts.map(p => `${toX(p)},${toY(p)}`).join(' ');
+
+  const maxMarkers = 32;
+  const step = Math.max(1, Math.round(pts.length / maxMarkers));
+  const pointIndexes = [];
+  for (let i = 0; i < pts.length; i += step) pointIndexes.push(i);
+  if (pointIndexes[pointIndexes.length - 1] !== pts.length - 1) pointIndexes.push(pts.length - 1);
+
+  const markerMarkup = pointIndexes.map(index => {
+    const pt = pts[index];
+    const item = data?.[index];
+    const bearing = index < pts.length - 1
+      ? bearingBetween(pts[index], pts[index + 1])
+      : (index > 0 ? bearingBetween(pts[index - 1], pts[index]) : 0);
+    const hw = windComponent(bearing, item?.windDir ?? 0, item?.windSpeed ?? 0);
+    const color = windArrowColor(hw);
+    const angleRad = ((hw > 3 ? (bearing + 180) : (hw < -3 ? bearing : windDirectionIcon(item?.windDir ?? 0))) - 90) * Math.PI / 180;
+    const length = 18;
+    const x = toX(pt);
+    const y = toY(pt);
+    const dx = Math.cos(angleRad) * length;
+    const dy = Math.sin(angleRad) * length;
+    const headX = x + dx;
+    const headY = y + dy;
+    const leftX = headX - dx * 0.35 - dy * 0.2;
+    const leftY = headY - dy * 0.35 + dx * 0.2;
+    const rightX = headX - dx * 0.35 + dy * 0.2;
+    const rightY = headY - dy * 0.35 - dx * 0.2;
+    const label = (pt.cumulDist ?? 0).toFixed(1);
+    return `
+      <g>
+        <circle cx="${x}" cy="${y}" r="4" fill="#0f172a"></circle>
+        <line x1="${x}" y1="${y}" x2="${headX}" y2="${headY}" stroke="${color}" stroke-width="2.2"></line>
+        <polygon points="${headX},${headY} ${leftX},${leftY} ${rightX},${rightY}" fill="${color}"></polygon>
+        <text x="${x + 8}" y="${y - 8}" font-size="11" font-family="Arial, Helvetica, sans-serif" fill="#0f172a">${escapeHtml(label)} km</text>
+      </g>`;
+  }).join('');
+
+  return `
+    <div class="route-map-card">
+      <div class="route-map-caption">Vue du circuit • flèches de vent et points kilométriques</div>
+      <svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vue du circuit avec points kilométriques">
+        <rect x="0" y="0" width="${width}" height="${height}" rx="18" fill="#f8fafc"></rect>
+        <polyline points="${routePoints}" fill="none" stroke="#3b82f6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+        ${markerMarkup}
+      </svg>
+    </div>`;
+}
+
 function downloadHtmlReport() {
   if (!lastWeatherData || !lastWeatherPts) return;
 
@@ -767,6 +885,7 @@ function downloadHtmlReport() {
 
   const avgTemp = avg(reportData.map(d => d.temp)).toFixed(1);
   const avgWind = avg(reportData.map(d => d.windSpeed)).toFixed(0);
+  const routeSvg = buildRouteSvgMarkup(lastWeatherPts, lastWeatherData);
   const avgPrecip = avg(reportData.map(d => d.precip)).toFixed(0);
 
   const faceCount = reportData.filter(d => d.type === 'Face').length;
@@ -845,6 +964,9 @@ function downloadHtmlReport() {
   .analysis h2{margin-bottom:14px;}
   .analysis ul{margin:0;padding-left:20px;}
   .analysis li{margin-bottom:8px;line-height:1.5;}
+  .route-map-card{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:16px;margin:24px 0;box-shadow:0 8px 24px rgba(15,23,42,0.05);}
+  .route-map-caption{font-size:0.95rem;color:#64748b;margin-bottom:10px;}
+  .route-map-card svg{width:100%;height:auto;display:block;border-radius:12px;background:linear-gradient(135deg,#f8fafc 0%,#eef4ff 100%);}
   .highlight-hard{background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:6px;font-weight:700;}
   .highlight-easy{background:#dcfce7;color:#166534;padding:2px 8px;border-radius:6px;font-weight:700;}
   .legend{display:flex;gap:16px;margin:12px 0 20px 0;font-size:13px;flex-wrap:wrap;}
@@ -876,6 +998,8 @@ function downloadHtmlReport() {
     <div class="rose-circle"><div style="transform:rotate(${meanDirRotation}deg);">➤</div></div>
     <div class="rose-desc">Direction moyenne du vent: <strong>${escapeHtml(meanDirText)}</strong></div>
   </div>
+
+  ${routeSvg}
 
   <div class="analysis">
     <h2>🔍 Analyse du parcours</h2>
@@ -957,6 +1081,7 @@ function resetParcours(confirm = true) {
   lastWeatherPts = null;
   if (routePolyline) { map.removeLayer(routePolyline); routePolyline = null; }
   clearWindMarkers();
+  clearRoutePointMarkers();
   updateStats();
   document.getElementById('btn-export').style.display = 'none';
   document.getElementById('wind-legend').style.display = 'none';
