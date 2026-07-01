@@ -268,8 +268,8 @@ function computeRouteDistance(pts) {
 }
 
 function calculateAdaptivePoints(distKm) {
-  const points = Math.round(distKm * 1.25);
-  return Math.max(8, Math.min(120, points || 8));
+  const points = Math.round(distKm * 6);
+  return Math.min(80, Math.max(5, points || 5));
 }
 // ──────────────────────────────────────────────────────
 //  WEATHER API
@@ -362,74 +362,39 @@ async function snapToRoads(pts) {
 }
 
 async function fetchWeatherForPoints(pts, startTime) {
-  const results = [];
-  const maxConcurrency = 4;
-  const maxRetries = 2;
+  const results = await Promise.all(pts.map(async (pt, i) => {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${pt.lat.toFixed(4)}&longitude=${pt.lng.toFixed(4)}&hourly=temperature_2m,precipitation_probability,windspeed_10m,winddirection_10m&wind_speed_unit=kmh&timezone=Europe/Paris&forecast_days=3`;
 
-  for (let i = 0; i < pts.length; i += maxConcurrency) {
-    const batch = pts.slice(i, i + maxConcurrency);
-    const batchResults = await Promise.all(batch.map(async (pt, offset) => {
-      const globalIndex = i + offset + 1;
-      let lastError = null;
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`Erreur pour le point ${i + 1}`);
+    const data = await resp.json();
 
-      for (let attempt = 0; attempt <= maxRetries; attempt++) {
-        try {
-          const url = `https://api.open-meteo.com/v1/forecast?latitude=${pt.lat.toFixed(4)}&longitude=${pt.lng.toFixed(4)}&hourly=temperature_2m,precipitation_probability,windspeed_10m,winddirection_10m&wind_speed_unit=kmh&timezone=Europe/Paris&forecast_days=3`;
-          const resp = await fetch(url, { cache: 'no-store' });
-          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const timeOffsetHours = (pt.cumulDist || 0) / speedKmh;
+    const targetTime = new Date(startTime.getTime() + timeOffsetHours * 3600000);
 
-          const data = await resp.json();
-          const timeOffsetHours = (pt.cumulDist || 0) / speedKmh;
-          const targetTime = new Date(startTime.getTime() + timeOffsetHours * 3600000);
-          const times = data.hourly.time;
-          let closest = 0;
-          let minDiff = Infinity;
+    const times = data.hourly.time;
+    let closest = 0;
+    let minDiff = Infinity;
 
-          for (let j = 0; j < times.length; j++) {
-            const t = new Date(times[j]);
-            const diff = Math.abs(t - targetTime);
-            if (diff < minDiff) {
-              minDiff = diff;
-              closest = j;
-            }
-          }
-
-          return {
-            time: times[closest],
-            temp: data.hourly.temperature_2m[closest],
-            precip: data.hourly.precipitation_probability[closest],
-            windSpeed: data.hourly.windspeed_10m[closest],
-            windDir: data.hourly.winddirection_10m[closest],
-            lat: pt.lat,
-            lng: pt.lng
-          };
-        } catch (err) {
-          lastError = err;
-          if (attempt < maxRetries) {
-            await new Promise(resolve => setTimeout(resolve, 400 * (attempt + 1)));
-          }
-        }
+    for (let j = 0; j < times.length; j++) {
+      const t = new Date(times[j]);
+      const diff = Math.abs(t - targetTime);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closest = j;
       }
+    }
 
-      console.warn(`Weather fetch failed for point ${globalIndex}, using fallback values`, lastError);
-      const fallback = results[results.length - 1] || {
-        time: startTime.toISOString(),
-        temp: 0,
-        precip: 0,
-        windSpeed: 0,
-        windDir: 0,
-        lat: pt.lat,
-        lng: pt.lng
-      };
-      return {
-        ...fallback,
-        lat: pt.lat,
-        lng: pt.lng
-      };
-    }));
-
-    results.push(...batchResults);
-  }
+    return {
+      time: times[closest],
+      temp: data.hourly.temperature_2m[closest],
+      precip: data.hourly.precipitation_probability[closest],
+      windSpeed: data.hourly.windspeed_10m[closest],
+      windDir: data.hourly.winddirection_10m[closest],
+      lat: pt.lat,
+      lng: pt.lng
+    };
+  }));
 
   return results;
 }

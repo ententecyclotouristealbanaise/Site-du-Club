@@ -1,6 +1,6 @@
 /* Service Worker pour ECTA Saint-Alban - PWA Offline Support */
 
-const CACHE_NAME = 'ecta-v10';
+const CACHE_NAME = 'ecta-v11';
 const BASE_PATH = new URL('.', self.registration.scope).pathname.replace(/\/$/, '');
 const withBase = (path) => `${BASE_PATH}/${path.replace(/^\//, '')}`;
 const STATIC_ASSETS = [
@@ -18,6 +18,16 @@ const STATIC_ASSETS = [
   withBase('donnees.js'),
   withBase('manifest.json')
 ];
+
+const BYPASS_CACHE_PATHS = [
+  withBase('tools/roadwind.html'),
+  withBase('tools/roadwind.js'),
+  withBase('tools/roadwind.css')
+];
+
+function shouldBypassCache(url) {
+  return BYPASS_CACHE_PATHS.some(path => url === path || url.startsWith(path + '?'));
+}
 
 /* Installation du Service Worker */
 self.addEventListener('install', event => {
@@ -59,6 +69,11 @@ self.addEventListener('fetch', event => {
 
   /* Ignorer les requêtes externes et non-GET */
   if (request.method !== 'GET' || url.origin !== location.origin) {
+    return;
+  }
+
+  if (shouldBypassCache(url)) {
+    event.respondWith(fetch(request).catch(() => caches.match(request)));
     return;
   }
 
