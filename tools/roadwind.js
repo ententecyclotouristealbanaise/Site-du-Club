@@ -950,4 +950,20 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
+async function refreshRoadwindCache() {
+  try {
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map(reg => reg.unregister()));
+    }
+    localStorage.clear();
+    sessionStorage.clear();
+    showToast('🔄 Cache nettoyé, rechargement…');
+    setTimeout(() => window.location.reload(true), 500);
+  } catch (err) {
+    console.error(err);
+    showToast('⚠️ Impossible de nettoyer le cache');
+  }
+}
+
 document.getElementById('depart-datetime').addEventListener('change', updateStats);
