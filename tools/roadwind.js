@@ -118,9 +118,11 @@ function updateStats() {
   const h = Math.floor(mins / 60);
   const m = mins % 60;
   const timeStr = h > 0 ? `${h}h${String(m).padStart(2, '0')}` : `${m} min`;
+  const adaptivePoints = calculateAdaptivePoints(dist);
 
   document.getElementById('stat-dist').innerHTML = `${dist.toFixed(1)}<span class="unit"> km</span>`;
   document.getElementById('stat-time').textContent = timeStr;
+  document.getElementById('pts-label').textContent = `${adaptivePoints} pts`;
 
   // Heure d'arrivée
   const dtVal = document.getElementById('depart-datetime').value;
@@ -256,7 +258,19 @@ function onSpeedChange(val) {
   document.getElementById('speed-label').textContent = speedKmh + ' km/h';
   updateStats();
 }
+function computeRouteDistance(pts) {
+  if (!pts || pts.length < 2) return 0;
+  let dist = 0;
+  for (let i = 1; i < pts.length; i++) {
+    dist += haversine(pts[i - 1], pts[i]);
+  }
+  return dist;
+}
 
+function calculateAdaptivePoints(distKm) {
+  const points = Math.round(distKm * 6);
+  return Math.min(80, Math.max(5, points || 5));
+}
 // ──────────────────────────────────────────────────────
 //  WEATHER API
 // ──────────────────────────────────────────────────────
@@ -273,7 +287,8 @@ async function analyserParcours() {
     const dt = document.getElementById('depart-datetime').value;
     const departTime = dt ? parseDateTimeInput(dt) : new Date();
 
-    const ptsCount = parseInt(document.getElementById('pts-slider').value) || 5;
+    const routeDistance = computeRouteDistance(waypoints);
+    const ptsCount = calculateAdaptivePoints(routeDistance);
     const pts = samplePoints(waypoints, ptsCount);
     const weatherData = await fetchWeatherForPoints(pts, departTime);
 

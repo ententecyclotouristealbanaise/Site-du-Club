@@ -219,6 +219,11 @@ body { margin: 0; padding: 0; }
   color: var(--text-muted);
   width: 50px;
 }
+.roadwind-app .speed-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
 .roadwind-app .speed-slider {
   width: 80px;
   accent-color: var(--accent-blue);

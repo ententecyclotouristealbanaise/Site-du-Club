@@ -98,9 +98,9 @@
         <input type="range" class="speed-slider" id="speed-slider" min="12" max="50" value="25" step="1" oninput="onSpeedChange(this.value)">
       </div>
 
-      <div class="speed-control" title="Points d'analyse">
-        <span class="speed-label" id="pts-label">80 pts</span>
-        <input type="range" class="speed-slider" id="pts-slider" min="5" max="80" value="80" step="1" oninput="document.getElementById('pts-label').textContent = this.value + ' pts'">
+      <div class="speed-control" title="Points d'analyse générés automatiquement selon la longueur du parcours">
+        <span class="speed-label" id="pts-label">Auto</span>
+        <span class="speed-note">Points adaptatifs</span>
       </div>
 
       <button class="btn primary icon-btn" id="btn-export" onclick="downloadHtmlReport()" title="Exporter rapport HTML" style="display:none;">
