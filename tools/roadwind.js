@@ -198,12 +198,16 @@ async function parseGPX(text) {
     if (!isNaN(lat) && !isNaN(lng)) waypoints.push({ lat, lng, ele });
   });
 
-  // Try to snap the trace to roads for a nicer visual on zoom
+  // Try to snap the trace to roads for a nicer visual on zoom (optional)
   try {
-    const snapped = await snapToRoads(waypoints);
-    if (snapped && snapped.length) {
-      // Replace waypoints with snapped coordinates (ele lost)
-      waypoints = snapped.map(p => ({ lat: p.lat, lng: p.lng, ele: null }));
+    const snapEl = document.getElementById('snap-toggle');
+    const doSnap = snapEl ? snapEl.checked : true;
+    if (doSnap) {
+      const snapped = await snapToRoads(waypoints);
+      if (snapped && snapped.length) {
+        // Replace waypoints with snapped coordinates (ele lost)
+        waypoints = snapped.map(p => ({ lat: p.lat, lng: p.lng, ele: null }));
+      }
     }
   } catch (e) {
     console.warn('Road snapping failed', e);
