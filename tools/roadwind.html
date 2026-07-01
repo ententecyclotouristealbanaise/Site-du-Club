@@ -113,9 +113,10 @@
         <input type="range" class="speed-slider" id="speed-slider" min="12" max="50" value="25" step="1" oninput="onSpeedChange(this.value)">
       </div>
 
-      <div class="speed-control" title="Points d'analyse générés automatiquement selon la longueur du parcours">
-        <span class="speed-label" id="pts-label">Auto</span>
-        <span class="speed-note">Points adaptatifs</span>
+      <div class="speed-control" title="Nombre de points d'analyse à utiliser pour la météo">
+        <span class="speed-label" id="pts-label">20 pts</span>
+        <input type="range" class="speed-slider" id="pts-slider" min="0" max="200" value="20" step="1" oninput="onPointsChange(this.value)">
+        <span class="speed-note">Points météo</span>
       </div>
 
       <button class="btn primary icon-btn" id="btn-export" onclick="downloadHtmlReport()" title="Exporter rapport HTML" style="display:none;">

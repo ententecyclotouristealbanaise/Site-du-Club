@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>RoadWind - Rapport météo</title>
+<style>
+  body{font-family:Arial,Helvetica,sans-serif;color:#0f172a;background:#f8fafc;padding:24px;}
+  h1,h2{color:#0f172a;margin:0 0 12px 0;}
+  .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;}
+  .meta .card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px;box-shadow:0 8px 24px rgba(15,23,42,0.05);}
+  .card strong{display:block;font-size:0.9rem;color:#64748b;margin-bottom:6px;}
+  table{width:100%;border-collapse:collapse;background:#fff;box-shadow:0 12px 36px rgba(15,23,42,0.08);}
+  th,td{padding:12px 10px;border-bottom:1px solid #e2e8f0;font-size:13px;text-align:left;}
+  th{background:#f1f5f9;color:#0f172a;font-weight:700;}
+  tr:nth-child(even){background:#f8fafc;}
+  .summary{margin:24px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;}
+  .summary div{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px;}
+  .summary strong{display:block;font-size:0.9rem;color:#64748b;margin-bottom:6px;}
+  .rose{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:14px;margin-bottom:24px;}
+  .rose-circle{position:relative;width:100px;height:100px;border:1px solid #dbeafe;border-radius:50%;background:radial-gradient(circle at center,rgba(59,130,246,.08)0%,transparent 70%);}
+  .rose-circle div{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:32px;color:#3b82f6;transform-origin:center;}
+  .rose-desc{font-size:0.95rem;color:#0f172a;}
+  .analysis{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin-bottom:24px;box-shadow:0 8px 24px rgba(15,23,42,0.05);}
+  .analysis h2{margin-bottom:14px;}
+  .analysis ul{margin:0;padding-left:20px;}
+  .analysis li{margin-bottom:8px;line-height:1.5;}
+  .highlight-hard{background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:6px;font-weight:700;}
+  .highlight-easy{background:#dcfce7;color:#166534;padding:2px 8px;border-radius:6px;font-weight:700;}
+  .legend{display:flex;gap:16px;margin:12px 0 20px 0;font-size:13px;flex-wrap:wrap;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend .dot{width:14px;height:14px;border-radius:4px;display:inline-block;}
+</style>
+</head>
+<body>
+  <h1>RoadWind — Rapport météo</h1>
+  <p>Analyse du parcours et du vent pour l'heure de départ <strong>01/07/2026 15:00</strong>.</p>
+
+  <div class="meta">
+    <div class="card"><strong>Arrivée estimée</strong>18:35</div>
+    <div class="card"><strong>Distance</strong>89.5 km</div>
+    <div class="card"><strong>Durée estimée</strong>3h35</div>
+    <div class="card"><strong>Points analysés</strong>80</div>
+  </div>
+
+  <div class="summary">
+    <div><strong>Température moyenne</strong>21.1 °C</div>
+    <div><strong>Vitesse moyenne du vent</strong>22 km/h</div>
+    <div><strong>Précipitations moyennes</strong>0 %</div>
+    <div><strong>Vent de face</strong>50 %</div>
+    <div><strong>Vent de dos</strong>44 %</div>
+    <div><strong>Vent latéral</strong>6 %</div>
+  </div>
+
+  <div class="rose">
+    <div class="rose-circle"><div style="transform:rotate(78deg);">➤</div></div>
+    <div class="rose-desc">Direction moyenne du vent: <strong>E</strong></div>
+  </div>
+
+  <div class="analysis">
+    <h2>🔍 Analyse du parcours</h2>
+    <ul>
+      <li>La partie la plus difficile du trajet se situe entre les points <span class="highlight-hard">55 et 74</span> (soit environ le dernier tiers du parcours) : <strong>20 points d'affilée avec du vent de face</strong>, avec des pointes jusqu'à <span class="highlight-hard">28-30 km/h</span> de vent. C'est là qu'il faudra garder le plus d'énergie.</li>
+      <li>Le début du parcours (points 2 à 28) est globalement <span class="highlight-easy">favorable</span>, avec du vent de dos sur la majorité des points — bon moment pour rouler vite sans trop forcer.</li>
+      <li>Le point le plus exposé au vent de face est le <strong>point 65</strong> (48.4906, -2.6007) avec <span class="highlight-hard">28 km/h</span> de vent de face.</li>
+      <li>Le meilleur point de vent de dos est le <strong>point 75</strong> (48.5333, -2.5781) avec <span class="highlight-easy">28 km/h</span> dans le dos.</li>
+      <li>Globalement : 50% du trajet en vent de face (force moyenne 16 km/h), 44% en vent de dos (force moyenne 14,2 km/h), et 6% en vent latéral.</li>
+      <li>Aucune pluie prévue sur l'ensemble du parcours (0% partout) — les conditions restent sèches.</li>
+    </ul>
+  </div>
+
+  <h2>Détails par point</h2>
+  <div class="legend">
+    <span><span class="dot" style="background:#dcfce7;"></span> Vent faible (&lt; 10 km/h)</span>
+    <span><span class="dot" style="background:#fef3c7;"></span> Vent modéré (10-20 km/h)</span>
+    <span><span class="dot" style="background:#fee2e2;"></span> Vent fort (&gt; 20 km/h)</span>
+  </div>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Coord.</th><th>Temp.</th><th>Vent</th><th>Type</th><th>Force ressentie</th><th>Pluie</th></tr>
+    </thead>
+    <tbody>
+<tr>
+      <td>1</td>
+      <td>48.5558, -2.5372</td>
+      <td>20.1 °C</td>
+      <td>21 km/h</td>
+      <td>Face</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">6 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>2</td>
+      <td>48.5558, -2.5404</td>
+      <td>20.1 °C</td>
+      <td>22 km/h</td>
+      <td>Dos</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">8 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>3</td>
+      <td>48.5540, -2.5441</td>
+      <td>20.4 °C</td>
+      <td>22 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">22 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>4</td>
+      <td>48.5422, -2.5394</td>
+      <td>20.4 °C</td>
+      <td>22 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">22 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>5</td>
+      <td>48.5229, -2.5287</td>
+      <td>20.7 °C</td>
+      <td>21 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">21 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>6</td>
+      <td>48.4956, -2.5179</td>
+      <td>21.3 °C</td>
+      <td>21 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">20 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>7</td>
+      <td>48.4810, -2.5141</td>
+      <td>21.9 °C</td>
+      <td>18 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">17 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>8</td>
+      <td>48.4763, -2.5092</td>
+      <td>22.0 °C</td>
+      <td>18 km/h</td>
+      <td>Face</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">5 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>9</td>
+      <td>48.4783, -2.5045</td>
+      <td>22.0 °C</td>
+      <td>18 km/h</td>
+      <td>Dos</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">3 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>10</td>
+      <td>48.4789, -2.4988</td>
+      <td>22.0 °C</td>
+      <td>18 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">17 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>11</td>
+      <td>48.4724, -2.4924</td>
+      <td>22.0 °C</td>
+      <td>21 km/h</td>
+      <td>Face</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">7 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>12</td>
+      <td>48.4730, -2.5014</td>
+      <td>22.1 °C</td>
+      <td>21 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">13 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>13</td>
+      <td>48.4681, -2.5071</td>
+      <td>22.0 °C</td>
+      <td>21 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">13 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>14</td>
+      <td>48.4667, -2.5086</td>
+      <td>22.1 °C</td>
+      <td>21 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">19 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>15</td>
+      <td>48.4653, -2.5070</td>
+      <td>22.1 °C</td>
+      <td>21 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">19 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>16</td>
+      <td>48.4616, -2.5033</td>
+      <td>21.9 °C</td>
+      <td>20 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">19 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>17</td>
+      <td>48.4566, -2.4981</td>
+      <td>21.9 °C</td>
+      <td>20 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">18 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>18</td>
+      <td>48.4524, -2.4920</td>
+      <td>21.9 °C</td>
+      <td>20 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">19 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>19</td>
+      <td>48.4444, -2.4815</td>
+      <td>21.9 °C</td>
+      <td>20 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">20 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>20</td>
+      <td>48.4353, -2.4739</td>
+      <td>21.9 °C</td>
+      <td>20 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">16 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>21</td>
+      <td>48.4292, -2.4598</td>
+      <td>21.8 °C</td>
+      <td>20 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">15 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>22</td>
+      <td>48.4239, -2.4477</td>
+      <td>21.7 °C</td>
+      <td>20 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">17 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>23</td>
+      <td>48.4198, -2.4405</td>
+      <td>21.8 °C</td>
+      <td>20 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">17 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>24</td>
+      <td>48.4169, -2.4353</td>
+      <td>21.8 °C</td>
+      <td>20 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">17 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>25</td>
+      <td>48.4033, -2.4112</td>
+      <td>22.0 °C</td>
+      <td>20 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">18 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>26</td>
+      <td>48.3919, -2.3934</td>
+      <td>22.1 °C</td>
+      <td>20 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">17 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>27</td>
+      <td>48.3810, -2.3743</td>
+      <td>22.8 °C</td>
+      <td>19 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">18 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>28</td>
+      <td>48.3768, -2.3687</td>
+      <td>22.9 °C</td>
+      <td>19 km/h</td>
+      <td>Dos</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">4 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>29</td>
+      <td>48.3727, -2.3770</td>
+      <td>23.1 °C</td>
+      <td>19 km/h</td>
+      <td>Latéral</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">0 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>30</td>
+      <td>48.3672, -2.3939</td>
+      <td>23.1 °C</td>
+      <td>18 km/h</td>
+      <td>Dos</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">4 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>31</td>
+      <td>48.3640, -2.4003</td>
+      <td>23.5 °C</td>
+      <td>18 km/h</td>
+      <td>Latéral</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">0 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>32</td>
+      <td>48.3625, -2.4052</td>
+      <td>23.0 °C</td>
+      <td>19 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">18 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>33</td>
+      <td>48.3635, -2.4070</td>
+      <td>23.0 °C</td>
+      <td>18 km/h</td>
+      <td>Latéral</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">2 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>34</td>
+      <td>48.3552, -2.4275</td>
+      <td>22.6 °C</td>
+      <td>19 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">14 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>35</td>
+      <td>48.3459, -2.4322</td>
+      <td>22.6 °C</td>
+      <td>18 km/h</td>
+      <td>Dos</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">4 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>36</td>
+      <td>48.3389, -2.4469</td>
+      <td>22.6 °C</td>
+      <td>18 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">12 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>37</td>
+      <td>48.3256, -2.4579</td>
+      <td>22.4 °C</td>
+      <td>16 km/h</td>
+      <td>Face</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">8 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>38</td>
+      <td>48.3266, -2.4670</td>
+      <td>22.4 °C</td>
+      <td>17 km/h</td>
+      <td>Latéral</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">1 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>39</td>
+      <td>48.3243, -2.4787</td>
+      <td>22.4 °C</td>
+      <td>17 km/h</td>
+      <td>Face</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">6 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>40</td>
+      <td>48.3245, -2.4870</td>
+      <td>22.2 °C</td>
+      <td>17 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">17 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>41</td>
+      <td>48.3309, -2.4878</td>
+      <td>22.0 °C</td>
+      <td>16 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">11 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>42</td>
+      <td>48.3199, -2.4965</td>
+      <td>21.8 °C</td>
+      <td>16 km/h</td>
+      <td>Dos</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">5 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>43</td>
+      <td>48.3061, -2.5240</td>
+      <td>21.1 °C</td>
+      <td>17 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">14 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>44</td>
+      <td>48.3116, -2.5333</td>
+      <td>21.0 °C</td>
+      <td>17 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">12 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>45</td>
+      <td>48.3218, -2.5560</td>
+      <td>20.9 °C</td>
+      <td>17 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">15 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>46</td>
+      <td>48.3336, -2.5689</td>
+      <td>20.7 °C</td>
+      <td>16 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">13 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>47</td>
+      <td>48.3406, -2.5800</td>
+      <td>21.1 °C</td>
+      <td>18 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">18 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>48</td>
+      <td>48.3484, -2.5812</td>
+      <td>21.2 °C</td>
+      <td>18 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">18 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>49</td>
+      <td>48.3540, -2.5836</td>
+      <td>21.3 °C</td>
+      <td>18 km/h</td>
+      <td>Face</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">7 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>50</td>
+      <td>48.3568, -2.6040</td>
+      <td>21.3 °C</td>
+      <td>18 km/h</td>
+      <td>Face</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">9 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>51</td>
+      <td>48.3613, -2.6198</td>
+      <td>21.3 °C</td>
+      <td>18 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">15 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>52</td>
+      <td>48.3730, -2.6310</td>
+      <td>21.4 °C</td>
+      <td>18 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">18 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>53</td>
+      <td>48.3879, -2.6279</td>
+      <td>21.0 °C</td>
+      <td>22 km/h</td>
+      <td>Latéral</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">3 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>54</td>
+      <td>48.4053, -2.6234</td>
+      <td>20.8 °C</td>
+      <td>22 km/h</td>
+      <td>Dos</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">3 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>55</td>
+      <td>48.4170, -2.6252</td>
+      <td>20.9 °C</td>
+      <td>25 km/h</td>
+      <td>Face</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">24 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>56</td>
+      <td>48.4240, -2.6238</td>
+      <td>20.8 °C</td>
+      <td>25 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">17 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>57</td>
+      <td>48.4309, -2.6139</td>
+      <td>20.6 °C</td>
+      <td>25 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">17 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>58</td>
+      <td>48.4365, -2.6060</td>
+      <td>20.5 °C</td>
+      <td>25 km/h</td>
+      <td>Face</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">23 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>59</td>
+      <td>48.4461, -2.6137</td>
+      <td>20.3 °C</td>
+      <td>27 km/h</td>
+      <td>Face</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">25 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>60</td>
+      <td>48.4547, -2.6202</td>
+      <td>20.4 °C</td>
+      <td>27 km/h</td>
+      <td>Face</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">26 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>61</td>
+      <td>48.4622, -2.6249</td>
+      <td>20.3 °C</td>
+      <td>27 km/h</td>
+      <td>Face</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">24 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>62</td>
+      <td>48.4690, -2.6211</td>
+      <td>20.1 °C</td>
+      <td>28 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">14 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>63</td>
+      <td>48.4776, -2.6042</td>
+      <td>20.0 °C</td>
+      <td>28 km/h</td>
+      <td>Face</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">27 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>64</td>
+      <td>48.4859, -2.6021</td>
+      <td>19.8 °C</td>
+      <td>28 km/h</td>
+      <td>Face</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">27 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>65</td>
+      <td>48.4906, -2.6007</td>
+      <td>19.9 °C</td>
+      <td>28 km/h</td>
+      <td>Face</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">28 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>66</td>
+      <td>48.4930, -2.6009</td>
+      <td>19.9 °C</td>
+      <td>28 km/h</td>
+      <td>Face</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">21 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>67</td>
+      <td>48.4971, -2.6087</td>
+      <td>19.7 °C</td>
+      <td>28 km/h</td>
+      <td>Face</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">24 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>68</td>
+      <td>48.5043, -2.6174</td>
+      <td>19.6 °C</td>
+      <td>28 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">17 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>69</td>
+      <td>48.5094, -2.6101</td>
+      <td>19.5 °C</td>
+      <td>28 km/h</td>
+      <td>Face</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">28 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>70</td>
+      <td>48.5218, -2.6091</td>
+      <td>19.1 °C</td>
+      <td>30 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">17 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>71</td>
+      <td>48.5244, -2.6054</td>
+      <td>19.1 °C</td>
+      <td>30 km/h</td>
+      <td>Face</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">7 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>72</td>
+      <td>48.5265, -2.5990</td>
+      <td>18.8 °C</td>
+      <td>30 km/h</td>
+      <td>Face</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">9 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>73</td>
+      <td>48.5292, -2.5915</td>
+      <td>19.0 °C</td>
+      <td>30 km/h</td>
+      <td>Face</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">6 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>74</td>
+      <td>48.5308, -2.5861</td>
+      <td>19.0 °C</td>
+      <td>29 km/h</td>
+      <td>Face</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">7 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>75</td>
+      <td>48.5333, -2.5781</td>
+      <td>19.1 °C</td>
+      <td>29 km/h</td>
+      <td>Dos</td>
+      <td style="background:#fee2e2;color:#991b1b;font-weight:700;text-align:center;">28 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>76</td>
+      <td>48.5313, -2.5769</td>
+      <td>19.0 °C</td>
+      <td>29 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">16 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>77</td>
+      <td>48.5362, -2.5700</td>
+      <td>18.8 °C</td>
+      <td>29 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">15 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>78</td>
+      <td>48.5520, -2.5460</td>
+      <td>18.6 °C</td>
+      <td>26 km/h</td>
+      <td>Face</td>
+      <td style="background:#fef3c7;color:#92400e;font-weight:700;text-align:center;">15 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>79</td>
+      <td>48.5549, -2.5431</td>
+      <td>18.6 °C</td>
+      <td>25 km/h</td>
+      <td>Dos</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">3 km/h</td>
+      <td>0 %</td>
+    </tr>
+<tr>
+      <td>80</td>
+      <td>48.5558, -2.5371</td>
+      <td>18.5 °C</td>
+      <td>24 km/h</td>
+      <td>Dos</td>
+      <td style="background:#dcfce7;color:#166534;font-weight:700;text-align:center;">4 km/h</td>
+      <td>0 %</td>
+    </tr>
+    </tbody>
+  </table>
+</body>
+</html>

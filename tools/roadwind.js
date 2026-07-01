@@ -118,11 +118,11 @@ function updateStats() {
   const h = Math.floor(mins / 60);
   const m = mins % 60;
   const timeStr = h > 0 ? `${h}h${String(m).padStart(2, '0')}` : `${m} min`;
-  const adaptivePoints = calculateAdaptivePoints(dist);
+  const selectedPoints = getSelectedPointCount();
 
   document.getElementById('stat-dist').innerHTML = `${dist.toFixed(1)}<span class="unit"> km</span>`;
   document.getElementById('stat-time').textContent = timeStr;
-  document.getElementById('pts-label').textContent = `${adaptivePoints} pts`;
+  document.getElementById('pts-label').textContent = `${selectedPoints} pts`;
 
   // Heure d'arrivée
   const dtVal = document.getElementById('depart-datetime').value;
@@ -258,6 +258,19 @@ function onSpeedChange(val) {
   document.getElementById('speed-label').textContent = speedKmh + ' km/h';
   updateStats();
 }
+
+function getSelectedPointCount() {
+  const slider = document.getElementById('pts-slider');
+  const value = parseInt(slider?.value || '20', 10);
+  return Number.isFinite(value) ? Math.max(0, Math.min(200, value)) : 20;
+}
+
+function onPointsChange(val) {
+  const value = parseInt(val, 10);
+  const safeValue = Number.isFinite(value) ? Math.max(0, Math.min(200, value)) : 20;
+  document.getElementById('pts-label').textContent = `${safeValue} pts`;
+}
+
 function computeRouteDistance(pts) {
   if (!pts || pts.length < 2) return 0;
   let dist = 0;
@@ -267,9 +280,8 @@ function computeRouteDistance(pts) {
   return dist;
 }
 
-function calculateAdaptivePoints(distKm) {
-  const points = Math.round(distKm * 6);
-  return Math.min(30, Math.max(8, points || 8));
+function calculateAdaptivePoints() {
+  return getSelectedPointCount();
 }
 // ──────────────────────────────────────────────────────
 //  WEATHER API
@@ -287,8 +299,7 @@ async function analyserParcours() {
     const dt = document.getElementById('depart-datetime').value;
     const departTime = dt ? parseDateTimeInput(dt) : new Date();
 
-    const routeDistance = computeRouteDistance(waypoints);
-    const ptsCount = calculateAdaptivePoints(routeDistance);
+    const ptsCount = calculateAdaptivePoints();
     const pts = samplePoints(waypoints, ptsCount);
     const weatherData = await fetchWeatherForPoints(pts, departTime);
 
