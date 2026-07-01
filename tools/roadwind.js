@@ -679,9 +679,10 @@ function downloadHtmlReport() {
     const type = hw > 3 ? 'Face' : hw < -3 ? 'Dos' : 'Latéral';
     const origin = dirToText(item.windDir);
     const destination = dirToText(windDirectionIcon(item.windDir));
+    const pkKm = (lastWeatherPts[i]?.cumulDist ?? 0).toFixed(1);
     return `<tr>
       <td>${i + 1}</td>
-      <td><a href="https://www.google.com/maps/@?api=1&map_action=map&center=${item.lat.toFixed(6)},${item.lng.toFixed(6)}&zoom=18&basemap=satellite" target="_blank" rel="noopener noreferrer">${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}</a></td>
+      <td>${pkKm} km</td>
       <td>${item.temp.toFixed(1)} °C</td>
       <td>${item.windSpeed.toFixed(0)} km/h</td>
       <td>${origin}</td>
@@ -740,7 +741,7 @@ function downloadHtmlReport() {
   <h2>Détails par point</h2>
   <table>
     <thead>
-      <tr><th>#</th><th>Coord.</th><th>Temp.</th><th>Vent</th><th>Origine</th><th>Destination</th><th>Force</th><th>Type</th><th>Pluie</th></tr>
+      <tr><th>#</th><th>Point kilométrique</th><th>Temp.</th><th>Vent</th><th>Origine</th><th>Destination</th><th>Force</th><th>Type</th><th>Pluie</th></tr>
     </thead>
     <tbody>${rows}</tbody>
   </table>
