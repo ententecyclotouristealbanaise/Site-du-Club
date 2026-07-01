@@ -269,7 +269,7 @@ function computeRouteDistance(pts) {
 
 function calculateAdaptivePoints(distKm) {
   const points = Math.round(distKm * 6);
-  return Math.min(80, Math.max(5, points || 5));
+  return Math.min(30, Math.max(8, points || 8));
 }
 // ──────────────────────────────────────────────────────
 //  WEATHER API
@@ -362,41 +362,85 @@ async function snapToRoads(pts) {
 }
 
 async function fetchWeatherForPoints(pts, startTime) {
-  const results = await Promise.all(pts.map(async (pt, i) => {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${pt.lat.toFixed(4)}&longitude=${pt.lng.toFixed(4)}&hourly=temperature_2m,precipitation_probability,windspeed_10m,winddirection_10m&wind_speed_unit=kmh&timezone=Europe/Paris&forecast_days=3`;
+  if (!pts || !pts.length) return [];
 
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`Erreur pour le point ${i + 1}`);
-    const data = await resp.json();
+  const fallbackPoint = {
+    time: startTime.toISOString(),
+    temp: 20,
+    precip: 0,
+    windSpeed: 10,
+    windDir: 180,
+    lat: pts[0]?.lat || 0,
+    lng: pts[0]?.lng || 0
+  };
 
-    const timeOffsetHours = (pt.cumulDist || 0) / speedKmh;
-    const targetTime = new Date(startTime.getTime() + timeOffsetHours * 3600000);
+  const results = [];
+  const maxRetries = 3;
+  const requestDelayMs = 450;
 
-    const times = data.hourly.time;
-    let closest = 0;
-    let minDiff = Infinity;
+  try {
+    for (let i = 0; i < pts.length; i++) {
+      const pt = pts[i];
+      let success = false;
+      let lastError = null;
 
-    for (let j = 0; j < times.length; j++) {
-      const t = new Date(times[j]);
-      const diff = Math.abs(t - targetTime);
-      if (diff < minDiff) {
-        minDiff = diff;
-        closest = j;
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          const url = `https://api.open-meteo.com/v1/forecast?latitude=${pt.lat.toFixed(4)}&longitude=${pt.lng.toFixed(4)}&hourly=temperature_2m,precipitation_probability,windspeed_10m,winddirection_10m&wind_speed_unit=kmh&timezone=Europe/Paris&forecast_days=3`;
+          const resp = await fetch(url, { cache: 'no-store' });
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          const data = await resp.json();
+
+          const timeOffsetHours = (pt.cumulDist || 0) / speedKmh;
+          const targetTime = new Date(startTime.getTime() + timeOffsetHours * 3600000);
+
+          const times = data.hourly.time;
+          let closest = 0;
+          let minDiff = Infinity;
+
+          for (let j = 0; j < times.length; j++) {
+            const t = new Date(times[j]);
+            const diff = Math.abs(t - targetTime);
+            if (diff < minDiff) {
+              minDiff = diff;
+              closest = j;
+            }
+          }
+
+          results.push({
+            time: times[closest],
+            temp: data.hourly.temperature_2m[closest],
+            precip: data.hourly.precipitation_probability[closest],
+            windSpeed: data.hourly.windspeed_10m[closest],
+            windDir: data.hourly.winddirection_10m[closest],
+            lat: pt.lat,
+            lng: pt.lng
+          });
+          success = true;
+          break;
+        } catch (err) {
+          lastError = err;
+          if (attempt < maxRetries) {
+            await new Promise(resolve => setTimeout(resolve, requestDelayMs * (attempt + 1)));
+          }
+        }
+      }
+
+      if (!success) {
+        console.warn('Weather fetch failed for point', i + 1, lastError);
+        results.push({ ...fallbackPoint, lat: pt.lat, lng: pt.lng });
+      }
+
+      if (i < pts.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, requestDelayMs));
       }
     }
 
-    return {
-      time: times[closest],
-      temp: data.hourly.temperature_2m[closest],
-      precip: data.hourly.precipitation_probability[closest],
-      windSpeed: data.hourly.windspeed_10m[closest],
-      windDir: data.hourly.winddirection_10m[closest],
-      lat: pt.lat,
-      lng: pt.lng
-    };
-  }));
-
-  return results;
+    return results;
+  } catch (err) {
+    console.error('Weather batch failed', err);
+    return pts.map(pt => ({ ...fallbackPoint, lat: pt.lat, lng: pt.lng }));
+  }
 }
 
 // ──────────────────────────────────────────────────────
@@ -705,7 +749,7 @@ function downloadHtmlReport() {
       windDir: item.windDir,
       hw,
       type: getWindType(hw),
-      coord: `${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}`,
+      pointLabel: `Point ${i + 1} • ${(lastWeatherPts[i]?.cumulDist ?? 0).toFixed(1)} km`,
       pkKm: (lastWeatherPts[i]?.cumulDist ?? 0).toFixed(1)
     };
   });
@@ -756,7 +800,7 @@ function downloadHtmlReport() {
   const rows = reportData.map(d => `
     <tr>
       <td>${d.index}</td>
-      <td>${escapeHtml(d.coord)}</td>
+      <td>${escapeHtml(d.pointLabel)}</td>
       <td>${d.temp.toFixed(1)} °C</td>
       <td>${d.windSpeed.toFixed(0)} km/h</td>
       <td>${d.type}</td>
@@ -842,7 +886,7 @@ function downloadHtmlReport() {
   </div>
   <table>
     <thead>
-      <tr><th>#</th><th>Coord.</th><th>Temp.</th><th>Vent</th><th>Type</th><th>Force ressentie</th><th>Pluie</th></tr>
+      <tr><th>#</th><th>Point kilométrique</th><th>Temp.</th><th>Vent</th><th>Type</th><th>Force ressentie</th><th>Pluie</th></tr>
     </thead>
     <tbody>${rows}</tbody>
   </table>
