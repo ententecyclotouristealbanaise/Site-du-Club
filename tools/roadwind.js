@@ -10,10 +10,30 @@ let chartInstances = {};
 let lastWeatherData = null;
 let lastWeatherPts = null;
 
+function formatDateTimeInput(date) {
+  const pad = value => String(value).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function parseDateTimeInput(value) {
+  if (!value) return new Date();
+  const [datePart, timePart] = value.split('T');
+  const [year, month, day] = datePart.split('-').map(Number);
+  const [hours, minutes] = (timePart || '00:00').split(':').map(Number);
+  return new Date(year, month - 1, day, hours, minutes);
+}
+
+function formatFrenchDateTime(date, options = {}) {
+  return new Intl.DateTimeFormat('fr-FR', {
+    timeZone: 'Europe/Paris',
+    ...options
+  }).format(date);
+}
+
 // Date/heure par défaut : maintenant
 const now = new Date();
 now.setMinutes(0, 0, 0);
-document.getElementById('depart-datetime').value = now.toISOString().slice(0, 16);
+document.getElementById('depart-datetime').value = formatDateTimeInput(now);
 
 // ──────────────────────────────────────────────────────
 //  MAP INIT
@@ -105,12 +125,14 @@ function updateStats() {
   // Heure d'arrivée
   const dtVal = document.getElementById('depart-datetime').value;
   if (dtVal) {
-    const depart = new Date(dtVal);
+    const depart = parseDateTimeInput(dtVal);
     const arrival = new Date(depart.getTime() + mins * 60000);
-    const arrStr = arrival.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    const dayStr = arrival.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
-    const today = new Date(); today.setHours(0, 0, 0, 0);
-    const arrDay = new Date(arrival); arrDay.setHours(0, 0, 0, 0);
+    const arrStr = formatFrenchDateTime(arrival, { hour: '2-digit', minute: '2-digit' });
+    const dayStr = formatFrenchDateTime(arrival, { weekday: 'short', day: 'numeric', month: 'short' });
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const arrDay = new Date(arrival);
+    arrDay.setHours(0, 0, 0, 0);
     const isTomorrow = arrDay - today === 86400000;
     document.getElementById('stat-arrival').textContent = isTomorrow ? `${dayStr} ${arrStr}` : arrStr;
   }
@@ -152,7 +174,7 @@ document.getElementById('gpx-input').addEventListener('change', function(e) {
   this.value = '';
 });
 
-function parseGPX(text) {
+async function parseGPX(text) {
   resetParcours(false);
   const parser = new DOMParser();
   const doc = parser.parseFromString(text, 'application/xml');
@@ -175,6 +197,17 @@ function parseGPX(text) {
     const ele = eleEl ? parseFloat(eleEl.textContent) : null;
     if (!isNaN(lat) && !isNaN(lng)) waypoints.push({ lat, lng, ele });
   });
+
+  // Try to snap the trace to roads for a nicer visual on zoom
+  try {
+    const snapped = await snapToRoads(waypoints);
+    if (snapped && snapped.length) {
+      // Replace waypoints with snapped coordinates (ele lost)
+      waypoints = snapped.map(p => ({ lat: p.lat, lng: p.lng, ele: null }));
+    }
+  } catch (e) {
+    console.warn('Road snapping failed', e);
+  }
 
   drawRoute();
   updateStats();
@@ -234,7 +267,7 @@ async function analyserParcours() {
 
   try {
     const dt = document.getElementById('depart-datetime').value;
-    const departTime = dt ? new Date(dt) : new Date();
+    const departTime = dt ? parseDateTimeInput(dt) : new Date();
 
     const ptsCount = parseInt(document.getElementById('pts-slider').value) || 5;
     const pts = samplePoints(waypoints, ptsCount);
@@ -284,12 +317,32 @@ function samplePoints(pts, n) {
   return result;
 }
 
+async function snapToRoads(pts) {
+  if (!pts || pts.length < 2) return pts;
+  try {
+    // Limit number of coordinates sent to OSRM to avoid long URLs
+    const maxSamples = 60;
+    const sample = samplePoints(pts, Math.min(maxSamples, pts.length));
+    const coords = sample.map(p => `${p.lng.toFixed(6)},${p.lat.toFixed(6)}`).join(';');
+    const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('OSRM route failed');
+    const j = await resp.json();
+    if (j && j.routes && j.routes.length && j.routes[0].geometry && j.routes[0].geometry.coordinates) {
+      return j.routes[0].geometry.coordinates.map(c => ({ lat: c[1], lng: c[0] }));
+    }
+  } catch (err) {
+    console.warn('snapToRoads failed:', err);
+  }
+  return pts.map(p => ({ lat: p.lat, lng: p.lng, ele: p.ele || null }));
+}
+
 async function fetchWeatherForPoints(pts, startTime) {
   const iso = startTime.toISOString();
   const dateStr = iso.slice(0, 10);
 
   const results = await Promise.all(pts.map(async (pt, i) => {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${pt.lat.toFixed(4)}&longitude=${pt.lng.toFixed(4)}&hourly=temperature_2m,precipitation_probability,windspeed_10m,winddirection_10m&wind_speed_unit=kmh&timezone=auto&forecast_days=3`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${pt.lat.toFixed(4)}&longitude=${pt.lng.toFixed(4)}&hourly=temperature_2m,precipitation_probability,windspeed_10m,winddirection_10m&wind_speed_unit=kmh&timezone=Europe/Paris&forecast_days=3`;
 
     const resp = await fetch(url);
     if (!resp.ok) throw new Error(`Erreur pour le point ${i + 1}`);
@@ -590,7 +643,7 @@ function avg(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length; }
 function downloadHtmlReport() {
   if (!lastWeatherData || !lastWeatherPts) return;
   const dStr = document.getElementById('depart-datetime').value;
-  const depart = dStr ? new Date(dStr).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+  const depart = dStr ? formatFrenchDateTime(parseDateTimeInput(dStr), { dateStyle: 'short', timeStyle: 'short' }) : '—';
   const arrival = document.getElementById('stat-arrival').textContent || '—';
   const dist = document.getElementById('stat-dist').textContent || '— km';
   const duration = document.getElementById('stat-time').textContent || '—';
@@ -619,9 +672,19 @@ function downloadHtmlReport() {
       ? bearingBetween(lastWeatherPts[i], lastWeatherPts[i + 1])
       : (i > 0 ? bearingBetween(lastWeatherPts[i - 1], lastWeatherPts[i]) : 0);
     const hw = windComponent(travelBearing, item.windDir, item.windSpeed);
+    const type = hw > 3 ? 'Face' : hw < -3 ? 'Dos' : 'Latéral';
+    const origin = dirToText(item.windDir);
+    const destination = dirToText(windDirectionIcon(item.windDir));
     return `<tr>
       <td>${i + 1}</td>
       <td><a href="https://www.google.com/maps/@?api=1&map_action=map&center=${item.lat.toFixed(6)},${item.lng.toFixed(6)}&zoom=18&basemap=satellite" target="_blank" rel="noopener noreferrer">${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}</a></td>
+      <td>${item.temp.toFixed(1)} °C</td>
+      <td>${item.windSpeed.toFixed(0)} km/h</td>
+      <td>${origin}</td>
+      <td>${destination}</td>
+      <td>${Math.abs(hw).toFixed(0)} km/h</td>
+      <td>${type}</td>
+      <td>${item.precip.toFixed(0)} %</td>
     </tr>`;
   }).join('');
 
@@ -695,7 +758,7 @@ function downloadHtmlReport() {
 function exportResume() {
   if (!lastWeatherData || !lastWeatherPts) return;
   const dStr = document.getElementById('depart-datetime').value;
-  const depart = dStr ? new Date(dStr).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+  const depart = dStr ? formatFrenchDateTime(parseDateTimeInput(dStr), { dateStyle: 'short', timeStyle: 'short' }) : '—';
 
   let head = 0, tail = 0, cross = 0;
   for (let i = 0; i < lastWeatherData.length; i++) {
