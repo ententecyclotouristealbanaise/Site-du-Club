@@ -13,7 +13,7 @@ const ECTA_DATA = {
     {
       "date": "Dim. 5 juil..",
       "dateSort": "2026-07-05",
-      "titre": "Sortie en ligne et circuit de remplacement",
+      "titre": "Sortie en ligne et Circuit de remplacement",
       "videos": [],
       "locked": true,
       "parcours": [
