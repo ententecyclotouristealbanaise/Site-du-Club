@@ -4,7 +4,7 @@ const ECTA_DATA = {
       "date": "Dimanche 5 Juillet 2026",
       "dateSort": "2026-07-05",
       "titre": "Sortie en ligne /Circuit de remplacement ",
-      "texte": "Départ pour tout le monde à 8h du stade \n",
+      "texte": "Départ pour tout les Cyclos dès 08H00 du stade \n",
       "tag": "Sortie",
       "image": ""
     }
