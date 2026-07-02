@@ -26,7 +26,7 @@ const ECTA_DATA = {
           "lien": "https://www.openrunner.com/route-details/24209940"
         },
         {
-          "distance": "87 Kms",
+          "distance": "87 Kms (Circuit Classique)",
           "lien": "https://www.openrunner.com/route-details/24508605"
         }
       ]
