@@ -3,7 +3,7 @@ const ECTA_DATA = {
     {
       "date": "Dimanche 27 Septembre 2026",
       "dateSort": "2026-09-27",
-      "titre": "Virades de l' Espoir (Muco) Erquy",
+      "titre": "Virades de l'Espoir (Muco) Erquy",
       "texte": "Le Dimanche 27 septembre,  la Virade d'Erquy vous accueille dès 8h du matin pour vivre un week-end sportif, festif et solidaire sur son fameux Port réputé pour ses coquilles Saint-Jacques. \nAnimation musicale, randonnées : \n\nPédestres 9km départ 8h30 et 7 km départ 9h. \nRando famille 3km départ 9h30. Marche Nordique rdv 9h départ 9h15. \nRando cyclo de 50 et 70 km (départ 8h30). \nRando moto (places limitées à 50) départ 10h.\n\n",
       "tag": "Rando extérieure",
       "image": ""
