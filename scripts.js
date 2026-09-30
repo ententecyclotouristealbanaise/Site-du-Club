@@ -225,6 +225,9 @@ function circuitUnlocked(sortie) {
   const liens = parcours.filter(p => p.lien).map(p =>
     `<a class="circuit-link" href="${p.lien}" target="_blank">🗺 Circuit ${p.distance} sur Openrunner</a>`
   ).join('');
+  const liensGpx = parcours.filter(p => p.gpx).map(p =>
+    `<a class="circuit-link circuit-gpx-link" href="${p.gpx}">📥 Ouvrir / importer le GPX ${p.distance}</a>`
+  ).join('');
   const contenu = liens || `<p style="color:var(--gris);font-size:.9rem;">🗺 Circuit Openrunner à venir - revenez bientôt !</p>`;
   
   const videosHtml = sortie.videos && sortie.videos.length > 0 
@@ -237,7 +240,9 @@ function circuitUnlocked(sortie) {
     ${videosHtml}
     <div class="circuit-links">
       ${contenu}
+      ${liensGpx}
     </div>
+    ${liensGpx ? '<p class="gpx-help">Sur mobile, choisissez Garmin, Bryton ou une autre application compatible si le téléphone le propose.</p>' : ''}
     <button class="lock-logout-btn" onclick="lockCircuits()">Se déconnecter</button>
   </div>`;
 }

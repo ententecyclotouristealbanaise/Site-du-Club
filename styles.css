@@ -170,6 +170,9 @@ section{padding:5rem 1.5rem}
 .circuit-links{display:grid;grid-template-columns:repeat(auto-fit, minmax(min(280px, 100%), 1fr));gap:.75rem;margin-top:1rem;max-width:100%}
 .circuit-link{display:flex;align-items:center;justify-content:center;gap:.6rem;background:var(--rose);color:var(--blanc);padding:.75rem 2rem;border-radius:var(--radius);font-weight:700;font-size:.95rem;transition:background .2s,transform .15s;width:100%;box-sizing:border-box;text-align:center}
 .circuit-link:hover{background:#c9295e;transform:translateY(-2px)}
+.circuit-gpx-link{background:#087f73}
+.circuit-gpx-link:hover{background:#06665d}
+.gpx-help{color:var(--gris);font-size:.82rem;margin:.75rem 0 0}
 .lock-logout-btn{background:none;border:none;color:var(--gris);font-size:.78rem;cursor:pointer;text-decoration:underline;margin-top:.75rem;display:block}
 
 /* Video Container */

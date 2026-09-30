@@ -1,0 +1,6 @@
+Déposez dans ce dossier les fichiers GPX destinés aux circuits de l'agenda.
+
+Dans l'administration, associez chaque parcours à son fichier en indiquant un chemin relatif, par exemple :
+gpx/circuit-62.gpx
+
+Publiez le fichier GPX en même temps que le site. Le lien direct s'affiche aux licenciés après déverrouillage du circuit.
