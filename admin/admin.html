@@ -266,11 +266,6 @@
         .parcours-entry { display: grid; grid-template-columns: minmax(100px, 0.7fr) minmax(180px, 1.3fr); gap: 0.5rem; margin-bottom: 0.75rem; }
         .parcours-entry .p-gpx { grid-column: 1 / -1; }
         @media (max-width: 600px) { .parcours-entry { grid-template-columns: 1fr; } .parcours-entry .p-gpx { grid-column: auto; } }
-        .gpx-upload-section > p { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 0.8rem; }
-        .gpx-upload-section > input[type="file"] { display: block; width: 100%; margin-bottom: 0.8rem; }
-        .gpx-upload-section > .btn-main { width: 100%; }
-        .gpx-upload-status { min-height: 1.4em; margin-top: 0.7rem; font-size: 0.85rem; font-weight: 700; }
-        .gpx-upload-section > small { display: block; color: var(--text-muted); font-size: 0.78rem; line-height: 1.5; }
         .btn-sub { background: #f1f5f9; border: none; padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; margin-bottom: 1rem; }
         
         .toast {
@@ -338,15 +333,6 @@
 
         <!-- SECTION AGENDA -->
         <div id="tab-agenda" class="content hidden">
-            <div class="form-section gpx-upload-section">
-                <div class="form-title">📥 Déposer des fichiers GPX</div>
-                <p>Sélectionnez un ou plusieurs fichiers .gpx, puis choisissez le dossier <strong>gpx</strong> de votre copie locale du site. Les fichiers portant le même nom seront remplacés.</p>
-                <input type="file" id="gpx-upload-files" accept=".gpx,application/gpx+xml" multiple>
-                <button type="button" class="btn-main" onclick="uploadGpxFiles()">Copier dans le dossier gpx</button>
-                <div id="gpx-upload-status" class="gpx-upload-status" role="status" aria-live="polite"></div>
-                <small>Cette copie reste sur votre ordinateur. Publiez ensuite les fichiers du dossier gpx avec le site. Fonctionne dans un navigateur compatible, sur une page sécurisée (HTTPS ou localhost).</small>
-            </div>
-
             <div class="item-list" id="list-agenda"></div>
 
             <div class="form-section">
@@ -534,47 +520,6 @@
             event.target.value = '';
         };
         reader.readAsText(file, 'UTF-8');
-    }
-
-    async function uploadGpxFiles() {
-        const input = document.getElementById('gpx-upload-files');
-        const status = document.getElementById('gpx-upload-status');
-        const files = Array.from(input.files || []);
-        if (!files.length) {
-            status.textContent = 'Choisissez au moins un fichier GPX.';
-            return;
-        }
-        if (files.some(file => !file.name.toLowerCase().endsWith('.gpx'))) {
-            status.textContent = 'Seuls les fichiers avec l’extension .gpx sont acceptés.';
-            return;
-        }
-        if (!window.showDirectoryPicker) {
-            status.textContent = 'Ce navigateur ne permet pas la copie directe. Utilisez Chrome ou Edge sur ordinateur, ou copiez les fichiers manuellement dans gpx/. ';
-            return;
-        }
-
-        let copied = 0;
-        try {
-            status.textContent = 'Choisissez le dossier gpx de votre copie locale du site.';
-            const directory = await window.showDirectoryPicker({ mode: 'readwrite' });
-            if (directory.name.toLowerCase() !== 'gpx') {
-                status.textContent = 'Dossier incorrect : sélectionnez le dossier nommé gpx.';
-                return;
-            }
-            for (const file of files) {
-                const handle = await directory.getFileHandle(file.name, { create: true });
-                const writable = await handle.createWritable();
-                await writable.write(file);
-                await writable.close();
-                copied += 1;
-            }
-            status.textContent = `${copied} fichier(s) GPX copié(s) dans gpx/. Publiez ensuite ces fichiers avec le site.`;
-            input.value = '';
-        } catch (error) {
-            status.textContent = error.name === 'AbortError'
-                ? 'Copie annulée.'
-                : `Copie interrompue après ${copied} fichier(s) : ${error.message}`;
-        }
     }
 
     function importData(content, name) {
