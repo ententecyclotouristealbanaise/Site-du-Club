@@ -20,12 +20,10 @@ const ECTA_DATA = {
         {
           "distance": "59 Kms",
           "lien": "https://www.openrunner.com/route-details/17856167",
-          "gpx": "https://1drv.ms/u/c/0061cf29663b27b0/IQB6tlMrQgxGQb2KpIOrokw0AeF4vZ-6EbjJrnv00qxc0-E?e=SIKxQ7"
         },
         {
           "distance": "71 Kms",
           "lien": "https://www.openrunner.com/route-details/17856044",
-          "gpx": "https://1drv.ms/u/c/0061cf29663b27b0/IQAkN-3mLQmwTbxRPReJiXxyAckql1gyZ2ZHitoMb5dJi0U?e=3VloZE"
         }
       ]
     }
