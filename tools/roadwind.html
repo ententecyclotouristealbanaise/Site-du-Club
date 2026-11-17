@@ -1,270 +1,520 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <title>RoadWind · Météo de parcours · ECTA Saint-Alban</title>
-  <meta name="description" content="Analysez la météo et le vent (de face, de dos, latéral) tout au long de votre parcours vélo. Outil gratuit du club ECTA Saint-Alban." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e8357a'/></svg>" />
-  <link rel="apple-touch-icon" href="../icon-192x192.png" />
-  <link rel="manifest" href="../manifest.json" />
-  <meta name="theme-color" content="#e8357a" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-
-  <script>
-    (function() {
-      const currentVersion = '20260701e';
-      const url = new URL(window.location.href);
-      if (url.searchParams.get('v') !== currentVersion) {
-        url.searchParams.set('v', currentVersion);
-        window.location.replace(url.toString());
-        return;
-      }
-    })();
-  </script>
-
-  <!-- Site fonts (nav) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-
-  <!-- Site CSS (nav) + App CSS -->
-  <link rel="stylesheet" href="../styles.css?v=20260501">
-  <link rel="stylesheet" href="roadwind.css?v=20260701d">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Parcours GPX et météo · ECTA Saint-Alban</title>
+<meta name="description" content="Importez un parcours GPX, visualisez-le sur une carte et consultez les prévisions météo aux heures de passage." />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<style>
+:root { --bg:#f5f7f8; --surface:#fff; --fg:#16232b; --muted:#5b6b74; --line:#d9e1e5; --accent:#1d7a8c; --marker:#b4532a; color-scheme: light; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg:#0f1a1f; --surface:#17262d; --fg:#e6eef1; --muted:#9db0b8; --line:#2a3d46; --accent:#5fc3d4; --marker:#f08a5c; color-scheme: dark; }
+}
+body { margin:0; background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size:15px; line-height:1.5; padding:16px; }
+main { max-width:960px; margin:0 auto; display:grid; gap:14px; }
+h1 { font-size:22px; margin:0; }
+h2 { font-size:15px; margin:0 0 8px; }
+.card { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px; min-width:0; }
+.hint, .muted { color:var(--muted); font-size:13px; margin:4px 0 0; }
+.controls { display:flex; flex-wrap:wrap; gap:12px 18px; align-items:end; }
+.controls label { display:grid; gap:4px; font-size:13px; color:var(--muted); }
+input[type=number], input[type=datetime-local] { font:inherit; padding:6px 8px; border:1px solid var(--line); border-radius:6px; background:var(--surface); color:var(--fg); }
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin:0; }
+.stats div { border-top:2px solid var(--accent); padding-top:8px; }
+.stats dt { font-size:12px; color:var(--muted); }
+.stats dd { margin:2px 0 0; font-weight:600; font-variant-numeric:tabular-nums; }
+#map { height:440px; width:100%; border-radius:8px; }
+input[type=range] { width:100%; accent-color:var(--accent); }
+.readout { font-variant-numeric:tabular-nums; margin:8px 0 0; }
+.wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:14px; font-variant-numeric:tabular-nums; }
+th, td { text-align:left; padding:5px 6px; border-bottom:1px solid var(--line); white-space:normal; font-size:13px; vertical-align:middle; }
+th { font-weight:600; color:var(--muted); font-size:12px; }
+td .ic { vertical-align:middle; margin-right:6px; }
+a { color:var(--accent); }
+#error { color:var(--marker); }
+#content:not(.hidden) { display:grid; gap:14px; }
+.hidden { display:none; }
+.wx-icon { background:#fff; border:2px solid #1d7a8c; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; box-sizing:border-box; }
+.wx-tip { font-size:13px; line-height:1.5; }
+.wx-wrap { position:relative; width:72px; height:72px; }
+.wx-wrap .wx-icon { position:relative; z-index:1; margin:21px; }
+.wx-arrow { position:absolute; left:0; top:0; width:72px; height:72px; }
+.wx-arrow svg { display:block; width:72px; height:72px; }
+.leaflet-tooltip { white-space:normal; max-width:240px; }
+</style>
 </head>
 <body>
+<main>
+  <header>
+    <h1>Parcours GPX, carte et météo</h1>
+    <p class="hint">Charge un fichier GPX, choisis le départ et le nombre de points. Passe la souris sur un point pour voir la météo.</p>
+    <p class="hint"><a href="../index.html">Accueil ECTA</a> · <a href="../outils.html">Tous les outils</a></p>
+  </header>
 
-<!-- NAV ECTA -->
-<nav>
-  <div class="nav-brand">
-    <a href="../index.html" style="display:flex;align-items:center;gap:.75rem;text-decoration:none">
-      <img class="nav-logo-img" src="../images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
-      <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban · Côtes-d'Armor</small></div>
-    </a>
-  </div>
-  <ul class="nav-links">
-    <li><a href="../index.html">Accueil</a></li>
-    <li><a href="../le-club.html">Le Club</a></li>
-    <li><a href="../actualites.html">Activités</a></li>
-    <li><a href="../agenda.html">Agenda</a></li>
-    <li><a href="../meteo-et-radar.html">Météo</a></li>
-    <li><a href="../galerie.html">Galerie</a></li>
-    <li><a href="../contact.html">Contact</a></li>
-    <li><a href="../documents.html">WT 2026</a></li>
-    <li><a href="../news.html">Actu vélo</a></li>
-    <li><a href="../calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
-    <li><a href="../Flora 2026.html">Flora 2026</a></li>
-    <li><a href="../outils.html" class="active">Outils</a></li>
-  </ul>
-  <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
-</nav>
-<div class="mobile-menu" id="mobileMenu">
-  <a href="../index.html" onclick="closeMenu()">Accueil</a>
-  <a href="../le-club.html" onclick="closeMenu()">Le Club</a>
-  <a href="../actualites.html" onclick="closeMenu()">Activités</a>
-  <a href="../agenda.html" onclick="closeMenu()">Agenda</a>
-  <a href="../meteo-et-radar.html" onclick="closeMenu()">Météo</a>
-  <a href="../galerie.html" onclick="closeMenu()">Galerie</a>
-  <a href="../contact.html" onclick="closeMenu()">Contact</a>
-  <a href="../documents.html" onclick="closeMenu()">WT 2026</a>
-  <a href="../news.html" onclick="closeMenu()">Actu vélo</a>
-  <a href="../calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
-  <a href="../Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
-  <a href="../outils.html" onclick="closeMenu()">Outils</a>
-</div>
+  <section class="card controls">
+    <label>Fichier GPX
+      <input type="file" id="file" accept=".gpx,application/gpx+xml,text/xml">
+    </label>
+    <label>Départ
+      <input type="datetime-local" id="when">
+    </label>
+    <label>Vitesse moyenne (km/h)
+      <input type="number" id="speed" min="3" max="60" value="20" step="1">
+    </label>
+    <label>Nombre de points
+      <input type="number" id="npts" min="2" max="40" value="10" step="1">
+    </label>
+    <p id="error" class="hint" role="alert" style="width:100%"></p>
+  </section>
 
-<!-- Enveloppe globale de l'application RoadWind -->
-<div class="roadwind-app" id="roadwind-app">
-
-  <!-- HEADER OUTIL -->
-  <div class="app-header">
-    <div class="logo">Road<span>Wind</span></div>
-
-    <div class="header-controls">
-      <div class="mode-toggle">
-        <button class="active" id="btn-velo" onclick="setMode('velo')">🚴 Vélo</button>
-        <button id="btn-course" onclick="setMode('course')">🏃 Course</button>
-      </div>
-
-      <input type="datetime-local" class="datetime-input" id="depart-datetime" title="Date et heure de départ">
-
-      <label class="btn" for="gpx-input" title="Importer fichier GPX/TCX/FIT">
-        📁 Importer GPX
-      </label>
-      <input type="file" id="gpx-input" accept=".gpx,.tcx,.fit">
-
-      <label class="btn" title="Aligner le tracé sur les routes (OSRM)">
-        <input type="checkbox" id="snap-toggle" checked style="margin-right:6px;vertical-align:middle;">Snap to roads
-      </label>
-
-      <button class="btn primary" id="btn-analyser" onclick="analyserParcours()">
-        💨 Analyser le vent
-      </button>
-
-      <div class="speed-control" title="Vitesse moyenne">
-        <span class="speed-label" id="speed-label">25 km/h</span>
-        <input type="range" class="speed-slider" id="speed-slider" min="12" max="50" value="25" step="1" oninput="onSpeedChange(this.value)">
-      </div>
-
-      <div class="speed-control" title="Nombre de points d'analyse à utiliser pour la météo">
-        <span class="speed-label" id="pts-label">20 pts</span>
-        <input type="range" class="speed-slider" id="pts-slider" min="0" max="200" value="20" step="1" oninput="onPointsChange(this.value)">
-        <span class="speed-note">Points météo</span>
-      </div>
-
-      <button class="btn primary icon-btn" id="btn-export" onclick="downloadHtmlReport()" title="Exporter rapport HTML" style="display:none;">
-        📄
-      </button>
-
-      <button class="btn icon-btn" id="btn-refresh-cache" onclick="refreshRoadwindCache()" title="Actualiser le cache et recharger">
-        🔄
-      </button>
-
-      <button class="btn danger icon-btn" id="btn-reset" onclick="resetParcours()" title="Effacer tout">
-        ✕
-      </button>
-    </div>
-  </div>
-
-  <!-- MAIN -->
-  <div class="main">
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <!-- Infos tracé -->
-      <div class="sidebar-section glass-panel">
-        <div class="sidebar-label">Votre parcours</div>
-        <div class="stats-grid" id="stats-grid">
-          <div class="stat-box">
-            <div class="label">Distance</div>
-            <div class="value" id="stat-dist">—<span class="unit">km</span></div>
-          </div>
-          <div class="stat-box">
-            <div class="label">Dénivelé +</div>
-            <div class="value" id="stat-elev">—<span class="unit">m</span></div>
-          </div>
-          <div class="stat-box">
-            <div class="label">Points</div>
-            <div class="value" id="stat-pts">0</div>
-          </div>
-          <div class="stat-box">
-            <div class="label">Temps estimé</div>
-            <div class="value" id="stat-time">—</div>
-          </div>
-          <div class="stat-box full-width">
-            <div class="label">Arrivée estimée</div>
-            <div class="value highlight-val" id="stat-arrival">—</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Météo résumé -->
-      <div class="sidebar-section glass-panel sidebar-scroll" id="weather-panel">
-        <div class="sidebar-label">Météo sur le parcours</div>
-        <div id="weather-content">
-          <div class="empty-state">
-            <div class="icon">🌤️</div>
-            <p>Importez un fichier GPX pour commencer l'analyse.</p>
-          </div>
-        </div>
-        <div class="wind-legend" id="wind-legend" style="display:none;">
-          <div class="legend-item"><div class="legend-dot green"></div> Favorable</div>
-          <div class="legend-item"><div class="legend-dot yellow"></div> Latéral</div>
-          <div class="legend-item"><div class="legend-dot red"></div> Défavorable</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MAP -->
-    <div class="map-container">
+  <div id="content" class="hidden">
+    <section class="card">
+      <dl class="stats">
+        <div><dt>Distance</dt><dd id="s-dist"></dd></div>
+        <div><dt>Dénivelé +</dt><dd id="s-gain"></dd></div>
+        <div><dt>Dénivelé −</dt><dd id="s-loss"></dd></div>
+        <div><dt>Altitude min / max</dt><dd id="s-alt"></dd></div>
+        <div><dt>Sens de rotation</dt><dd id="s-rot"></dd></div>
+      </dl>
+    </section>
+    <section class="card">
       <div id="map"></div>
-
-      <div class="map-overlay">
-        <div class="map-badge" id="status-badge">
-          <div class="dot"></div>
-          <span id="status-text">Prêt</span>
-        </div>
-        <div class="wind-rose" id="windRose" style="display:none;">
-          <div class="rose-head">Rose des vents</div>
-          <div class="rose-circle">
-            <div class="rose-arrow" id="windRoseArrow">➤</div>
-            <div class="rose-labels">
-              <span>N</span>
-              <span>E</span>
-              <span>S</span>
-              <span>O</span>
-            </div>
-          </div>
-          <div class="rose-info" id="windRoseInfo">—</div>
-        </div>
+    </section>
+    <section class="card">
+      <h2>Météo aux points du parcours</h2>
+      <p class="muted" id="meteo-status">Chargement de la météo…</p>
+      <p><button id="csv" type="button" style="font:inherit;padding:6px 12px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer">Télécharger le tableau (CSV)</button></p>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Point</th><th>Km</th><th>Passage</th><th>Météo</th><th>Temp.</th><th>Pluie</th><th>Vent</th><th>Détail</th></tr></thead>
+          <tbody id="meteo-rows"></tbody>
+        </table>
       </div>
-
-      <!-- Loading -->
-      <div class="loading-overlay hidden" id="loading">
-        <div class="spinner"></div>
-        <div class="loading-text" id="loading-text">Analyse météo en cours...</div>
+      <p class="muted">Prévisions : Open-Meteo, heure de Paris. Le vent est donné par rapport à ton sens de déplacement au moment du passage.</p>
+      <h2>Détail heure par heure</h2>
+      <p class="muted" id="detail-title">Clique sur « Voir » dans le tableau pour le détail des 12 heures qui suivent le passage.</p>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Heure</th><th>Météo</th><th>Temp.</th><th>Pluie</th><th>Pluie mm</th><th>Vent</th><th>Vient de</th></tr></thead>
+          <tbody id="detail-rows"></tbody>
+        </table>
       </div>
-    </div>
-
-    <!-- CHARTS PANEL -->
-    <div class="charts-panel glass-panel">
-      <div class="charts-tabs">
-        <div class="chart-tab active" data-tab="vent" onclick="switchTab('vent')">💨 Vent</div>
-        <div class="chart-tab" data-tab="temperature" onclick="switchTab('temperature')">🌡️ Temp.</div>
-        <div class="chart-tab" data-tab="gradient" onclick="switchTab('gradient')" id="tab-btn-gradient" style="display:none;">⛰️ Dénivelé</div>
-      </div>
-
-      <div class="charts-scroll" id="charts-scroll">
-        <!-- Vent -->
-        <div class="chart-card visible" id="tab-vent">
-          <div class="chart-title"><span class="icon">💨</span> Vitesse du vent (km/h)</div>
-          <div class="chart-wrapper"><canvas class="chart" id="chart-wind"></canvas></div>
-        </div>
-        <div class="chart-card visible" id="tab-vent2">
-          <div class="chart-title"><span class="icon">🧭</span> Force du vent (Rouge=Face, Vert=Dos)</div>
-          <div class="chart-wrapper"><canvas class="chart" id="chart-headwind"></canvas></div>
-        </div>
-
-        <!-- Température -->
-        <div class="chart-card" id="tab-temperature">
-          <div class="chart-title"><span class="icon">🌡️</span> Température (°C)</div>
-          <div class="chart-wrapper"><canvas class="chart" id="chart-temp"></canvas></div>
-        </div>
-        <div class="chart-card" id="tab-temperature2">
-          <div class="chart-title"><span class="icon">🌧</span> Précipitations (%)</div>
-          <div class="chart-wrapper"><canvas class="chart" id="chart-precip"></canvas></div>
-        </div>
-
-        <!-- Gradient -->
-        <div class="chart-card" id="tab-gradient">
-          <div class="chart-title"><span class="icon">⛰️</span> Profil altimétrique (m)</div>
-          <div class="chart-wrapper"><canvas class="chart" id="chart-elev"></canvas></div>
-        </div>
-
-        <div class="empty-state" id="charts-empty">
-          <div class="icon">📊</div>
-          <p>Les graphiques d'analyse s'afficheront ici</p>
-        </div>
-      </div>
-    </div>
+    </section>
+    <section class="card">
+      <label for="pos"><strong>Position sur le parcours</strong></label>
+      <input type="range" id="pos" min="0" max="1000" value="0" step="1">
+      <p class="readout" id="readout"></p>
+    </section>
   </div>
+</main>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+(function () {
+  var fileEl = document.getElementById("file");
+  var errEl = document.getElementById("error");
+  var contentEl = document.getElementById("content");
+  var posEl = document.getElementById("pos");
+  var readoutEl = document.getElementById("readout");
+  var speedEl = document.getElementById("speed");
+  var nptsEl = document.getElementById("npts");
+  var whenEl = document.getElementById("when");
+  var meteoRows = document.getElementById("meteo-rows");
+  var meteoStatus = document.getElementById("meteo-status");
+  var map = L.map("map");
+  // Deux fonds de carte sans clé, au choix dans le sélecteur en haut à droite
+  var topo = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 19, attribution: "Tiles &copy; Esri, USGS, OpenStreetMap"
+  });
+  var rues = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 19, attribution: "Tiles &copy; Esri, HERE, OpenStreetMap"
+  });
+  topo.addTo(map);
+  L.control.layers({ "Topo": topo, "Plan": rues }, null, { position: "topright" }).addTo(map);
+  var routeLayer = null, cursor = null, pts = [], total = 0, pointMarkers = [], reqId = 0;
 
-</div>
+  // Icônes météo (SVG dessinés à la main, sans image externe)
+  var ICONS = {
+    sun: '<svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="#f0a500"/><g stroke="#f0a500" stroke-width="2" stroke-linecap="round"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1"/></g></svg>',
+    cloud: '<svg width="20" height="20" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 0-8 6 6 0 0 0-11.5 1.5A3.5 3.5 0 0 0 7 18z" fill="#8aa0aa"/></svg>',
+    rain: '<svg width="20" height="20" viewBox="0 0 24 24"><path d="M7 14h10a4 4 0 0 0 0-8 6 6 0 0 0-11.5 1.5A3.5 3.5 0 0 0 7 14z" fill="#8aa0aa"/><path d="M8 17l-1 3M12 17l-1 3M16 17l-1 3" stroke="#2d7fc1" stroke-width="2" stroke-linecap="round"/></svg>',
+    snow: '<svg width="20" height="20" viewBox="0 0 24 24"><path d="M7 14h10a4 4 0 0 0 0-8 6 6 0 0 0-11.5 1.5A3.5 3.5 0 0 0 7 14z" fill="#8aa0aa"/><path d="M8 18v3M6.5 19.5h3M16 18v3M14.5 19.5h3" stroke="#5b9bd5" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    storm: '<svg width="20" height="20" viewBox="0 0 24 24"><path d="M7 14h10a4 4 0 0 0 0-8 6 6 0 0 0-11.5 1.5A3.5 3.5 0 0 0 7 14z" fill="#6b7f89"/><path d="M12 14l-2 4h3l-2 4" fill="none" stroke="#f0a500" stroke-width="2" stroke-linejoin="round"/></svg>',
+    fog: '<svg width="20" height="20" viewBox="0 0 24 24"><path d="M4 9h16M6 13h12M4 17h16" stroke="#8aa0aa" stroke-width="2" stroke-linecap="round"/></svg>'
+  };
 
-<!-- Scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script src="../scripts.js" defer></script>
-<script src="roadwind.js?v=20260701f"></script>
+  function wxInfo(code) {
+    code = Number(code);
+    if (code === 0 || code === 1) return { key: "sun", label: "Dégagé" };
+    if (code === 2 || code === 3) return { key: "cloud", label: "Nuageux" };
+    if (code === 45 || code === 48) return { key: "fog", label: "Brouillard" };
+    if (code >= 51 && code <= 67) return { key: "rain", label: "Pluie" };
+    if (code >= 80 && code <= 82) return { key: "rain", label: "Averses" };
+    if (code >= 71 && code <= 77) return { key: "snow", label: "Neige" };
+    if (code >= 85 && code <= 86) return { key: "snow", label: "Averses de neige" };
+    if (code >= 95) return { key: "storm", label: "Orage" };
+    return { key: "cloud", label: "Variable" };
+  }
+
+  function rad(x) { return x * Math.PI / 180; }
+  function hav(a, b) {
+    var R = 6371000, dLat = rad(b.lat - a.lat), dLon = rad(b.lon - a.lon);
+    var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+  }
+  function fmtDist(m) { return m >= 1000 ? (m / 1000).toFixed(2).replace(".", ",") + " km" : Math.round(m) + " m"; }
+  function fmtHour(d) { return d.toLocaleString("fr-FR", { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); }
+
+  function parse(text) {
+    var doc = new DOMParser().parseFromString(text, "application/xml");
+    if (doc.getElementsByTagName("parsererror").length) throw new Error("Fichier GPX illisible.");
+    var nodes = doc.getElementsByTagName("trkpt");
+    if (!nodes.length) nodes = doc.getElementsByTagName("rtept");
+    if (!nodes.length) throw new Error("Aucun point de trace trouvé dans ce fichier.");
+    var out = [];
+    for (var i = 0; i < nodes.length; i++) {
+      var lat = parseFloat(nodes[i].getAttribute("lat")), lon = parseFloat(nodes[i].getAttribute("lon"));
+      if (isNaN(lat) || isNaN(lon)) continue;
+      var e = nodes[i].getElementsByTagName("ele")[0];
+      var ele = e ? parseFloat(e.textContent) : NaN;
+      out.push({ lat: lat, lon: lon, ele: isNaN(ele) ? null : ele, d: 0 });
+    }
+    if (out.length < 2) throw new Error("Pas assez de points dans le tracé.");
+    return out;
+  }
+
+  // Sens de rotation d'une boucle (formule du lacet), seulement si le départ et l'arrivée sont proches
+  function rotationLabel(p) {
+    var a = p[0], b = p[p.length - 1];
+    if (hav(a, b) > 300) return "Aller simple";
+    var lat0 = rad(a.lat), s = 0;
+    for (var i = 0; i < p.length - 1; i++) {
+      var x1 = p[i].lon * Math.cos(lat0), y1 = p[i].lat;
+      var x2 = p[i + 1].lon * Math.cos(lat0), y2 = p[i + 1].lat;
+      s += x1 * y2 - x2 * y1;
+    }
+    return s > 0 ? "Anti-horaire" : "Horaire";
+  }
+
+  // Petites flèches sur le tracé : sens de déplacement, tous les ~1/14 du parcours
+  function drawDirection() {
+    if (map._dirMarkers) map._dirMarkers.forEach(function (m) { map.removeLayer(m); });
+    map._dirMarkers = [];
+    var n = 14;
+    for (var k = 1; k < n; k++) {
+      var i = indexAtDistance(k * total / n);
+      if (i <= 0 || i >= pts.length - 1) continue;
+      var b = routeBearing(i);
+      if (b == null) continue;
+      var p = pts[i];
+      var icon = L.divIcon({
+        className: "",
+        html: '<div style="width:18px;height:18px;transform:rotate(' + b + 'deg)"><svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 1 L16 16 L9 12 L2 16 Z" fill="#0b3d91" stroke="#ffffff" stroke-width="1.2" stroke-linejoin="round"/></svg></div>',
+        iconSize: [18, 18], iconAnchor: [9, 9]
+      });
+      map._dirMarkers.push(L.marker([p.lat, p.lon], { icon: icon, interactive: false }).addTo(map));
+    }
+  }
+
+  function render(points) {
+    var d = 0, gain = 0, loss = 0, minE = Infinity, maxE = -Infinity;
+    points[0].d = 0;
+    for (var i = 1; i < points.length; i++) {
+      d += hav(points[i - 1], points[i]);
+      points[i].d = d;
+      var a = points[i - 1].ele, b = points[i].ele;
+      if (a != null && b != null) { if (b > a) gain += b - a; else loss += a - b; }
+    }
+    points.forEach(function (p) { if (p.ele != null) { minE = Math.min(minE, p.ele); maxE = Math.max(maxE, p.ele); } });
+    pts = points; total = d;
+
+    document.getElementById("s-dist").textContent = fmtDist(d);
+    document.getElementById("s-gain").textContent = gain ? Math.round(gain) + " m" : "—";
+    document.getElementById("s-loss").textContent = loss ? Math.round(loss) + " m" : "—";
+    document.getElementById("s-alt").textContent = isFinite(minE) ? Math.round(minE) + " / " + Math.round(maxE) + " m" : "—";
+    document.getElementById("s-rot").textContent = rotationLabel(points);
+    contentEl.classList.remove("hidden");
+
+    var latlngs = points.map(function (p) { return [p.lat, p.lon]; });
+    if (routeLayer) map.removeLayer(routeLayer);
+    routeLayer = L.polyline(latlngs, { color: "#1d7a8c", weight: 4 }).addTo(map);
+    drawDirection();
+    if (cursor) map.removeLayer(cursor);
+    cursor = L.circleMarker(latlngs[0], { radius: 7, color: "#fff", fillColor: "#b4532a", fillOpacity: 1, weight: 2 }).addTo(map);
+    map.fitBounds(routeLayer.getBounds(), { padding: [20, 20] });
+    setTimeout(function () { map.invalidateSize(); map.fitBounds(routeLayer.getBounds(), { padding: [20, 20] }); }, 0);
+    posEl.value = 0;
+    setPosition(0);
+    loadWeather();
+  }
+
+  function indexAtDistance(target) {
+    var lo = 0, hi = pts.length - 1;
+    while (lo < hi) { var mid = (lo + hi) >> 1; if (pts[mid].d < target) lo = mid + 1; else hi = mid; }
+    return lo;
+  }
+
+  function setPosition(frac) {
+    var p = pts[indexAtDistance(frac * total)];
+    cursor.setLatLng([p.lat, p.lon]);
+    readoutEl.textContent = "À " + fmtDist(p.d) + " du départ" + (p.ele != null ? " · altitude " + Math.round(p.ele) + " m" : "");
+  }
+
+  function pickSamples(n) {
+    var out = [];
+    for (var k = 0; k < n; k++) {
+      var f = n === 1 ? 0 : k / (n - 1);
+      var i = indexAtDistance(f * total);
+      var label = k === 0 ? "Départ" : (k === n - 1 ? "Arrivée" : "Point " + (k + 1));
+      out.push({ p: pts[i], i: i, d: pts[i].d, label: label });
+    }
+    return out;
+  }
+
+  // Cap de la route autour du point (en degrés, 0 = nord, sens horaire)
+  function routeBearing(i) {
+    var a = pts[Math.max(i - 2, 0)], b = pts[Math.min(i + 2, pts.length - 1)];
+    if (a === b || (a.lat === b.lat && a.lon === b.lon)) return null;
+    var l1 = rad(a.lat), l2 = rad(b.lat), dl = rad(b.lon - a.lon);
+    var y = Math.sin(dl) * Math.cos(l2);
+    var x = Math.cos(l1) * Math.sin(l2) - Math.sin(l1) * Math.cos(l2) * Math.cos(dl);
+    return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+  }
+
+  // Vent par rapport au sens de déplacement : de face, de dos, ou de côté
+  function windRel(r) {
+    var b = routeBearing(r.s.i);
+    if (b == null || r.wdir == null) return "";
+    // direction d'où vient le vent (convention météo), comparée au cap
+    var diff = ((r.wdir - b) % 360 + 540) % 360 - 180;
+    var a = Math.abs(diff);
+    if (a < 45) return "vent de face";
+    if (a > 135) return "vent de dos";
+    return diff > 0 ? "de côté, venant de droite" : "de côté, venant de gauche";
+  }
+
+  // Heure de passage : la vitesse baisse en montée et augmente un peu en descente
+  function computeTimes(speed) {
+    pts[0].t = 0;
+    var t = 0;
+    for (var i = 1; i < pts.length; i++) {
+      var seg = pts[i].d - pts[i - 1].d;
+      var dE = (pts[i].ele != null && pts[i - 1].ele != null) ? pts[i].ele - pts[i - 1].ele : 0;
+      var g = seg > 0 ? Math.max(-20, Math.min(20, dE / seg * 100)) : 0;
+      var f = g > 0 ? Math.max(0.35, 1 - 0.035 * g) : Math.min(1.25, 1 - 0.01 * g);
+      t += seg / (speed * f / 3.6);
+      pts[i].t = t;
+    }
+  }
+
+  // Couleur de la flèche selon la force du vent
+  function windColor(v) { return v < 15 ? "#2e7d32" : v < 30 ? "#ef6c00" : "#c62828"; }
+
+  function fetchOne(s) {
+    var url = "https://api.open-meteo.com/v1/forecast?latitude=" + s.p.lat.toFixed(4) +
+      "&longitude=" + s.p.lon.toFixed(4) +
+      "&hourly=temperature_2m,precipitation_probability,precipitation,wind_speed_10m,wind_direction_10m,weather_code" +
+      "&timezone=Europe%2FParis&forecast_days=7";
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    });
+  }
+
+  function hourIndex(times, when) {
+    var best = 0, bestDiff = Infinity;
+    for (var i = 0; i < times.length; i++) {
+      var diff = Math.abs(new Date(times[i]).getTime() - when.getTime());
+      if (diff < bestDiff) { bestDiff = diff; best = i; }
+    }
+    return best;
+  }
+
+  function startDate() {
+    var v = whenEl.value;
+    var d = v ? new Date(v) : new Date();
+    if (isNaN(d.getTime())) d = new Date();
+    return d;
+  }
+
+  // Direction cardinale en français (d'où vient le vent)
+  function cardinal(deg) {
+    var names = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"];
+    return names[Math.round(deg / 45) % 8];
+  }
+
+  // Affiche les 12 heures qui suivent le passage du point choisi
+  function showDetail(r) {
+    var h = r.hourly;
+    var i0 = hourIndex(h.time, r.passage);
+    var body = document.getElementById("detail-rows");
+    body.innerHTML = "";
+    document.getElementById("detail-title").textContent =
+      r.s.label + " · " + (r.s.d / 1000).toFixed(1).replace(".", ",") + " km · à partir de " + fmtHour(r.passage);
+    for (var i = i0; i < Math.min(i0 + 12, h.time.length); i++) {
+      var info = wxInfo(h.weather_code[i]);
+      var tr = document.createElement("tr");
+      tr.innerHTML = '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>';
+      var c = tr.children;
+      c[0].textContent = fmtHour(new Date(h.time[i]));
+      c[1].innerHTML = '<span class="ic">' + ICONS[info.key] + '</span>' + info.label;
+      c[2].textContent = Math.round(h.temperature_2m[i]) + " °C";
+      c[3].textContent = Math.round(h.precipitation_probability[i]) + " %";
+      c[4].textContent = String(Math.round(h.precipitation[i] * 10) / 10).replace(".", ",") + " mm";
+      c[5].textContent = Math.round(h.wind_speed_10m[i]) + " km/h";
+      c[6].textContent = cardinal(h.wind_direction_10m[i]);
+      body.appendChild(tr);
+    }
+    document.getElementById("detail-title").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function awLink(p) {
+    return "https://www.accuweather.com/fr/search-locations?query=" + p.lat.toFixed(4) + "%2C" + p.lon.toFixed(4);
+  }
+
+  function loadWeather() {
+    var mine = ++reqId;
+    var n = Math.max(2, Math.min(40, parseInt(nptsEl.value, 10) || 10));
+    var speed = Math.max(3, Math.min(60, parseFloat(speedEl.value) || 20));
+    var start = startDate();
+    computeTimes(speed);
+    var samples = pickSamples(n);
+
+    meteoRows.innerHTML = "";
+    pointMarkers.forEach(function (m) { map.removeLayer(m); });
+    pointMarkers = [];
+    meteoStatus.textContent = "Chargement de la météo pour " + n + " points…";
+
+    // Limite les requêtes simultanées
+    var results = new Array(samples.length);
+    var idx = 0, active = 0, done = 0;
+    function next() {
+      if (mine !== reqId) return;
+      while (active < 4 && idx < samples.length) {
+        (function (k) {
+          active++;
+          fetchOne(samples[k]).then(function (data) {
+            var passage = new Date(start.getTime() + samples[k].p.t * 1000);
+            var h = data.hourly;
+            var i = hourIndex(h.time, passage);
+            results[k] = {
+              s: samples[k], passage: passage, hourly: h,
+              temp: h.temperature_2m[i], pp: h.precipitation_probability[i],
+              precip: h.precipitation[i], wind: h.wind_speed_10m[i], wdir: h.wind_direction_10m[i], code: h.weather_code[i]
+            };
+          }).catch(function () { results[k] = null; }).then(function () {
+            active--; done++;
+            if (mine !== reqId) return;
+            if (done === samples.length) finish();
+            else next();
+          });
+        })(idx);
+        idx++;
+      }
+    }
+    function finish() {
+      var failed = 0;
+      results.forEach(function (r, k) {
+        if (!r) { failed++; return; }
+        var info = wxInfo(r.code);
+        var rel = windRel(r);
+        var km = (r.s.d / 1000).toFixed(1).replace(".", ",") + " km";
+        var tr = document.createElement("tr");
+        tr.innerHTML = '<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td><button type="button" style="font:inherit;padding:2px 10px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer">Voir</button></td>';
+        var c = tr.children;
+        c[0].textContent = r.s.label;
+        c[1].textContent = km;
+        c[2].textContent = fmtHour(r.passage);
+        c[3].innerHTML = '<span class="ic">' + ICONS[info.key] + '</span>' + info.label;
+        c[4].textContent = Math.round(r.temp) + " °C";
+        c[5].textContent = Math.round(r.pp) + " % · " + String(Math.round(r.precip * 10) / 10).replace(".", ",") + " mm";
+        c[6].textContent = Math.round(r.wind) + " km/h" + (rel ? " · " + rel : "");
+        c[7].firstChild.addEventListener("click", function () { showDetail(r); });
+        meteoRows.appendChild(tr);
+
+        var tip = '<div class="wx-tip"><strong>' + r.s.label + '</strong> · ' + km + '<br>' +
+          fmtHour(r.passage) + '<br>' + info.label + ' · ' + Math.round(r.temp) + ' °C<br>' +
+          'Pluie ' + Math.round(r.pp) + ' % · ' + String(Math.round(r.precip * 10) / 10).replace(".", ",") + ' mm<br>' +
+          'Vent ' + Math.round(r.wind) + ' km/h' + (rel ? ', ' + rel : '') + '<br>' +
+          '<em>Clic pour le détail heure par heure</em></div>';
+        // Flèche = sens où va le vent (la direction d'où il vient + 180°)
+        var ang = r.wdir == null ? 0 : (r.wdir + 180) % 360;
+        var icon = L.divIcon({
+          className: "",
+          html: '<div class="wx-wrap"><div class="wx-arrow" style="transform:rotate(' + ang + 'deg)"><svg viewBox="0 0 72 72" aria-hidden="true"><path d="M36 0 L49 15 L41 15 L41 21 L31 21 L31 15 L23 15 Z" fill="' + windColor(r.wind) + '" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/></svg></div><div class="wx-icon">' + ICONS[info.key] + '</div></div>',
+          iconSize: [72, 72], iconAnchor: [36, 36]
+        });
+        var m = L.marker([r.s.p.lat, r.s.p.lon], { icon: icon }).addTo(map);
+        // Survol : la bulle s'affiche en dessous si le point est près du haut de la carte, sans bouger la carte
+        m.on("mouseover", function () {
+          // Sur téléphone il n'y a pas de survol : seul le clic ouvre la fenêtre
+          if (window.matchMedia && window.matchMedia("(hover: none)").matches) return;
+          var below = map.latLngToContainerPoint(m.getLatLng()).y < 170;
+          m.unbindTooltip();
+          m.bindTooltip(tip, { direction: below ? "bottom" : "top", offset: below ? [0, 18] : [0, -18] });
+          m.openTooltip();
+        });
+        // Clic : une fenêtre fixe avec le lien, la carte se décale seulement si besoin
+        m.on("click", function () {
+          m.closeTooltip();
+          m.bindPopup(tip, { autoPan: true, autoPanPadding: [30, 30], offset: [0, -22] }).openPopup();
+        });
+        pointMarkers.push(m);
+      });
+      meteoStatus.textContent = failed
+        ? "Météo indisponible pour " + failed + " point(s). Vérifie ta connexion."
+        : "Prévisions chargées pour " + samples.length + " points. Passe la souris sur une icône de la carte.";
+    }
+    next();
+  }
+
+  // Date par défaut : maintenant, au format attendu par le champ
+  (function () {
+    var d = new Date();
+    d.setMinutes(0, 0, 0);
+    var pad = function (x) { return (x < 10 ? "0" : "") + x; };
+    whenEl.value = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":00";
+  })();
+
+  // Export CSV du tableau météo
+  document.getElementById("csv").addEventListener("click", function () {
+    var lines = [["Point", "Km", "Passage", "Météo", "Temp", "Pluie", "Vent"].join(";")];
+    Array.prototype.forEach.call(meteoRows.children, function (tr) {
+      var cells = Array.prototype.map.call(tr.children, function (td, j) {
+        return j === 7 ? "" : '"' + td.textContent.replace(/"/g, '""') + '"';
+      }).filter(function (x) { return x !== ""; });
+      lines.push(cells.join(";"));
+    });
+    if (lines.length < 2) return;
+    var blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "meteo-parcours.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  });
+
+  fileEl.addEventListener("change", function () {
+    errEl.textContent = "";
+    var f = fileEl.files && fileEl.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try { render(parse(String(reader.result))); }
+      catch (e) { errEl.textContent = e.message || "Erreur de lecture."; }
+    };
+    reader.readAsText(f);
+  });
+  posEl.addEventListener("input", function () { if (pts.length) setPosition(posEl.value / 1000); });
+  [whenEl, speedEl, nptsEl].forEach(function (el) {
+    el.addEventListener("change", function () { if (pts.length) loadWeather(); });
+  });
+  map.setView([46.6, 2.5], 5);
+})();
+</script>
 </body>
 </html>
