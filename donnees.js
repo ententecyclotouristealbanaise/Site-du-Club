@@ -1,9 +1,9 @@
 const ECTA_DATA = {
   "actualites": [
     {
-      "date": "Dimanche 22 Novembre 2026",
-      "dateSort": "2026-11-22",
-      "titre": "Sortie du  22 Novembre 2026",
+      "date": "Dimanche 29 Novembre 2026",
+      "dateSort": "2026-11-29",
+      "titre": "Circuit  D 47",
       "texte": "Départ 09h00 du Stade\n",
       "tag": "Sortie",
       "image": ""
@@ -11,19 +11,19 @@ const ECTA_DATA = {
   ],
   "agenda": [
     {
-      "date": "Dim. 22 nov..",
-      "dateSort": "2026-11-22",
-      "titre": "Circuit D 46",
+      "date": "Dim. 29 nov..",
+      "dateSort": "2026-11-29",
+      "titre": "Circuit D 47",
       "videos": [],
       "locked": true,
       "parcours": [
         {
-          "distance": "57 Kms",
-          "lien": "https://www.openrunner.com/route-details/17981173"
+          "distance": "58 Kms",
+          "lien": "https://www.openrunner.com/route-details/18020564-d-47"
         },
         {
-          "distance": "67 Kms",
-          "lien": "https://www.openrunner.com/route-details/17981357"
+          "distance": "68 Kms",
+          "lien": "https://www.openrunner.com/route-details/18020780-d-47"
         }
       ]
     }
@@ -32,6 +32,7 @@ const ECTA_DATA = {
     {
       "titre": "Bourguignon 2026",
       "couverture": "images/Bourguignon 2026/photo-09.webp",
+      "aVenir": false,
       "photos": [
         "images/Bourguignon 2026/photo-01.webp",
         "images/Bourguignon 2026/photo-02.webp",
