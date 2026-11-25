@@ -1,0 +1,286 @@
+:root {
+  color-scheme: dark !important;
+  --blanc: #202d3a !important;
+  --texte: #e8eef3 !important;
+  --gris: #b1bec8 !important;
+  --gris-clair: #293743 !important;
+  --rose-pale: #402337 !important;
+  --cyan-pale: #15333a !important;
+  --card-bg: #202d3a !important;
+  --input-bg: #18232d !important;
+  --bg: #111a23 !important;
+  --bg2: #1a2934 !important;
+  --surface: #202d3a !important;
+  --fg: #e8eef3 !important;
+  --text: #e8eef3 !important;
+  --text-muted: #b1bec8 !important;
+  --muted: #b1bec8 !important;
+  --line: #394a56 !important;
+  --border: #394a56 !important;
+  --border-l: #34434e !important;
+  --white: #202d3a !important;
+  --card: #202d3a !important;
+  --green-s: #173528 !important;
+  --amber-s: #3b2d17 !important;
+  --rose-s: #402337 !important;
+  --accent: #74deeb !important;
+  --marker: #f08a5c !important;
+}
+
+html {
+  background: #111a23 !important;
+}
+
+body {
+  background: #111a23 !important;
+  color: #e8eef3 !important;
+}
+
+nav,
+.top-nav,
+.topbar {
+  color: #fff !important;
+}
+
+.nav-title,
+.nav-title small,
+.nav-links a,
+.mobile-menu a,
+.burger span,
+.top-nav .nav-links a {
+  color: #fff !important;
+}
+
+.burger span {
+  background: #fff !important;
+}
+
+.page-header {
+  color: #fff !important;
+}
+
+.page-header h1,
+.hero h1 {
+  color: #fff !important;
+}
+
+.section-header h2,
+.section-header p,
+.club-text p,
+.actu-card p,
+.weather-card p,
+.meteo-day .m-label,
+.meteo-day .m-pluie,
+.meteo-day .m-vent,
+.cd-label,
+.agenda-titre,
+.circuit-lock p,
+.gpx-help,
+.info-item p,
+.info-item strong,
+.tool-card h3,
+.tool-card p,
+.tool-features li {
+  color: var(--texte) !important;
+}
+
+.section-header p,
+.club-text p,
+.actu-card p,
+.weather-card p,
+.meteo-day .m-label,
+.meteo-day .m-pluie,
+.meteo-day .m-vent,
+.cd-label,
+.circuit-lock p,
+.gpx-help,
+.info-item p,
+.tool-card p {
+  color: var(--gris) !important;
+}
+
+#actualites,
+#agenda,
+#galerie,
+#contact,
+#leclub {
+  background-color: #111a23 !important;
+  color: var(--texte) !important;
+}
+
+.actu-card,
+.album-card,
+.weather-card,
+.meteo-day,
+.agenda-item,
+.circuit-lock,
+.circuit-unlocked,
+.contact-form,
+.stat-card,
+.agenda-countdown,
+.card,
+.tool-card,
+.filters,
+.tv-wrap,
+.tv-card,
+#status-bar,
+.rc,
+.dashboard-card,
+.item-card,
+.modal-card,
+.meta .card,
+.summary div,
+.rose,
+.analysis {
+  background-color: #202d3a !important;
+  color: #e8eef3 !important;
+  border-color: #394a56 !important;
+}
+
+.bienvenue-box {
+  background: linear-gradient(135deg, #352334, #19343b) !important;
+  color: #e8eef3 !important;
+}
+
+.meteo-widget {
+  background: linear-gradient(135deg, #19343b, #352334) !important;
+}
+
+.contact-form,
+.form-section {
+  background-color: #18232d !important;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.lock-input,
+input,
+textarea,
+select,
+.search-input,
+.search-wrap input {
+  background-color: #18232d !important;
+  border-color: #43535f !important;
+  color: #e8eef3 !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #aab8c2 !important;
+}
+
+.agenda-item-header:hover {
+  background: #352334 !important;
+}
+
+.agenda-body {
+  border-color: #394a56 !important;
+}
+
+.home-preview-card,
+.home-ride-card {
+  background-color: #202d3a !important;
+  color: #e8eef3 !important;
+}
+
+.home-preview-card h3,
+.home-preview-entry h4,
+.home-club-copy h2,
+.home-club-copy > p:not(.home-preview-kicker) {
+  color: #e8eef3 !important;
+}
+
+.home-preview-entry p,
+.home-preview-empty,
+.home-preview-heading > p:last-child,
+.home-club-contact {
+  color: #b1bec8 !important;
+}
+
+.home-club {
+  background: linear-gradient(180deg, #111a23 0%, #17212b 100%) !important;
+}
+
+.home-club-copy h2 span,
+.home-preview-heading h2 span {
+  color: #ff78ad !important;
+}
+
+.viewer-btn,
+.tabs,
+.tab-btn.active,
+.btn-icon,
+.btn-sub,
+.btn-generate {
+  background-color: #202d3a !important;
+  color: #e8eef3 !important;
+  border-color: #394a56 !important;
+}
+
+.doc-nav,
+.modal-header {
+  background-color: #202d3a !important;
+  color: #e8eef3 !important;
+  border-color: #394a56 !important;
+}
+
+.viewer-btn:hover,
+.btn-icon:hover {
+  background-color: var(--rose) !important;
+  color: #fff !important;
+  border-color: var(--rose) !important;
+}
+
+.tab-btn {
+  color: #b1bec8 !important;
+}
+
+.footer-brand h4,
+.footer-col h5 {
+  color: #fff !important;
+}
+
+footer {
+  background: #0b1118 !important;
+  color: rgba(255,255,255,.76) !important;
+}
+
+table {
+  background-color: #202d3a !important;
+  color: #e8eef3 !important;
+}
+
+th {
+  background-color: #263643 !important;
+  color: #e8eef3 !important;
+}
+
+td,
+th {
+  border-color: #394a56 !important;
+}
+
+tr:nth-child(even) {
+  background-color: #1a2631 !important;
+}
+
+.pdf-page-img {
+  background: #fff !important;
+}
+
+.tv-card h3,
+.tv-line b,
+.rc-body h3,
+.rose-desc,
+h1,
+h2,
+h3,
+h4 {
+  color: #e8eef3;
+}
+
+.meta .card strong,
+.summary strong {
+  color: #b1bec8 !important;
+}
