@@ -22,6 +22,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css?v=20260405">
+  <style>
+    .home-previews { position: relative; z-index: 1; padding: 4.5rem 1.25rem 5rem; background: var(--blanc, #fff); }
+    .home-preview-container { max-width: 1050px; margin: 0 auto; }
+    .home-preview-heading { text-align: center; margin-bottom: 2rem; }
+    .home-preview-kicker { display: inline-block; margin: 0 0 .65rem; padding: .3rem .9rem; border-radius: 2rem; background: rgba(232,53,122,.1); color: var(--rose, #e8357a); font: 700 .76rem 'Barlow Condensed', sans-serif; letter-spacing: .14em; text-transform: uppercase; }
+    .home-preview-heading h2 { margin: 0; color: var(--texte, #202033); font: 800 clamp(1.9rem, 4vw, 2.7rem)/1.05 'Barlow Condensed', sans-serif; text-transform: uppercase; }
+    .home-preview-heading h2 span { color: var(--rose, #e8357a); }
+    .home-preview-heading > p:last-child { margin: .65rem 0 0; color: var(--gris, #687080); }
+    .home-preview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+    .home-preview-card { position: relative; overflow: hidden; padding: 1.5rem; border: 1px solid rgba(31,41,55,.09); border-radius: 1.15rem; background: #fff; box-shadow: 0 8px 26px rgba(31,41,55,.08); }
+    .home-preview-card::before { position: absolute; top: 0; right: 0; left: 0; height: 5px; background: linear-gradient(90deg, var(--rose, #e8357a), var(--cyan, #00a1cc)); content: ''; }
+    .home-preview-card-head { display: flex; align-items: center; gap: .85rem; margin-bottom: 1.15rem; }
+    .home-preview-icon { display: grid; width: 2.8rem; height: 2.8rem; flex: 0 0 2.8rem; place-items: center; border-radius: .9rem; background: rgba(0,161,204,.1); font-size: 1.3rem; }
+    .home-preview-eyebrow { margin: 0 0 .1rem; color: var(--gris, #687080); font-size: .76rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .home-preview-card h3 { margin: 0; color: var(--texte, #202033); font: 700 1.35rem 'Barlow Condensed', sans-serif; }
+    .home-preview-entry { padding: 1rem 0; border-top: 1px solid #edf0f3; }
+    .home-preview-date { margin: 0 0 .35rem; color: var(--rose, #e8357a); font-size: .82rem; font-weight: 800; }
+    .home-preview-entry h4 { margin: 0 0 .4rem; color: var(--texte, #202033); font-size: 1rem; font-weight: 800; }
+    .home-preview-entry p { margin: .35rem 0 0; color: var(--gris, #687080); font-size: .92rem; line-height: 1.55; white-space: pre-line; }
+    .home-preview-pills { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .7rem; }
+    .home-preview-pills span { padding: .25rem .65rem; border-radius: 2rem; background: rgba(0,161,204,.1); color: #087b98; font-size: .78rem; font-weight: 800; }
+    .home-preview-empty { margin: 0; padding: .85rem 0 1rem; color: var(--gris, #687080); line-height: 1.55; }
+    .home-preview-link { display: inline-flex; align-items: center; gap: .4rem; margin-top: .8rem; color: var(--cyan, #008eae); font-family: 'Barlow Condensed', sans-serif; font-weight: 800; letter-spacing: .03em; text-decoration: none; }
+    .home-preview-link:hover { color: var(--rose, #e8357a); text-decoration: underline; }
+    @media (max-width: 680px) { .home-previews { padding: 3.5rem 1rem; } .home-preview-grid { grid-template-columns: 1fr; } .home-preview-card { padding: 1.25rem; } }
+  </style>
+
 </head>
 <body>
 
@@ -81,6 +108,30 @@
   </div>
 </header>
 
+
+<!-- APERÇU AGENDA ET ACTIVITÉS -->
+<section class="home-previews" aria-labelledby="homePreviewTitle">
+  <div class="home-preview-container">
+    <div class="home-preview-heading">
+      <p class="home-preview-kicker">La vie du club</p>
+      <h2 id="homePreviewTitle">Agenda <span>&amp; activités</span></h2>
+      <p>Les prochains rendez-vous et les dernières nouvelles de l’ECTA.</p>
+    </div>
+    <div class="home-preview-grid">
+      <article class="home-preview-card" aria-labelledby="homeAgendaTitle">
+        <div class="home-preview-card-head"><span class="home-preview-icon" aria-hidden="true">📅</span><div><p class="home-preview-eyebrow">À venir</p><h3 id="homeAgendaTitle">Agenda du club</h3></div></div>
+        <div id="homeAgendaPreview"><p class="home-preview-empty">Chargement de l’agenda…</p></div>
+        <a class="home-preview-link" href="agenda.html">Voir tout l’agenda <span aria-hidden="true">→</span></a>
+      </article>
+      <article class="home-preview-card" aria-labelledby="homeActivityTitle">
+        <div class="home-preview-card-head"><span class="home-preview-icon" aria-hidden="true">🚴</span><div><p class="home-preview-eyebrow">Dernière publication</p><h3 id="homeActivityTitle">Activités du club</h3></div></div>
+        <div id="homeActivityPreview"><p class="home-preview-empty">Chargement des activités…</p></div>
+        <a class="home-preview-link" href="actualites.html">Voir toutes les activités <span aria-hidden="true">→</span></a>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
@@ -121,5 +172,40 @@
 
 <script src="donnees.js" defer></script>
 <script src="scripts.js" defer></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const agendaContainer = document.getElementById("homeAgendaPreview");
+    const activityContainer = document.getElementById("homeActivityPreview");
+    const escapeHTML = value => String(value ?? "").replace(/[&<>]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[char]));
+    const data = typeof ECTA_DATA !== "undefined" ? ECTA_DATA : null;
+    if (!data) {
+      agendaContainer.innerHTML = '<p class="home-preview-empty">L’agenda sera bientôt disponible.</p>';
+      activityContainer.innerHTML = '<p class="home-preview-empty">Les activités seront bientôt disponibles.</p>';
+      return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const upcoming = (Array.isArray(data.agenda) ? data.agenda : [])
+      .filter(item => /^\d{4}-\d{2}-\d{2}$/.test(item.dateSort || ""))
+      .filter(item => { const date = new Date(item.dateSort + "T00:00:00"); return !Number.isNaN(date.getTime()) && date >= today; })
+      .sort((a, b) => a.dateSort.localeCompare(b.dateSort))
+      .slice(0, 2);
+
+    agendaContainer.innerHTML = upcoming.length
+      ? upcoming.map(item => {
+          const routes = Array.isArray(item.parcours) ? item.parcours.map(route => '<span>' + escapeHTML(route.distance) + '</span>').join('') : '';
+          return '<article class="home-preview-entry"><p class="home-preview-date">' + escapeHTML(item.date) + '</p><h4>' + escapeHTML(item.titre) + '</h4>' + (routes ? '<div class="home-preview-pills">' + routes + '</div>' : '') + '</article>';
+        }).join("")
+      : '<p class="home-preview-empty">Aucun prochain rendez-vous n’est encore inscrit à l’agenda.</p>';
+
+    const latestActivity = (Array.isArray(data.actualites) ? [...data.actualites] : [])
+      .sort((a, b) => String(b.dateSort || "").localeCompare(String(a.dateSort || "")))[0];
+    activityContainer.innerHTML = latestActivity
+      ? '<article class="home-preview-entry"><p class="home-preview-date">' + escapeHTML(latestActivity.date) + '</p><h4>' + escapeHTML(latestActivity.titre) + '</h4><p>' + escapeHTML(latestActivity.texte) + '</p></article>'
+      : '<p class="home-preview-empty">Aucune activité n’est encore publiée.</p>';
+  });
+</script>
+
 </body>
 </html>
