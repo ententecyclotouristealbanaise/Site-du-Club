@@ -31,7 +31,7 @@ const ECTA_DATA = {
   "galerie": [
     {
       "titre": "Bourguignon 2026",
-      "couverture": "images/Bourguignon 2026/photo-01.webp",
+      "couverture": "images/Bourguignon 2026/photo-09.webp",
       "photos": [
         "images/Bourguignon 2026/photo-01.webp",
         "images/Bourguignon 2026/photo-02.webp",
