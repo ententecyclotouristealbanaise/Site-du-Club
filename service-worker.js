@@ -1,6 +1,6 @@
 /* Service Worker pour ECTA Saint-Alban - PWA Offline Support */
 
-const CACHE_NAME = 'ecta-v18';
+const CACHE_NAME = 'ecta-v19';
 const BASE_PATH = new URL('.', self.registration.scope).pathname.replace(/\/$/, '');
 const withBase = (path) => `${BASE_PATH}/${path.replace(/^\//, '')}`;
 const STATIC_ASSETS = [
@@ -13,7 +13,7 @@ const STATIC_ASSETS = [
   withBase('news.html'),
   withBase('calendrier-randos-22-2027.html'),
   withBase('calendrier-randos-22-2027.js'),
-  withBase('styles.css?v=20261125f'),
+  withBase('styles.css?v=20261125g'),
   withBase('header.css?v=20261125b'),
   withBase('theme-sombre.css?v=20261125a'),
   withBase('scripts.js'),
