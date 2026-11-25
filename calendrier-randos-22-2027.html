@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Randonnées 2027 – Côtes-d'Armor | ECTA Saint-Alban</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e8357a'/></svg>" />
+  <link rel="apple-touch-icon" href="icon-192x192.png" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#e8357a" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css?v=20261125e">
+  <style>
+    :root {
+      --rose:#e8357a; --rose-clair:#f06fa0; --rose-pale:#fde8f1;
+      --cyan:#00b4d8; --blanc:#f4f4f6; --card:#fff;
+      --texte:#1c1c2e; --gris:#6b7280; --gris-clair:#e8e4ed;
+      --navy:var(--rose); --bg:var(--blanc); --white:#fff;
+      --border:var(--gris-clair); --txt:var(--texte); --muted:var(--gris);
+      --green:#1d7a3a; --green-s:#e5f4eb; --amber:#b45309; --amber-s:#fef3c7;
+      --r:10px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;font-size:15px;line-height:1.45;padding-top:54px;}
+    .hero{padding:5rem 2rem 4rem!important;text-align:center;}
+    .hero h1{font-size:3rem!important;margin-bottom:.5rem!important;}
+    .hero p{max-width:760px;margin:0 auto 1rem!important;}
+    .header-pills{margin-top:1rem!important;}
+    .stats-bar{background:var(--white);border-bottom:2px solid var(--border);padding:0 20px;}
+    .stats-inner{max-width:1160px;margin:0 auto;display:flex;align-items:center;overflow-x:auto;scrollbar-width:none;}
+    .stats-inner::-webkit-scrollbar{display:none;}
+    .stat-pill{display:flex;align-items:center;gap:7px;padding:14px 16px;border-right:1px solid var(--border);white-space:nowrap;flex-shrink:0;}
+    .stat-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+    .stat-label{font-size:12px;color:var(--muted);}
+    .stat-num{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--navy);margin-left:4px;}
+    .month-nav{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:54px;z-index:100;box-shadow:0 2px 8px rgba(232,53,122,.12);}
+    .month-nav-inner{max-width:1160px;margin:0 auto;padding:0 20px;display:flex;overflow-x:auto;scrollbar-width:none;}
+    .mnav-btn{flex-shrink:0;padding:10px 14px;font:700 12px 'Nunito',sans-serif;color:var(--muted);background:none;border:0;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;}
+    .mnav-btn.active,.mnav-btn:hover{color:var(--navy);border-bottom-color:var(--rose);}
+    .filter-wrap,.results-bar,.month-group{max-width:1160px;margin-left:auto;margin-right:auto;padding-left:20px;padding-right:20px;}
+    .filter-wrap{margin-top:20px;}
+    .filter-section{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;}
+    .search-wrap{flex:1;min-width:190px;}
+    .search-input{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:6px;font:13px 'Nunito',sans-serif;color:var(--txt);background:var(--bg);}
+    .search-input:focus{outline:none;border-color:var(--navy);}
+    .filter-group{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+    .filter-group-label{font:700 11px 'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+    .chip{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);color:var(--txt);font:600 12px 'Nunito',sans-serif;cursor:pointer;}
+    .chip.on{background:var(--navy);border-color:var(--navy);color:#fff;}
+    .chip.on.rose-chip{background:var(--rose);border-color:var(--rose);}
+    .source-note{max-width:1160px;margin:10px auto 0;padding:0 20px;color:var(--muted);font-size:12px;}
+    .results-bar{margin-top:14px;margin-bottom:12px;color:var(--muted);font:700 14px 'Barlow Condensed',sans-serif;}
+    .results-count b{color:var(--navy);font-size:18px;}
+    .month-group{margin-bottom:24px;}
+    .month-head{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:6px 16px;border-radius:7px 7px 0 0;font:800 13px 'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;}
+    .month-count-badge{background:rgba(255,255,255,.2);padding:1px 8px;border-radius:10px;font-size:11px;}
+    .month-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;background:var(--white);border:1.5px solid var(--border);border-radius:0 var(--r) var(--r) var(--r);padding:14px;}
+    .card{border:1.5px solid #f0edf4;border-radius:var(--r);padding:15px;background:var(--white);display:flex;flex-direction:column;gap:10px;transition:box-shadow .2s,border-color .2s,transform .15s;}
+    .card:hover{box-shadow:0 6px 24px rgba(232,53,122,.2);border-color:var(--cyan);transform:translateY(-2px);}
+    .date-badge{display:inline-flex;align-self:flex-start;padding:3px 10px;border-radius:6px;font:700 12px 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.4px;}
+    .date-badge.ok{background:var(--green-s);color:var(--green);}
+    .date-badge.tbc{background:var(--amber-s);color:var(--amber);}
+    .card-name{font:700 20px 'Barlow Condensed',sans-serif;color:var(--navy);line-height:1.2;}
+    .card-loc,.card-info{font-size:13px;color:var(--muted);}
+    .discips{display:flex;flex-wrap:wrap;gap:6px;background:var(--bg);border-radius:6px;padding:9px 10px;}
+    .dl{font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px;}
+    .d-route{background:#ddeeff;color:#1255aa;}.d-vtt{background:#d4eed8;color:#1d6e30;}
+    .d-gravel{background:#fde8cc;color:#b04000;}.d-marche{background:#fad5e4;color:#922050;}
+    .card-foot{display:flex;justify-content:flex-end;margin-top:auto;padding-top:8px;border-top:1px solid #f0edf4;}
+    .bl{font-size:11px;font-weight:700;padding:5px 10px;border-radius:8px;text-decoration:none;background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+    .bl:hover{opacity:.8;}
+    .no-results{max-width:1160px;margin:20px auto;padding:50px 20px;text-align:center;color:var(--muted);display:none;}
+    .no-results-icon{font-size:40px;margin-bottom:12px;}
+    @media(max-width:640px){.hero h1{font-size:2.4rem!important;}.stats-bar{display:none;}.filter-section{gap:10px;}.month-cards{grid-template-columns:1fr;}}
+  </style>
+  <script src="calendrier-randos-22-2027.js" defer></script>
+</head>
+<body>
+<nav class="top-nav">
+  <div class="nav-brand">
+    <img class="nav-logo-img" src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
+    <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban - Côtes-d'Armor</small></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li><li><a href="le-club.html">Le Club / Contact</a></li>
+    <li><a href="actualites.html">Activités</a></li><li><a href="agenda.html">Agenda</a></li>
+    <li><a href="galerie.html">Galerie</a></li><li><a href="news.html">Actu vélo</a></li>
+    <li><a href="calendrier-randos-22-2027.html" class="active">Agenda Randos 2027</a></li>
+    <li><a href="Flora 2026.html">Flora 2026</a></li><li><a href="outils.html">Outils</a></li>
+  </ul>
+  <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" onclick="closeMenu()">Accueil</a><a href="le-club.html" onclick="closeMenu()">Le Club / Contact</a>
+  <a href="actualites.html" onclick="closeMenu()">Activités</a><a href="agenda.html" onclick="closeMenu()">Agenda</a>
+  <a href="galerie.html" onclick="closeMenu()">Galerie</a><a href="news.html" onclick="closeMenu()">Actu vélo</a>
+  <a href="calendrier-randos-22-2027.html" onclick="closeMenu()">Agenda Randos 2027</a>
+  <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a><a href="outils.html" onclick="closeMenu()">Outils</a>
+</div>
+<header class="hero">
+  <div class="hero-badge">Calendrier des randonnées · Côtes-d'Armor (22)</div>
+  <h1>Randonnées <span>2027</span></h1>
+  <p>Route, cyclotourisme, VTT, gravel et marche dans le département 22.</p>
+  <div class="header-pills" style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:1rem;">
+    <span class="hpill">🗺️ Côtes-d'Armor uniquement</span>
+    <span class="hpill">📅 Janvier → Novembre 2027</span>
+    <span class="hpill" id="total-pill">Chargement…</span>
+  </div>
+</header>
+<div class="stats-bar"><div class="stats-inner">
+  <div class="stat-pill"><span class="stat-dot" style="background:#1255aa"></span><span class="stat-label">Route / cyclotourisme</span><span class="stat-num" id="s-route">0</span></div>
+  <div class="stat-pill"><span class="stat-dot" style="background:#1d6e30"></span><span class="stat-label">VTT</span><span class="stat-num" id="s-vtt">0</span></div>
+  <div class="stat-pill"><span class="stat-dot" style="background:#b04000"></span><span class="stat-label">Gravel</span><span class="stat-num" id="s-gravel">0</span></div>
+  <div class="stat-pill"><span class="stat-dot" style="background:#922050"></span><span class="stat-label">Marche</span><span class="stat-num" id="s-marche">0</span></div>
+  <div class="stat-pill"><span class="stat-dot" style="background:#1d7a3a"></span><span class="stat-label">Dates publiées</span><span class="stat-num" id="s-ok">0</span></div>
+  <div class="stat-pill"><span class="stat-dot" style="background:#b45309"></span><span class="stat-label">Jour à confirmer</span><span class="stat-num" id="s-tbc">0</span></div>
+</div></div>
+<div class="month-nav"><div class="month-nav-inner" id="month-nav">
+  <button class="mnav-btn active" onclick="scrollToMonth('all',this)">Tout</button>
+  <button class="mnav-btn" onclick="scrollToMonth('janvier',this)">Janvier</button>
+  <button class="mnav-btn" onclick="scrollToMonth('fevrier',this)">Février</button>
+  <button class="mnav-btn" onclick="scrollToMonth('mars',this)">Mars</button>
+  <button class="mnav-btn" onclick="scrollToMonth('avril',this)">Avril</button>
+  <button class="mnav-btn" onclick="scrollToMonth('mai',this)">Mai</button>
+  <button class="mnav-btn" onclick="scrollToMonth('juin',this)">Juin</button>
+  <button class="mnav-btn" onclick="scrollToMonth('juillet',this)">Juillet</button>
+  <button class="mnav-btn" onclick="scrollToMonth('aout',this)">Août</button>
+  <button class="mnav-btn" onclick="scrollToMonth('septembre',this)">Septembre</button>
+  <button class="mnav-btn" onclick="scrollToMonth('octobre',this)">Octobre</button>
+  <button class="mnav-btn" onclick="scrollToMonth('novembre',this)">Novembre</button>
+</div></div>
+<div class="filter-wrap"><div class="filter-section">
+  <div class="search-wrap"><input class="search-input" type="search" id="search" placeholder="Rechercher une commune ou un événement…" oninput="applyFilters()"/></div>
+  <div class="filter-group" id="ftype"><span class="filter-group-label">Discipline</span>
+    <button class="chip on" data-value="all" onclick="setF('type','all',this)">Tout</button>
+    <button class="chip" data-value="route" onclick="setF('type','route',this)">🚴 Route</button>
+    <button class="chip" data-value="vtt" onclick="setF('type','vtt',this)">🏔️ VTT</button>
+    <button class="chip" data-value="gravel" onclick="setF('type','gravel',this)">🪨 Gravel</button>
+    <button class="chip" data-value="marche" onclick="setF('type','marche',this)">🚶 Marche</button>
+  </div>
+  <div class="filter-group" id="fmonth"><span class="filter-group-label">Mois</span>
+    <button class="chip on rose-chip" data-value="all" onclick="setF('month','all',this)">Tous</button>
+    <button class="chip" data-value="janvier" onclick="setF('month','janvier',this)">Janv.</button>
+    <button class="chip" data-value="fevrier" onclick="setF('month','fevrier',this)">Févr.</button>
+    <button class="chip" data-value="mars" onclick="setF('month','mars',this)">Mars</button>
+    <button class="chip" data-value="avril" onclick="setF('month','avril',this)">Avril</button>
+    <button class="chip" data-value="mai" onclick="setF('month','mai',this)">Mai</button>
+    <button class="chip" data-value="juin" onclick="setF('month','juin',this)">Juin</button>
+    <button class="chip" data-value="juillet" onclick="setF('month','juillet',this)">Juil.</button>
+    <button class="chip" data-value="aout" onclick="setF('month','aout',this)">Août</button>
+    <button class="chip" data-value="septembre" onclick="setF('month','septembre',this)">Sept.</button>
+    <button class="chip" data-value="octobre" onclick="setF('month','octobre',this)">Oct.</button>
+    <button class="chip" data-value="novembre" onclick="setF('month','novembre',this)">Nov.</button>
+  </div>
+</div></div>
+<p class="source-note">Calendrier prévisionnel établi à partir des fiches publiées par Miles Republic, FFVélo Bretagne et NaFix. « Jour à confirmer » signifie que seule une période est annoncée. Certaines fiches indiquent seulement « vélo » sans préciser la surface; la discipline exacte reste alors à vérifier. NaFix précise que les annonces ne sont pas garanties : confirmez les informations et les parcours auprès de l’organisateur. Les manifestations classées « Marche » peuvent aussi proposer des épreuves de trail ou de course : vérifiez les circuits auprès de l’organisateur avant de vous déplacer.</p>
+<p class="source-note">Archive : <a href="calendrier-randos-22-2026-v4.html">calendrier des randonnées 2026</a>.</p>
+<div class="results-bar"><div class="results-count"><b id="cnt">0</b> événements affichés</div></div>
+<main id="all-groups"></main>
+<div class="no-results" id="no-results"><div class="no-results-icon">🔍</div><p>Aucun événement ne correspond à votre recherche.</p></div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><img src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA" class="footer-logo">
+      <h4>ECTA SAINT-ALBAN</h4><p>Entente Cyclotouriste Albanaise - club de cyclotourisme fondé en 1985 à Saint-Alban, Côtes-d'Armor.</p>
+    </div>
+    <div class="footer-col"><h5>Navigation</h5><ul>
+      <li><a href="index.html">Accueil</a></li><li><a href="agenda.html">Agenda</a></li>
+      <li><a href="calendrier-randos-22-2027.html">Agenda Randos 2027</a></li><li><a href="mentions-legales.html">Mentions légales</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2027 Entente Cyclotouriste Albanaise · Saint-Alban 22</span><a href="mentions-legales.html">Mentions légales</a></div>
+</footer>
+<script>
+  function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+  function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+  document.addEventListener('click',function(e){
+    const menu=document.getElementById('mobileMenu'),burger=document.querySelector('.burger');
+    if(menu&&burger&&!menu.contains(e.target)&&!burger.contains(e.target))closeMenu();
+  });
+  let currentF={type:'all',month:'all'};
+  function setF(key,val,el){
+    currentF[key]=val;
+    if(el.parentNode){el.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+    applyFilters();
+  }
+  function applyFilters(){
+    const query=(document.getElementById('search').value||'').trim().toLowerCase();
+    const cards=document.querySelectorAll('.card');let count=0;
+    cards.forEach(c=>{
+      const matchQuery=!query||(c.dataset.search||'').toLowerCase().includes(query);
+      const matchType=currentF.type==='all'||(c.dataset.type||'').split(' ').includes(currentF.type);
+      const group=c.closest('.month-group');
+      const matchMonth=currentF.month==='all'||group.id==='m-'+currentF.month;
+      c.style.display=matchQuery&&matchType&&matchMonth?'flex':'none';
+      if(matchQuery&&matchType&&matchMonth)count++;
+    });
+    document.querySelectorAll('.month-group').forEach(group=>{
+      const visible=group.querySelectorAll('.card:not([style*="display: none"])').length;
+      group.style.display=visible?'block':'none';
+      group.querySelector('.month-count-badge').textContent=visible;
+    });
+    document.getElementById('cnt').textContent=count;
+    document.getElementById('no-results').style.display=count?'none':'block';
+    recalcStats();
+  }
+  function recalcStats(){
+    const visible=document.querySelectorAll('.card:not([style*="display: none"])');
+    const stats={route:0,vtt:0,gravel:0,marche:0,ok:0,tbc:0};
+    visible.forEach(card=>{
+      const types=(card.dataset.type||'').split(' ');
+      types.forEach(type=>{if(Object.prototype.hasOwnProperty.call(stats,type))stats[type]++;});
+      stats[card.querySelector('.date-badge.ok')?'ok':'tbc']++;
+    });
+    Object.keys(stats).forEach(key=>{document.getElementById('s-'+key).textContent=stats[key];});
+    document.getElementById('total-pill').textContent=visible.length+' événements';
+  }
+  function scrollToMonth(id,el){
+    document.querySelectorAll('.mnav-btn').forEach(button=>button.classList.remove('active'));
+    if(el)el.classList.add('active');
+    if(id==='all'){window.scrollTo({top:0,behavior:'smooth'});return;}
+    const target=document.getElementById('m-'+id);
+    if(target)window.scrollTo({top:target.offsetTop-110,behavior:'smooth'});
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    renderCalendar2027();
+    applyFilters();
+  });
+</script>
+<script src="donnees.js" defer></script><script src="scripts.js" defer></script>
+</body>
+</html>
