@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Parcours GPX et météo · ECTA Saint-Alban</title>
 <meta name="description" content="Importez un parcours GPX, visualisez-le sur une carte et consultez les prévisions météo aux heures de passage." />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 <style>
 :root { --bg:#f5f7f8; --surface:#fff; --fg:#16232b; --muted:#5b6b74; --line:#d9e1e5; --accent:#1d7a8c; --marker:#b4532a; color-scheme: light; }
@@ -13,14 +14,6 @@
 }
 body { margin:0; background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size:15px; line-height:1.5; padding:70px 16px 16px; }
 main { max-width:960px; margin:0 auto; display:grid; gap:14px; }
-nav.tool-nav { position:fixed; top:0; left:0; z-index:1000; box-sizing:border-box; width:100%; height:54px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:3px 16px; background:rgba(232,53,122,.78); border-bottom:1px solid rgba(255,255,255,.14); box-shadow:0 3px 16px rgba(232,53,122,.2); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
-.nav-brand { display:flex; align-items:center; gap:12px; min-width:0; color:#fff; text-decoration:none; }
-.nav-logo-img { display:block; flex:none; width:124px; height:48px; object-fit:contain; }
-.nav-title { color:#fff; font-size:15px; font-weight:800; line-height:1.05; }
-.nav-title small { display:block; margin-top:3px; font-size:11px; font-weight:600; }
-.nav-links { display:flex; align-items:center; gap:8px; margin:0; padding:0; list-style:none; }
-.nav-links a { display:block; padding:6px 9px; border-bottom:2px solid transparent; border-radius:6px; color:#fff; font-size:12px; font-weight:700; letter-spacing:.04em; text-decoration:none; text-transform:uppercase; }
-.nav-links a:hover, .nav-links a.active { border-bottom-color:#fff; background:rgba(255,255,255,.12); }
 h1 { font-size:22px; margin:0; }
 h2 { font-size:15px; margin:0 0 8px; }
 .card { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px; min-width:0; }
@@ -63,16 +56,12 @@ a { color:var(--accent); }
 @media (max-width:560px) {
   body { padding:12px; }
   body { padding-top:66px; }
-  nav.tool-nav { padding-inline:12px; }
-  .nav-logo-img { width:92px; height:38px; }
-  .nav-title { display:none; }
-  .nav-links { gap:2px; }
-  .nav-links a { padding:6px 7px; font-size:11px; }
   h1 { font-size:20px; }
   .controls { grid-template-columns:minmax(0,1fr); }
 }
 </style>
 <link rel="stylesheet" href="../theme-sombre.css?v=20261125a">
+<link rel="stylesheet" href="../header.css?v=20261125b">
 </head>
 <body>
 <nav class="tool-nav" aria-label="Navigation principale">
@@ -84,7 +73,14 @@ a { color:var(--accent); }
     <li><a href="../index.html">Accueil</a></li>
     <li><a href="../outils.html" class="active">Outils</a></li>
   </ul>
+  <button class="burger" type="button" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="../index.html" onclick="closeMenu()">Accueil</a>
+  <a href="../outils.html" onclick="closeMenu()">Outils</a>
+</div>
 <main>
   <header>
     <h1>Parcours GPX, carte et météo</h1>
@@ -558,6 +554,18 @@ a { color:var(--accent); }
   });
   map.setView([46.6, 2.5], 5);
 })();
+</script>
+<script>
+function toggleMenu() {
+  var menu = document.getElementById("mobileMenu");
+  var button = document.querySelector(".burger");
+  var isOpen = menu.classList.toggle("open");
+  button.setAttribute("aria-expanded", String(isOpen));
+}
+function closeMenu() {
+  document.getElementById("mobileMenu").classList.remove("open");
+  document.querySelector(".burger").setAttribute("aria-expanded", "false");
+}
 </script>
 </body>
 </html>

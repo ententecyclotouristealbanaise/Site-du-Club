@@ -28,6 +28,8 @@ let burgerTimeout;
 function toggleMenu() {
   const menu = document.getElementById('mobileMenu');
   menu.classList.toggle('open');
+  const burger = document.querySelector('.burger');
+  if (burger) burger.setAttribute('aria-expanded', String(menu.classList.contains('open')));
   if (menu.classList.contains('open')) {
     clearTimeout(burgerTimeout);
     burgerTimeout = setTimeout(closeMenu, 5000);
@@ -39,6 +41,8 @@ function toggleMenu() {
 function closeMenu() {
   const menu = document.getElementById('mobileMenu');
   menu.classList.remove('open');
+  const burger = document.querySelector('.burger');
+  if (burger) burger.setAttribute('aria-expanded', 'false');
   clearTimeout(burgerTimeout);
   window.removeEventListener('scroll', closeMenuOnce);
   window.removeEventListener('touchstart', closeMenuTouch);
@@ -60,7 +64,7 @@ document.addEventListener('click', function(e) {
 });
 
 window.addEventListener('resize', function() {
-  if (window.innerWidth > 1024) closeMenu();
+  if (window.innerWidth > 1220) closeMenu();
 });
 
 document.addEventListener('keydown', function(e) {

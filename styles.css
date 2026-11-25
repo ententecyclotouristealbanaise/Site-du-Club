@@ -1,4 +1,5 @@
 @import url("theme-sombre.css?v=20261125a");
+@import url("header.css?v=20261125b");
 
 :root{--rose:#e8357a;--rose-clair:#f06fa0;--rose-pale:#fde8f1;--cyan:#00b4d8;--blanc:#f4f4f6;--texte:#1c1c2e;--gris:#6b7280;--gris-clair:#e8e4ed;--radius:10px;--card-bg:#f4f4f6;--input-bg:#f4f4f6}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -9,23 +10,6 @@ section,header.hero{scroll-margin-top:54px}
 main{flex:1} /* Si on utilise <main>, sinon on peut mettre flex:1 sur .hero ou les sections */
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block;object-fit:cover}
-
-/* --- NAV --- */
-nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232, 53, 122, 0.5);display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:54px;box-shadow:0 3px 16px rgba(232,53,122,0.2);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);transition:all .3s ease;gap:1rem}
-.nav-brand{display:flex;align-items:center;gap:.75rem;flex:0 0 auto;min-width:0;overflow:visible}
-.nav-logo-img{height:48px;width:124px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
-.nav-title{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:var(--blanc);letter-spacing:.02em;line-height:1.05;min-width:0;white-space:nowrap}
-.nav-title small{display:block;font-size:.73rem;font-weight:600;letter-spacing:.03em;opacity:.95;white-space:nowrap}
-.nav-links{display:flex;align-items:center;justify-content:flex-end;flex:1 1 auto;gap:clamp(.2rem,.45vw,.65rem);list-style:none;margin-left:auto;min-width:0;flex-wrap:nowrap}
-.nav-links li{flex:0 0 auto}
-.nav-links a{display:flex;align-items:center;min-height:36px;color:var(--blanc);font-size:clamp(.62rem,.68vw,.72rem);font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;padding:.3rem .4rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:border-color .2s,background .2s}
-.nav-links a:hover,.nav-links a.active{border-color:var(--blanc);background:rgba(255,255,255,.12)}
-.burger{display:none;flex-direction:column;gap:5px;cursor:pointer;margin-left:auto;border:0;background:transparent;padding:.65rem}
-.burger span{display:block;width:26px;height:3px;background:var(--blanc);border-radius:2px}
-.mobile-menu{display:none;position:fixed;top:54px;left:0;width:100%;z-index:999;background:rgba(232, 53, 122, 0.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:2rem 1.5rem;flex-direction:column;gap:1.5rem;box-shadow:0 10px 30px rgba(0,0,0,0.15);max-height:calc(100vh - 54px);overflow-y:auto;border-bottom:1px solid rgba(255,255,255,0.1);transition:all .3s ease}
-.mobile-menu.open{display:flex}
-.mobile-menu a{color:var(--blanc);font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;transition:transform .2s}
-.mobile-menu a:hover{transform:scale(1.05)}
 
 /* --- HERO ACCUEIL PLEIN ÉCRAN --- */
 #accueil{margin-top:0;background:linear-gradient(160deg,var(--rose) 0%,var(--rose-clair) 45%,var(--cyan) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 2rem 1.5rem 2rem;position:relative;overflow:hidden;isolation:isolate;flex:1}
@@ -327,13 +311,7 @@ footer{background:var(--texte);color:rgba(255,255,255,.7);padding:1rem 1.5rem;ma
 
 /* --- RESPONSIVE --- */
 @media(max-width:1024px){
-  nav{height:54px;padding:0 .9rem;justify-content:space-between;gap:.75rem;border-bottom:0}
   #accueil{margin-top:54px}
-  .nav-logo-img{height:48px;width:124px}
-  .nav-title{font-size:1rem;line-height:1.05}
-  .mobile-menu{top:54px;padding:1rem 1.5rem 1.25rem}
-  .nav-links{display:none}
-  .burger{display:flex}
   .contact-grid{grid-template-columns:1fr}
   .contact-info,.contact-form{padding:1.4rem;border-radius:16px}
   .map-gps-row{flex-direction:column;align-items:stretch;gap:.85rem}
@@ -347,13 +325,6 @@ footer{background:var(--texte);color:rgba(255,255,255,.7);padding:1rem 1.5rem;ma
   .video-grid{grid-template-columns:1fr}
   .agenda-body{overflow:hidden}
 }
-@media(max-width:1220px){
-  nav .nav-links{display:none}
-  nav .burger{display:flex}
-  nav .nav-brand{flex:1 1 auto;overflow:hidden}
-  nav .nav-title,nav .nav-title small{white-space:normal}
-}
-
 /* Arrondi uniquement pour l'agenda, pas pour l'accueil */
 .hero::after {
   content: '';

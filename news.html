@@ -27,16 +27,6 @@
     body{font-family:'Nunito',sans-serif;color:var(--texte);background:radial-gradient(1000px 520px at 8% -10%, #fff 0%, transparent 62%),linear-gradient(180deg,#f7f6fa 0%,var(--blanc) 34%,#eef3f8 100%)}
     a{text-decoration:none;color:inherit}
 
-    /* ── TOPBAR ── */
-    .topbar{
-      background:rgba(232, 53, 122, 0.5);height:54px;padding:0 1.5rem;
-      display:flex;align-items:center;justify-content:space-between;gap:.75rem;
-      box-shadow:0 3px 16px rgba(232,53,122,0.2);
-      position:fixed;top:0;left:0;width:100%;z-index:1000;border-bottom:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-      transition: all .3s ease;
-    }
-    .tb-left{display:flex;align-items:center;gap:.9rem;min-width:0;overflow:hidden}
-    .tb-logo{height:48px;width:124px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
     .btn-retour{
       display:inline-flex;align-items:center;gap:5px;
       background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.5);
@@ -46,31 +36,7 @@
       text-decoration:none;
     }
     .btn-retour:hover{background:rgba(255,255,255,.38)}
-    .tb-brand{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:white;letter-spacing:.02em;line-height:1.05;min-width:0;white-space:nowrap}
-    .tb-brand small{display:block;font-size:.73rem;font-weight:600;opacity:.95;margin-left:0;letter-spacing:.03em;white-space:nowrap}
-    .tb-right{display:flex;align-items:center;gap:.7rem;flex-shrink:0;margin-left:auto}
-    /* centre colonne pour action refresh */
-    .tb-center{display:flex;align-items:center;justify-content:center;gap:.7rem;flex:1}
     #src-pills{display:flex;gap:5px;align-items:center;margin-left:1rem}
-
-    /* navigation dans la topbar */
-    .topbar .nav-links{display:flex;align-items:center;justify-content:flex-end;gap:clamp(.2rem,.45vw,.65rem);list-style:none;margin-left:1.5rem;min-width:0;flex-wrap:nowrap}
-    .topbar .nav-links li{flex:0 0 auto}
-    .topbar .nav-links a{display:flex;align-items:center;min-height:36px;color:white;font-size:clamp(.62rem,.68vw,.72rem);font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;padding:.3rem .4rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:border-color .2s,background .2s}
-    .topbar .nav-links a:hover,.topbar .nav-links a.active{border-color:white;background:rgba(255,255,255,.12)}
-    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:transparent;border:none;padding:0;margin-left:auto}
-    .burger span{display:block;width:26px;height:3px;background:var(--blanc);border-radius:2px}
-    .mobile-menu{display:none;position:fixed;top:54px;left:0;width:100%;z-index:999;background:rgba(232, 53, 122, 0.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:2rem 1.5rem;flex-direction:column;gap:1.5rem;box-shadow:0 10px 30px rgba(0,0,0,0.15);max-height:calc(100vh - 54px);overflow-y:auto;border-bottom:1px solid rgba(255,255,255,0.1);transition:all .3s ease}
-    .mobile-menu.open{display:flex}
-    .mobile-menu a{color:var(--blanc);font-size:.9rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-    #btn-refresh{
-      display:flex;align-items:center;gap:5px;
-      background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.5);
-      color:white;padding:4px 13px;border-radius:2rem;cursor:pointer;
-      font-family:'Barlow Condensed',sans-serif;font-size:.73rem;font-weight:700;
-      letter-spacing:.1em;text-transform:uppercase;transition:background .2s;
-    }
-    #btn-refresh:hover{background:rgba(255,255,255,.38)}
     .ico{display:inline-block}
     .spinning .ico{animation:tourne .7s linear infinite}
     @keyframes tourne{to{transform:rotate(360deg)}}
@@ -223,21 +189,13 @@
     @keyframes fadeUp{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
 
 
-    @media(max-width:1320px){
-      .topbar{padding:0 .9rem;height:54px;flex-wrap:nowrap}
-      .tb-center{display:none}
-      .tb-right{display:none}
-      .burger{display:flex}
-    }
-
     @media(max-width:640px){
-      .tb-brand{font-size:1rem;line-height:1.05}
-      .tb-brand,.tb-brand small{white-space:normal}
       .filters{padding:.65rem 1rem}
       main{padding:1.5rem 1rem 4rem}
     }
   </style>
   <link rel="stylesheet" href="theme-sombre.css?v=20261125a">
+  <link rel="stylesheet" href="header.css?v=20261125b">
 </head>
 <body>
 
@@ -248,12 +206,6 @@
     <img class="tb-logo" src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
     <div class="tb-brand">Entente Cyclotouriste Albanaise <small>Saint-Alban - Côtes-d'Armor</small></div>
   </div>
-  <div class="tb-center">
-    <button id="btn-refresh" onclick="loadAll()"><span class="ico">↻</span> Actualiser</button>
-  </div>
-  <button class="burger" aria-label="Ouvrir le menu" onclick="toggleMenu()">
-    <span></span><span></span><span></span>
-  </button>
   <div class="tb-right">
     <!-- liens de navigation similaires à index -->
     <ul class="nav-links">
@@ -268,6 +220,12 @@
     <li><a href="outils.html">Outils</a></li>
     </ul>
   </div>
+  <div class="tb-center">
+    <button id="btn-refresh" onclick="loadAll()"><span class="ico">↻</span> Actualiser</button>
+  </div>
+  <button class="burger" type="button" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
 </div>
 
 <div class="mobile-menu" id="mobileMenu">
@@ -476,11 +434,14 @@ function gnRssUrl(q) {
 
 
 function toggleMenu() {
-  document.getElementById('mobileMenu').classList.toggle('open');
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.toggle('open');
+  document.querySelector('.burger').setAttribute('aria-expanded', String(menu.classList.contains('open')));
 }
 
 function closeMenu() {
   document.getElementById('mobileMenu').classList.remove('open');
+  document.querySelector('.burger').setAttribute('aria-expanded', 'false');
 }
 
 document.addEventListener('click', function(e) {
@@ -493,7 +454,7 @@ document.addEventListener('click', function(e) {
 });
 
 window.addEventListener('resize', function() {
-  if (window.innerWidth > 1024) closeMenu();
+  if (window.innerWidth > 1320) closeMenu();
 });
 
 document.addEventListener('keydown', function(e) {
