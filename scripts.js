@@ -152,6 +152,17 @@ async function loadMeteo(){
 }
 
 /* --- ACTUALITÉS --- */
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"'']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[char]);
+}
+
+function safeDataUrl(value) {
+  const url = String(value ?? '').trim();
+  if (/^(https?:\/\/|\/|\.\.?\/)/i.test(url) && !/["''<>\s]/.test(url)) return url;
+  return '#';
+}
 const FALLBACK_SVG = `<div style="width:100%;height:110px;overflow:hidden;position:relative;background:#e8e0d8;border-bottom:1px solid #ddd;"> <svg viewBox="0 0 320 110" xmlns='http://www.w3.org/2000/svg' style="width:100%;height:100%;position:absolute;top:0;left:0;"> <rect width="320" height="110" fill="#ede8df"/> <rect x="0" y="0" width="90" height="48" rx="0" fill="#d4e8c2"/> <rect x="230" y="62" width="90" height="48" rx="0" fill="#d4e8c2"/> <rect x="150" y="0" width="60" height="30" rx="0" fill="#c8ddb0"/> <rect x="98" y="52" width="14" height="10" fill="#ccc4b8"/> <rect x="116" y="55" width="10" height="8" fill="#ccc4b8"/> <rect x="190" y="20" width="12" height="9" fill="#ccc4b8"/> <rect x="206" y="22" width="9" height="7" fill="#ccc4b8"/> <rect x="255" y="40" width="11" height="8" fill="#ccc4b8"/> <rect x="0" y="48" width="320" height="14" fill="#ffffff" opacity=".9"/> <line x1="0" y1="55" x2="320" y2="55" stroke="#f5f0e8" stroke-width=".5"/> <rect x="130" y="0" width="14" height="110" fill="#ffffff" opacity=".9"/> <line x1="137" y1="0" x2="137" y2="110" stroke="#f5f0e8" stroke-width=".5"/> <rect x="0" y="22" width="320" height="6" fill="#f8f4ee" opacity=".85"/> <rect x="0" y="80" width="320" height="6" fill="#f8f4ee" opacity=".85"/> <rect x="65" y="0" width="6" height="110" fill="#f8f4ee" opacity=".85"/> <rect x="210" y="0" width="6" height="110" fill="#f8f4ee" opacity=".85"/> <path d="M 0,55 L 130,55 L 137,48 L 137,22 L 210,22 L 213,22 L 213,55 L 320,55" fill="none" stroke="#e8357a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/> <circle cx="65" cy="55" r="3" fill="#e8357a" opacity=".7"/> <circle cx="137" cy="25" r="3" fill="#e8357a" opacity=".7"/> <circle cx="213" cy="55" r="3" fill="#e8357a" opacity=".7"/> <ellipse cx="137" cy="60" rx="6" ry="3" fill="rgba(232,53,122,.25)"/> <path d="M 137,48 Q 143,42 143,37 A 6,6 0 1 0 131,37 Q 131,42 137,48 Z" fill="#e8357a"/> <circle cx="137" cy="37" r="2.5" fill="white"/> <rect x="146" y="32" width="52" height="13" rx="3" fill="white" opacity=".9"/> <text x="172" y="42" text-anchor="middle" font-family="sans-serif" font-size="8" font-weight="700" fill="#333">Saint-Alban</text> <circle cx="298" cy="16" r="9" fill="white" opacity=".8"/> <text x="298" y="13" text-anchor="middle" font-family="sans-serif" font-size="7" font-weight="700" fill="#e8357a">N</text> <line x1="298" y1="14" x2="298" y2="8" stroke="#e8357a" stroke-width="1.2"/> <line x1="298" y1="14" x2="298" y2="20" stroke="#999" stroke-width="1"/> <line x1="295" y1="17" x2="301" y2="17" stroke="#999" stroke-width="1"/> </svg> <div style="position:absolute;bottom:7px;left:50%;transform:translateX(-50%);background:white;border-radius:2rem;padding:.2rem .85rem;box-shadow:0 2px 8px rgba(232,53,122,.25);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;color:#e8357a;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;">🗺 Circuit du dimanche</div></div>`;
 
 function renderActu() {
@@ -160,12 +171,12 @@ function renderActu() {
   grid.innerHTML = ECTA_DATA.actualites.map(a => `
     <div class="actu-card">
       <div class="actu-card-top"></div>
-      ${a.image ? `<img class="actu-card-img" src="${a.image}" alt="${a.titre}" onerror="this.outerHTML='${FALLBACK_SVG}'"/>` : FALLBACK_SVG}
+      ${a.image ? `<img class="actu-card-img" src="${safeDataUrl(a.image)}" alt="${escapeHtml(a.titre)}" onerror="this.outerHTML='${FALLBACK_SVG}'"/>` : FALLBACK_SVG}
       <div class="actu-card-body">
-        <div class="actu-date">📅 ${a.date}</div>
-        <h3>${a.titre}</h3>
-        <p>${a.texte}</p>
-        <span class="actu-tag">${a.tag}</span>
+        <div class="actu-date">📅 ${escapeHtml(a.date)}</div>
+        <h3>${escapeHtml(a.titre)}</h3>
+        <p>${escapeHtml(a.texte)}</p>
+        <span class="actu-tag">${escapeHtml(a.tag)}</span>
       </div>
     </div>
   `).join('');
@@ -180,14 +191,14 @@ function renderAgenda() {
   if (!list) return;
   list.innerHTML = ECTA_DATA.agenda.map((s, i) => {
     const parcours = s.parcours || [{ distance: s.distance, lien: s.lien }];
-    const distBadges = parcours.map(p => `<span class="badge-dist">🚴 ${p.distance}</span>`).join(' ');
+    const distBadges = parcours.map(p => `<span class="badge-dist">🚴 ${escapeHtml(p.distance)}</span>`).join(' ');
     const hasLien = parcours.some(p => p.lien);
     return `
       <div class="agenda-item${openAgendaIndex === i ? ' open' : ''}" id="ag${i}">
         <div class="agenda-item-header" onclick="toggleAgenda(${i})">
           <div class="agenda-meta">
-            <span class="agenda-date">${s.date}</span>
-            <span class="agenda-titre">${s.titre}</span>
+            <span class="agenda-date">${escapeHtml(s.date)}</span>
+            <span class="agenda-titre">${escapeHtml(s.titre)}</span>
           </div>
           <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
             ${distBadges}
@@ -227,10 +238,10 @@ function circuitLocked(i) {
 function circuitUnlocked(sortie) {
   const parcours = sortie.parcours || [{ distance: sortie.distance, lien: sortie.lien }];
   const liens = parcours.filter(p => p.lien).map(p =>
-    `<a class="circuit-link" href="${p.lien}" target="_blank">🗺 Circuit ${p.distance} sur Openrunner</a>`
+    `<a class="circuit-link" href="${safeDataUrl(p.lien)}" target="_blank">🗺 Circuit ${escapeHtml(p.distance)} sur Openrunner</a>`
   ).join('');
   const liensGpx = parcours.filter(p => p.gpx).map(p =>
-    `<a class="circuit-link circuit-gpx-link" href="${p.gpx}">📥 Ouvrir / importer le GPX ${p.distance}</a>`
+    `<a class="circuit-link circuit-gpx-link" href="${safeDataUrl(p.gpx)}">📥 Ouvrir / importer le GPX ${escapeHtml(p.distance)}</a>`
   ).join('');
   const contenu = liens || `<p style="color:var(--gris);font-size:.9rem;">🗺 Circuit Openrunner à venir - revenez bientôt !</p>`;
   
@@ -327,10 +338,10 @@ function renderGalerie() {
   grid.innerHTML = ECTA_DATA.galerie.map((album, i) => `
     <div class="album-card" onclick="openAlbum(${i})">
       <div class="album-cover">
-        <img src="${album.couverture}" alt="${album.titre}">
+        <img src="${safeDataUrl(album.couverture)}" alt="${escapeHtml(album.titre)}">
         <div class="album-count">${getAlbumCountLabel(album)}</div>
       </div>
-      <div class="album-title">${album.titre}</div>
+      <div class="album-title">${escapeHtml(album.titre)}</div>
     </div>
   `).join('');
 }
@@ -392,25 +403,25 @@ function updateLightbox() {
   if (currentMedia.type === 'video') {
     img.style.display = 'none';
     video.style.display = 'block';
-    video.poster = currentMedia.poster || '';
+    video.poster = safeDataUrl(currentMedia.poster) || '';
 
     const sources = [];
-    if (currentMedia.webm) sources.push(`<source src="${currentMedia.webm}" type="${inferVideoMime(currentMedia.webm)}">`);
-    if (currentMedia.mp4) sources.push(`<source src="${currentMedia.mp4}" type="${inferVideoMime(currentMedia.mp4)}">`);
-    if (currentMedia.src) sources.push(`<source src="${currentMedia.src}" type="${inferVideoMime(currentMedia.src)}">`);
+    if (currentMedia.webm) sources.push(`<source src="${safeDataUrl(currentMedia.webm)}" type="${inferVideoMime(currentMedia.webm)}">`);
+    if (currentMedia.mp4) sources.push(`<source src="${safeDataUrl(currentMedia.mp4)}" type="${inferVideoMime(currentMedia.mp4)}">`);
+    if (currentMedia.src) sources.push(`<source src="${safeDataUrl(currentMedia.src)}" type="${inferVideoMime(currentMedia.src)}">`);
 
     video.innerHTML = `${sources.join('')}Votre navigateur ne supporte pas la video HTML5.`;
     video.load();
   } else {
     video.style.display = 'none';
     img.style.display = 'block';
-    img.src = currentMedia.src;
-    img.alt = currentMedia.alt || currentAlbum.titre;
+    img.src = safeDataUrl(currentMedia.src);
+    img.alt = escapeHtml(currentMedia.alt || currentAlbum.titre);
   }
 
   thumbs.innerHTML = medias.map((m, i) => `
     <img class="lightbox-thumb ${i === currentPhotoIndex ? 'active' : ''}" 
-         src="${getMediaThumb(m, currentAlbum)}" onclick="currentPhotoIndex=${i};updateLightbox();">
+         src="${safeDataUrl(getMediaThumb(m, currentAlbum))}" onclick="currentPhotoIndex=${i};updateLightbox();">
   `).join('');
   
   const activeThumb = thumbs.querySelector('.active');

@@ -28,7 +28,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="styles.css?v=20261125g">
+  <link rel="stylesheet" href="styles.css?v=20261125h">
 </head>
 <body>
 
@@ -112,6 +112,17 @@
         <a class="home-preview-link" href="actualites.html">Voir toutes les activités <span aria-hidden="true">→</span></a>
       </article>
     </div>
+    <section class="home-gallery-preview" aria-labelledby="homeGalleryTitle">
+      <div class="home-gallery-heading">
+        <div><p class="home-preview-kicker">En images</p><h3 id="homeGalleryTitle">Les dernières photos</h3></div>
+        <div class="home-gallery-controls">
+          <button type="button" class="home-gallery-arrow" id="homeGalleryPrev" aria-label="Photos précédentes">‹</button>
+          <button type="button" class="home-gallery-arrow" id="homeGalleryNext" aria-label="Photos suivantes">›</button>
+        </div>
+      </div>
+      <div class="home-gallery-track" id="homeGalleryTrack" aria-label="Dernières photos du club"></div>
+      <a class="home-preview-link home-gallery-link" href="galerie.html">Découvrir toute la galerie <span aria-hidden="true">→</span></a>
+    </section>
   </div>
 </section>
 
@@ -189,7 +200,7 @@
 
     const agendaContainer = document.getElementById("homeAgendaPreview");
     const activityContainer = document.getElementById("homeActivityPreview");
-    const escapeHTML = value => String(value ?? "").replace(/[&<>]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[char]));
+    const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
     const data = typeof ECTA_DATA !== "undefined" ? ECTA_DATA : null;
     if (!data) {
       activityContainer.innerHTML = '<p class="home-preview-empty">Les activités seront bientôt disponibles.</p>';
@@ -216,6 +227,20 @@
     activityContainer.innerHTML = latestActivity
       ? '<article class="home-preview-entry"><p class="home-preview-date">' + escapeHTML(latestActivity.date) + '</p><h4>' + escapeHTML(latestActivity.titre) + '</h4><p>' + escapeHTML(latestActivity.texte) + '</p></article>'
       : '<p class="home-preview-empty">Aucune activité n’est encore publiée.</p>';
+
+    const galleryTrack = document.getElementById("homeGalleryTrack");
+    const latestAlbum = (Array.isArray(data.galerie) ? data.galerie : []).find(album => !album.aVenir && Array.isArray(album.photos) && album.photos.length);
+    if (latestAlbum) {
+      galleryTrack.innerHTML = [...latestAlbum.photos].reverse().slice(0, 8).map((photo, index) =>
+        '<a class="home-gallery-slide" href="galerie.html" aria-label="Voir la galerie : ' + escapeHTML(latestAlbum.titre) + '"><img src="' + escapeHTML(photo) + '" alt="' + escapeHTML(latestAlbum.titre + ', photo ' + (latestAlbum.photos.length - index)) + '" loading="lazy"><span>' + escapeHTML(latestAlbum.titre) + '</span></a>'
+      ).join("");
+      const scrollGallery = direction => galleryTrack.scrollBy({ left: direction * galleryTrack.clientWidth * 0.8, behavior: "smooth" });
+      document.getElementById("homeGalleryPrev").addEventListener("click", () => scrollGallery(-1));
+      document.getElementById("homeGalleryNext").addEventListener("click", () => scrollGallery(1));
+    } else {
+      galleryTrack.innerHTML = '<p class="home-preview-empty">Les photos du club seront bientôt disponibles.</p>';
+      document.querySelector(".home-gallery-controls").hidden = true;
+    }
   });
 </script>
 
