@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RoadWind - Rapport météo</title>
 <style>
   body{font-family:Arial,Helvetica,sans-serif;color:#0f172a;background:#f8fafc;padding:24px;}
@@ -29,6 +30,13 @@
   .legend{display:flex;gap:16px;margin:12px 0 20px 0;font-size:13px;flex-wrap:wrap;}
   .legend span{display:inline-flex;align-items:center;gap:6px;}
   .legend .dot{width:14px;height:14px;border-radius:4px;display:inline-block;}
+  @media(max-width:640px){
+    *,*::before,*::after{box-sizing:border-box;}
+    body{margin:0;padding:12px;}
+    table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    th,td{padding:8px 7px;white-space:nowrap;}
+    .rose{align-items:flex-start;flex-wrap:wrap;}
+  }
 </style>
 <link rel="stylesheet" href="theme-sombre.css?v=20261125a">
 </head>

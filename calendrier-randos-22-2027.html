@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#e8357a" />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="styles.css?v=20261125f">
+  <link rel="stylesheet" href="styles.css?v=20261125g">
   <style>
     :root {
       --rose:#e8357a; --rose-clair:#f06fa0; --rose-pale:#fde8f1;
@@ -71,7 +71,23 @@
     .bl:hover{opacity:.8;}
     .no-results{max-width:1160px;margin:20px auto;padding:50px 20px;text-align:center;color:var(--muted);display:none;}
     .no-results-icon{font-size:40px;margin-bottom:12px;}
-    @media(max-width:640px){.hero h1{font-size:2.4rem!important;}.stats-bar{display:none;}.filter-section{gap:10px;}.month-cards{grid-template-columns:1fr;}}
+    #all-groups,.month-group,.month-cards,.card{min-width:0;}
+    .card-name,.card-loc,.card-info,.bl{overflow-wrap:anywhere;}
+    @media(max-width:640px){
+      .hero{padding:3rem 1rem 2rem!important;}
+      .hero h1{font-size:clamp(1.9rem,8vw,2.4rem)!important;}
+      .hero-badge{max-width:100%;font-size:.72rem;}
+      .stats-bar{display:none;}
+      .month-nav-inner{flex-wrap:wrap;overflow-x:visible;padding-left:12px;padding-right:12px;}
+      .mnav-btn{padding:8px 10px;}
+      .filter-wrap,.results-bar,.month-group{padding-left:12px;padding-right:12px;}
+      .filter-section{gap:10px;padding:12px;align-items:stretch;}
+      .search-wrap{flex:1 1 100%;min-width:0;}
+      .filter-group{min-width:0;}
+      .month-cards{grid-template-columns:minmax(0,1fr);padding:10px;gap:10px;}
+      .card{padding:12px;}
+      .source-note{padding-left:12px;padding-right:12px;}
+    }
   </style>
   <script src="calendrier-randos-22-2027.js" defer></script>
 </head>

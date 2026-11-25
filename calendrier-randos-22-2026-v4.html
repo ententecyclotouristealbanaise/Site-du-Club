@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-title" content="ECTA Saint-Alban" />
 
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="styles.css?v=20261125f">
+  <link rel="stylesheet" href="styles.css?v=20261125g">
   <style>
     :root {
       --rose:#e8357a; --rose-clair:#f06fa0; --rose-pale:#fde8f1;
@@ -139,7 +139,19 @@
 
 
     .hidden{display:none!important;}
-    @media(max-width:640px){.month-cards{grid-template-columns:1fr;}.stats-bar{display:none;}.filter-section{gap:10px;}.fsep{display:none;}#btt{bottom:1.25rem;right:1.25rem;}.nav-title{font-size:1rem}}
+    @media(max-width:640px){
+      .month-nav-inner{flex-wrap:wrap;overflow-x:visible;padding-left:12px;padding-right:12px;}
+      .mnav-btn{padding:8px 10px;}
+      .month-cards{grid-template-columns:minmax(0,1fr);padding:10px;}
+      .filter-wrap,.results-bar,.month-group{padding-left:12px;padding-right:12px;}
+      .filter-section{gap:10px;padding:12px;align-items:stretch;}
+      .search-wrap{flex:1 1 100%;min-width:0;}
+      .filter-group{min-width:0;}
+      .stats-bar{display:none;}
+      .fsep{display:none;}
+      #btt{bottom:1.25rem;right:1.25rem;}
+      .nav-title{font-size:1rem}
+    }
   </style>
 </head>
 <body>

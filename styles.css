@@ -84,7 +84,7 @@ section{padding:5rem 1.5rem}
 
 /* --- ACTUALITÉS --- */
 #actualites{background:var(--gris-clair)}
-.actu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
+.actu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1.5rem}
 .actu-card{background:var(--blanc);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);transition:transform .2s,box-shadow .2s}
 .actu-card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(0,0,0,.12)}
 .actu-card-top{background:linear-gradient(90deg,var(--rose),var(--cyan));height:6px}
@@ -227,7 +227,7 @@ section{padding:5rem 1.5rem}
 }
 /* --- GALERIE --- */
 #galerie{background:var(--gris-clair)}
-.albums-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
+.albums-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:1.5rem}
 .album-card{background:var(--blanc);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);cursor:pointer;transition:transform .2s,box-shadow .2s}
 .album-card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(0,0,0,.14)}
 .album-cover{position:relative;height:200px;background:linear-gradient(135deg,var(--rose-pale),#e0f7fa);display:flex;align-items:center;justify-content:center;font-size:4rem;overflow:hidden}
@@ -324,6 +324,11 @@ footer{background:var(--texte);color:rgba(255,255,255,.7);padding:1rem 1.5rem;ma
   /* Video responsive */
   .video-grid{grid-template-columns:1fr}
   .agenda-body{overflow:hidden}
+}
+@media(max-width:640px){
+  main,section,article,.container,.card,.footer-inner{min-width:0}
+  section{padding-left:1rem;padding-right:1rem}
+  .footer-inner>.footer-col{grid-column:auto!important}
 }
 /* Arrondi uniquement pour l'agenda, pas pour l'accueil */
 .hero::after {
@@ -764,7 +769,11 @@ footer{background:var(--texte);color:rgba(255,255,255,.7);padding:1rem 1.5rem;ma
     grid-template-columns: 1fr;
     gap: 2rem;
   }
+  .home-club-inner > * {
+    min-width: 0;
+  }
   .home-club-photo {
+    width: 100%;
     min-height: 260px;
     aspect-ratio: 1.5;
   }
