@@ -15,7 +15,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20261125">
+  <link rel="stylesheet" href="styles.css?v=20261125c">
 </head>
 <body>
 
@@ -26,13 +26,10 @@
   </div>
   <ul class="nav-links">
     <li><a href="index.html">Accueil</a></li>
-    <li><a href="le-club.html" class="active">Le Club</a></li>
+    <li><a href="le-club.html" class="active">Le Club / Contact</a></li>
     <li><a href="actualites.html">Activités</a></li>
     <li><a href="agenda.html">Agenda</a></li>
-    <li><a href="meteo-et-radar.html">Météo</a></li>
     <li><a href="galerie.html">Galerie</a></li>
-    <li><a href="contact.html">Contact</a></li>
-    <li><a href="documents.html">WT 2026</a></li>
     <li><a href="news.html">Actu vélo</a></li>
     <li><a href="calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
     <li><a href="Flora 2026.html">Flora 2026</a></li>
@@ -43,13 +40,10 @@
 
 <div class="mobile-menu" id="mobileMenu">
   <a href="index.html" onclick="closeMenu()">Accueil</a>
-  <a href="le-club.html" onclick="closeMenu()">Le Club</a>
+  <a href="le-club.html" onclick="closeMenu()">Le Club / Contact</a>
   <a href="actualites.html" onclick="closeMenu()">Activités</a>
   <a href="agenda.html" onclick="closeMenu()">Agenda</a>
-  <a href="meteo-et-radar.html" onclick="closeMenu()">Météo</a>
   <a href="galerie.html" onclick="closeMenu()">Galerie</a>
-  <a href="contact.html" onclick="closeMenu()">Contact</a>
-  <a href="documents.html" onclick="closeMenu()">WT 2026</a>
   <a href="news.html" onclick="closeMenu()">Actu vélo</a>
   <a href="calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
   <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
@@ -90,6 +84,67 @@
   </div>
 </section>
 
+<section id="contact">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Contact</div>
+      <h2>Une question ? <span>Écrivez-nous</span></h2>
+      <p>Découvrez comment nous rejoindre ou contactez directement le club.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h3>Informations <span>pratiques</span></h3>
+        <div class="info-item">
+          <div class="info-icon">📍</div>
+          <div><strong>Adresse</strong><p>Stade de Foot<br/>1 Rue Christian de la Villéon<br/>22400 Saint-Alban</p></div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">📧</div>
+          <div><strong>Email</strong><p><a id="lien-email" href="mailto:ectastalban@gmail.com" style="color:var(--rose);text-decoration:underline;">ectastalban@gmail.com</a></p></div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">📅</div>
+          <div><strong>Sorties hebdomadaires</strong><p>Le club se retrouve chaque jeudi et dimanche matin. Départ devant le Stade de Foot.</p></div>
+        </div>
+        <div class="map-gps-row">
+          <div class="map-container">
+            <iframe
+              src="https://www.openstreetmap.org/export/embed.html?bbox=-2.5483%2C48.5454%2C-2.5284%2C48.5654&layer=mapnik&marker=48.5554%2C-2.5384"
+              allowfullscreen
+              loading="lazy"
+              title="Point de départ ECTA Saint-Alban">
+            </iframe>
+          </div>
+          <a class="gps-link" href="https://www.google.com/maps/dir/?api=1&destination=48.5554,-2.5384" target="_blank" rel="noopener noreferrer">
+            Ouvrir dans mon GPS
+          </a>
+        </div>
+      </div>
+      <div class="contact-form">
+        <h3>📬 Formulaire de contact</h3>
+        <form id="contactForm" action="https://formspree.io/f/mpqjyzdw" method="POST">
+          <div class="form-row">
+            <div class="form-group"><label>Prénom *<input type="text" name="prenom" required /></label></div>
+            <div class="form-group"><label>Nom *<input type="text" name="nom" required /></label></div>
+          </div>
+          <div class="form-group"><label>Email *<input type="email" name="email" required /></label></div>
+          <div class="form-group">
+            <label for="contact-sujet">Sujet</label>
+            <select id="contact-sujet" name="sujet">
+              <option value="">Choisissez un sujet...</option>
+              <option>Renseignements sur le club</option>
+              <option>Adhésion / Licence FFVélo</option>
+              <option>Autre</option>
+            </select>
+          </div>
+          <div class="form-group"><label for="contact-message">Message *</label><textarea id="contact-message" name="message" required></textarea></div>
+          <button type="submit" class="btn-rose">📨 Envoyer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
@@ -108,10 +163,8 @@
         <li><a href="le-club.html">Le Club</a></li>
         <li><a href="actualites.html">Activités</a></li>
         <li><a href="agenda.html">Agenda</a></li>
-        <li><a href="meteo-et-radar.html">Météo</a></li>
         <li><a href="galerie.html">Galerie</a></li>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="documents.html">WT 2026</a></li>
+        <li><a href="#contact">Contact</a></li>
         <li><a href="news.html">Actu vélo</a></li>
         <li><a href="calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
         <li><a href="Flora 2026.html">Flora 2026</a></li>

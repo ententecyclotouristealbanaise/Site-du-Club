@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-title" content="ECTA Saint-Alban" />
 
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="styles.css?v=20261125">
+  <link rel="stylesheet" href="styles.css?v=20261125c">
   <style>
     :root {
       --rose:#e8357a; --rose-clair:#f06fa0; --rose-pale:#fde8f1;
@@ -45,13 +45,14 @@
 
 
     /* ──── TOP NAV ──── */
-    .top-nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232, 53, 122, 0.5);display:flex;align-items:center;justify-content:space-between;padding:0 1rem;height:54px;box-shadow:0 3px 16px rgba(232,53,122,0.2);gap:.75rem;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);transition:all .3s ease}
-    .nav-brand{display:flex;align-items:center;gap:.75rem;min-width:0;overflow:hidden}
+    .top-nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232, 53, 122, 0.5);display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:54px;box-shadow:0 3px 16px rgba(232,53,122,0.2);gap:1rem;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);transition:all .3s ease}
+    .nav-brand{display:flex;align-items:center;gap:.75rem;flex:0 0 auto;min-width:0;overflow:visible}
     .nav-logo-img{height:48px;width:124px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
-    .nav-title{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:#f4f4f6;letter-spacing:.02em;line-height:1.05;min-width:0;white-space:normal}
-    .nav-title small{display:block;font-size:.73rem;font-weight:600;letter-spacing:.03em;opacity:.95;margin-left:0;text-transform:none}
-    .top-nav .nav-links{display:flex;gap:1rem;list-style:none;margin-left:auto}
-    .top-nav .nav-links a{color:#f4f4f6;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .45rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:border-color .2s,background .2s}
+    .nav-title{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:#f4f4f6;letter-spacing:.02em;line-height:1.05;min-width:0;white-space:nowrap}
+    .nav-title small{display:block;font-size:.73rem;font-weight:600;letter-spacing:.03em;opacity:.95;margin-left:0;text-transform:none;white-space:nowrap}
+    .top-nav .nav-links{display:flex;align-items:center;justify-content:flex-end;flex:1 1 auto;gap:clamp(.2rem,.45vw,.65rem);list-style:none;margin-left:auto;min-width:0;flex-wrap:nowrap}
+    .top-nav .nav-links li{flex:0 0 auto}
+    .top-nav .nav-links a{display:flex;align-items:center;min-height:36px;color:#f4f4f6;font-size:clamp(.62rem,.68vw,.72rem);font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;padding:.3rem .4rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:border-color .2s,background .2s}
     .top-nav .nav-links a:hover,.top-nav .nav-links a.active{border-color:#f4f4f6;background:rgba(255,255,255,.12)}
     .burger{display:none;flex-direction:column;gap:5px;cursor:pointer}
     .burger span{display:block;width:26px;height:3px;background:#f4f4f6;border-radius:2px}
@@ -154,7 +155,7 @@
 
 
     .hidden{display:none!important;}
-    @media(max-width:1024px){.top-nav{padding:0 .9rem}.top-nav .nav-links{display:none}.burger{display:flex}}
+    @media(max-width:1220px){.top-nav{padding:0 .9rem}.top-nav .nav-links{display:none}.top-nav .burger{display:flex}.top-nav .nav-brand{flex:1 1 auto;overflow:hidden}.top-nav .nav-title,.top-nav .nav-title small{white-space:normal}}
     @media(max-width:640px){.month-cards{grid-template-columns:1fr;}.stats-bar{display:none;}.filter-section{gap:10px;}.fsep{display:none;}#btt{bottom:1.25rem;right:1.25rem;}.nav-title{font-size:1rem}}
   </style>
 </head>
@@ -167,13 +168,10 @@
   </div>
   <ul class="nav-links">
     <li><a href="index.html">Accueil</a></li>
-    <li><a href="le-club.html">Le Club</a></li>
+    <li><a href="le-club.html">Le Club / Contact</a></li>
     <li><a href="actualites.html">Activités</a></li>
     <li><a href="agenda.html">Agenda</a></li>
-    <li><a href="meteo-et-radar.html">Météo</a></li>
     <li><a href="galerie.html">Galerie</a></li>
-    <li><a href="contact.html">Contact</a></li>
-    <li><a href="documents.html">WT 2026</a></li>
     <li><a href="news.html">Actu vélo</a></li>
     <li><a href="calendrier-randos-22-2026-v4.html" class="active">Agenda Randos 2026</a></li>
     <li><a href="Flora 2026.html">Flora 2026</a></li>
@@ -183,13 +181,10 @@
 </nav>
 <div class="mobile-menu" id="mobileMenu">
   <a href="index.html" onclick="closeMenu()">Accueil</a>
-  <a href="le-club.html" onclick="closeMenu()">Le Club</a>
+  <a href="le-club.html" onclick="closeMenu()">Le Club / Contact</a>
   <a href="actualites.html" onclick="closeMenu()">Activités</a>
   <a href="agenda.html" onclick="closeMenu()">Agenda</a>
-  <a href="meteo-et-radar.html" onclick="closeMenu()">Météo</a>
   <a href="galerie.html" onclick="closeMenu()">Galerie</a>
-  <a href="contact.html" onclick="closeMenu()">Contact</a>
-  <a href="documents.html" onclick="closeMenu()">WT 2026</a>
   <a href="news.html" onclick="closeMenu()">Actu vélo</a>
   <a href="calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
   <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
@@ -1154,10 +1149,8 @@
         <li><a href="le-club.html">Le Club</a></li>
         <li><a href="actualites.html">Activités</a></li>
         <li><a href="agenda.html">Agenda</a></li>
-        <li><a href="meteo-et-radar.html">Météo</a></li>
         <li><a href="galerie.html">Galerie</a></li>
         <li><a href="contact.html">Contact</a></li>
-        <li><a href="documents.html">WT 2026</a></li>
         <li><a href="news.html">Actu vélo</a></li>
         <li><a href="calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
         <li><a href="Flora 2026.html">Flora 2026</a></li>
