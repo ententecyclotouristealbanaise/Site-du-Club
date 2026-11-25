@@ -30,6 +30,25 @@ const ECTA_DATA = {
   ],
   "galerie": [
     {
+      "titre": "Bourguignon 2026",
+      "couverture": "images/Bourguignon 2026/photo-01.webp",
+      "photos": [
+        "images/Bourguignon 2026/photo-01.webp",
+        "images/Bourguignon 2026/photo-02.webp",
+        "images/Bourguignon 2026/photo-03.webp",
+        "images/Bourguignon 2026/photo-04.webp",
+        "images/Bourguignon 2026/photo-05.webp",
+        "images/Bourguignon 2026/photo-06.webp",
+        "images/Bourguignon 2026/photo-07.webp",
+        "images/Bourguignon 2026/photo-08.webp",
+        "images/Bourguignon 2026/photo-09.webp",
+        "images/Bourguignon 2026/photo-10.webp",
+        "images/Bourguignon 2026/photo-11.webp",
+        "images/Bourguignon 2026/photo-12.webp",
+        "images/Bourguignon 2026/photo-13.webp"
+      ]
+    },
+    {
       "titre": "Galette des Rois 2026",
       "couverture": "images/Galette des Rois 2026/photo_09.jpg",
       "photos": [
