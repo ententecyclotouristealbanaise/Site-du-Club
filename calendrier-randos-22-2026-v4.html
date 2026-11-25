@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-title" content="ECTA Saint-Alban" />
 
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="styles.css?v=20261125c">
+  <link rel="stylesheet" href="styles.css?v=20261125d">
   <style>
     :root {
       --rose:#e8357a; --rose-clair:#f06fa0; --rose-pale:#fde8f1;
@@ -43,22 +43,6 @@
 
 
 
-
-    /* ──── TOP NAV ──── */
-    .top-nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(232, 53, 122, 0.5);display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:54px;box-shadow:0 3px 16px rgba(232,53,122,0.2);gap:1rem;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);transition:all .3s ease}
-    .nav-brand{display:flex;align-items:center;gap:.75rem;flex:0 0 auto;min-width:0;overflow:visible}
-    .nav-logo-img{height:48px;width:124px;border-radius:0;object-fit:contain;flex-shrink:0;border:none;box-shadow:none;background:transparent}
-    .nav-title{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:#f4f4f6;letter-spacing:.02em;line-height:1.05;min-width:0;white-space:nowrap}
-    .nav-title small{display:block;font-size:.73rem;font-weight:600;letter-spacing:.03em;opacity:.95;margin-left:0;text-transform:none;white-space:nowrap}
-    .top-nav .nav-links{display:flex;align-items:center;justify-content:flex-end;flex:1 1 auto;gap:clamp(.2rem,.45vw,.65rem);list-style:none;margin-left:auto;min-width:0;flex-wrap:nowrap}
-    .top-nav .nav-links li{flex:0 0 auto}
-    .top-nav .nav-links a{display:flex;align-items:center;min-height:36px;color:#f4f4f6;font-size:clamp(.62rem,.68vw,.72rem);font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;padding:.3rem .4rem;border-radius:.45rem;border-bottom:2px solid transparent;transition:border-color .2s,background .2s}
-    .top-nav .nav-links a:hover,.top-nav .nav-links a.active{border-color:#f4f4f6;background:rgba(255,255,255,.12)}
-    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer}
-    .burger span{display:block;width:26px;height:3px;background:#f4f4f6;border-radius:2px}
-    .mobile-menu{display:none;position:fixed;top:54px;left:0;width:100%;z-index:999;background:rgba(232, 53, 122, 0.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:2rem 1.5rem;flex-direction:column;gap:1.5rem;box-shadow:0 10px 30px rgba(0,0,0,0.15);transition:all .3s ease}
-    .mobile-menu.open{display:flex}
-    .mobile-menu a{color:#f4f4f6;font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;text-decoration:none}
 
     /* ──── STATS BAR ──── */
     .stats-bar{background:var(--white);border-bottom:2px solid var(--border);padding:0 20px;}
@@ -155,7 +139,6 @@
 
 
     .hidden{display:none!important;}
-    @media(max-width:1220px){.top-nav{padding:0 .9rem}.top-nav .nav-links{display:none}.top-nav .burger{display:flex}.top-nav .nav-brand{flex:1 1 auto;overflow:hidden}.top-nav .nav-title,.top-nav .nav-title small{white-space:normal}}
     @media(max-width:640px){.month-cards{grid-template-columns:1fr;}.stats-bar{display:none;}.filter-section{gap:10px;}.fsep{display:none;}#btt{bottom:1.25rem;right:1.25rem;}.nav-title{font-size:1rem}}
   </style>
 </head>

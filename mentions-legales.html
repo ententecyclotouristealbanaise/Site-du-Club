@@ -15,17 +15,13 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20261125c">
+  <link rel="stylesheet" href="styles.css?v=20261125d">
   <style>
     :root{--rose:#e8357a;--rose-clair:#f06fa0;--rose-pale:#fde8f1;--cyan:#00b4d8;--blanc:#f4f4f6;--texte:#1c1c2e;--gris:#6b7280;--gris-clair:#e8e4ed;--radius:12px}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Nunito',sans-serif;color:var(--texte);background:#f7f6fa;line-height:1.6}
     a{color:var(--rose);text-decoration:none;font-weight:600}
     a:hover{text-decoration:underline}
-    nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:var(--rose);display:flex;align-items:center;justify-content:space-between;padding:0 1rem;height:54px;box-shadow:0 3px 16px rgba(232,53,122,.35)}
-    .nav-brand{display:flex;align-items:center;gap:.75rem}
-    .nav-title{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:var(--blanc);text-transform:uppercase}
-    .back-link{color:white;font-weight:700;font-size:.85rem;display:flex;align-items:center;gap:5px}
     header{margin-top:54px;background:linear-gradient(150deg,var(--rose) 0%,var(--rose-clair) 100%);padding:3rem 1.5rem;text-align:center;color:white}
     header h1{font-family:'Barlow Condensed',sans-serif;font-size:2.5rem;text-transform:uppercase;margin-bottom:.5rem}
     header p{opacity:0.9;font-size:.9rem}
@@ -42,10 +38,39 @@
   </style>
 </head>
 <body>
-<nav>
-  <div class="nav-brand"><a href="index.html" class="back-link">‹ Retour au site</a></div>
-  <div class="nav-title">ECTA Saint-Alban</div>
+<nav aria-label="Navigation principale">
+  <div class="nav-brand">
+    <a href="index.html" aria-label="Accueil">
+      <img class="nav-logo-img" src="images/logo_ECTA.png?v=20260305" alt="Logo ECTA Saint-Alban" />
+    </a>
+    <div class="nav-title">Entente Cyclotouriste Albanaise<small>Saint-Alban - Côtes-d'Armor</small></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="le-club.html">Le Club / Contact</a></li>
+    <li><a href="actualites.html">Activités</a></li>
+    <li><a href="agenda.html">Agenda</a></li>
+    <li><a href="galerie.html">Galerie</a></li>
+    <li><a href="news.html">Actu vélo</a></li>
+    <li><a href="calendrier-randos-22-2026-v4.html">Agenda Randos 2026</a></li>
+    <li><a href="Flora 2026.html">Flora 2026</a></li>
+    <li><a href="outils.html">Outils</a></li>
+  </ul>
+  <button class="burger" type="button" aria-label="Ouvrir le menu" aria-controls="mobileMenu" aria-expanded="false" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" onclick="closeMenu()">Accueil</a>
+  <a href="le-club.html" onclick="closeMenu()">Le Club / Contact</a>
+  <a href="actualites.html" onclick="closeMenu()">Activités</a>
+  <a href="agenda.html" onclick="closeMenu()">Agenda</a>
+  <a href="galerie.html" onclick="closeMenu()">Galerie</a>
+  <a href="news.html" onclick="closeMenu()">Actu vélo</a>
+  <a href="calendrier-randos-22-2026-v4.html" onclick="closeMenu()">Agenda Randos 2026</a>
+  <a href="Flora 2026.html" onclick="closeMenu()">Flora 2026</a>
+  <a href="outils.html" onclick="closeMenu()">Outils</a>
+</div>
 <header>
     <h1>Mentions Légales</h1>
     <p>Conformément aux articles 6-III et 19 de la Loi n°2004-575 du 21 juin 2004 (LCEN) — Mise à jour : Mars 2026</p>
