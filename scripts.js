@@ -438,7 +438,7 @@ function lightboxNav(dir) {
 /* --- SERVICE WORKER (PWA) --- */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/Site-du-Club/service-worker.js?v=20261125')
+    navigator.serviceWorker.register('/Site-du-Club/service-worker.js?v=20261125b')
       .then(reg => {
         console.log('SW: Enregistrement réussi', reg);
         reg.addEventListener('updatefound', () => {
