@@ -127,19 +127,11 @@ a { color:var(--accent); }
       <p><button id="csv" type="button" style="font:inherit;padding:6px 12px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer">Télécharger le tableau (CSV)</button></p>
       <div class="wrap">
         <table>
-          <thead><tr><th>Point</th><th>Km</th><th>Passage</th><th>Météo</th><th>Temp.</th><th>Pluie</th><th>Vent</th><th>Détail</th></tr></thead>
+          <thead><tr><th>Point</th><th>Km</th><th>Passage</th><th>Météo</th><th>Temp.</th><th>Pluie</th><th>Vent</th><th>Street View</th></tr></thead>
           <tbody id="meteo-rows"></tbody>
         </table>
       </div>
-      <p class="muted">Prévisions : Open-Meteo, heure de Paris. Le vent est donné par rapport à ton sens de déplacement au moment du passage.</p>
-      <h2>Détail heure par heure</h2>
-      <p class="muted" id="detail-title">Clique sur « Voir » dans le tableau pour le détail des 12 heures qui suivent le passage.</p>
-      <div class="wrap">
-        <table>
-          <thead><tr><th>Heure</th><th>Météo</th><th>Temp.</th><th>Pluie</th><th>Pluie mm</th><th>Vent</th><th>Vient de</th></tr></thead>
-          <tbody id="detail-rows"></tbody>
-        </table>
-      </div>
+      <p class="muted">Prévisions : Open-Meteo, heure de Paris. Le vent est donné par rapport à ton sens de déplacement au moment du passage. « Voir » ouvre Google Maps Street View aux coordonnées GPS du point.</p>
     </section>
   </div>
 </main>
@@ -376,39 +368,13 @@ a { color:var(--accent); }
     return d;
   }
 
-  // Direction cardinale en français (d'où vient le vent)
-  function cardinal(deg) {
-    var names = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"];
-    return names[Math.round(deg / 45) % 8];
-  }
-
-  // Affiche les 12 heures qui suivent le passage du point choisi
-  function showDetail(r) {
-    var h = r.hourly;
-    var i0 = hourIndex(h.time, r.passage);
-    var body = document.getElementById("detail-rows");
-    body.innerHTML = "";
-    document.getElementById("detail-title").textContent =
-      r.s.label + " · " + (r.s.d / 1000).toFixed(1).replace(".", ",") + " km · à partir de " + fmtHour(r.passage);
-    for (var i = i0; i < Math.min(i0 + 12, h.time.length); i++) {
-      var info = wxInfo(h.weather_code[i]);
-      var tr = document.createElement("tr");
-      tr.innerHTML = '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>';
-      var c = tr.children;
-      c[0].textContent = fmtHour(new Date(h.time[i]));
-      c[1].innerHTML = '<span class="ic">' + ICONS[info.key] + '</span>' + info.label;
-      c[2].textContent = Math.round(h.temperature_2m[i]) + " °C";
-      c[3].textContent = Math.round(h.precipitation_probability[i]) + " %";
-      c[4].textContent = String(Math.round(h.precipitation[i] * 10) / 10).replace(".", ",") + " mm";
-      c[5].textContent = Math.round(h.wind_speed_10m[i]) + " km/h";
-      c[6].textContent = cardinal(h.wind_direction_10m[i]);
-      body.appendChild(tr);
-    }
-    document.getElementById("detail-title").scrollIntoView({ behavior: "smooth", block: "center" });
-  }
-
   function awLink(p) {
     return "https://www.accuweather.com/fr/search-locations?query=" + p.lat.toFixed(4) + "%2C" + p.lon.toFixed(4);
+  }
+
+  function streetViewLink(p) {
+    return "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=" +
+      p.lat.toFixed(5) + "," + p.lon.toFixed(5);
   }
 
   function loadWeather() {
@@ -459,7 +425,7 @@ a { color:var(--accent); }
         var rel = windRel(r);
         var km = (r.s.d / 1000).toFixed(1).replace(".", ",") + " km";
         var tr = document.createElement("tr");
-        tr.innerHTML = '<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td><button type="button" style="font:inherit;padding:2px 10px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer">Voir</button></td>';
+        tr.innerHTML = '<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>';
         var c = tr.children;
         c[0].textContent = r.s.label;
         c[1].textContent = km;
@@ -468,7 +434,14 @@ a { color:var(--accent); }
         c[4].textContent = Math.round(r.temp) + " °C";
         c[5].textContent = Math.round(r.pp) + " % · " + String(Math.round(r.precip * 10) / 10).replace(".", ",") + " mm";
         c[6].textContent = Math.round(r.wind) + " km/h" + (rel ? " · " + rel : "");
-        c[7].firstChild.addEventListener("click", function () { showDetail(r); });
+        var streetView = document.createElement("a");
+        streetView.href = streetViewLink(r.s.p);
+        streetView.target = "_blank";
+        streetView.rel = "noopener noreferrer";
+        streetView.setAttribute("aria-label", "Voir Street View pour " + r.s.label);
+        streetView.textContent = "Voir";
+        streetView.style.cssText = "display:inline-block;font:inherit;padding:2px 10px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);text-decoration:none";
+        c[7].appendChild(streetView);
         meteoRows.appendChild(tr);
 
         var tip = '<div class="wx-tip">' +
