@@ -1,5 +1,5 @@
 @import url("theme-sombre.css?v=20261125a");
-@import url("header.css?v=20261125a");
+@import url("header.css?v=20261125b");
 
 :root{--rose:#e8357a;--rose-clair:#f06fa0;--rose-pale:#fde8f1;--cyan:#00b4d8;--blanc:#f4f4f6;--texte:#1c1c2e;--gris:#6b7280;--gris-clair:#e8e4ed;--radius:10px;--card-bg:#f4f4f6;--input-bg:#f4f4f6}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
