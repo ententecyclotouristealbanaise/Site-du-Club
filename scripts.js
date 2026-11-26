@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Rendu automatique si les éléments sont présents dans le DOM
   if (document.getElementById('albumsGrid')) renderGalerie();
   if (document.getElementById('actuGrid'))   renderActu();
+  if (document.getElementById('homeActivityPreview')) renderHomeActivities();
   if (document.getElementById('agendaList')) {
     if (typeof loadMeteo === 'function') loadMeteo();
     if (typeof renderAgenda === 'function') renderAgenda();
@@ -180,6 +181,29 @@ function renderActu() {
       </div>
     </div>
   `).join('');
+}
+
+function renderHomeActivities() {
+  const container = document.getElementById('homeActivityPreview');
+  if (!container) return;
+  if (typeof ECTA_DATA === 'undefined') {
+    container.innerHTML = '<p class="home-preview-empty">Les activités seront bientôt disponibles.</p>';
+    return;
+  }
+  const activities = Array.isArray(ECTA_DATA.actualites) ? ECTA_DATA.actualites : [];
+  if (!activities.length) {
+    container.innerHTML = '<p class="home-preview-empty">Aucune activité n’est encore publiée.</p>';
+    return;
+  }
+  container.innerHTML = '<div class="home-activity-list">' + activities.map(activity => `
+    <article class="home-preview-entry">
+      ${activity.image ? `<img class="home-activity-image" src="${escapeHtml(safeDataUrl(activity.image))}" alt="${escapeHtml(activity.titre)}" loading="lazy">` : ''}
+      <p class="home-preview-date">${escapeHtml(activity.date)}</p>
+      <h4>${escapeHtml(activity.titre)}</h4>
+      <p>${escapeHtml(activity.texte)}</p>
+      ${activity.tag ? `<span class="actu-tag">${escapeHtml(activity.tag)}</span>` : ''}
+    </article>
+  `).join('') + '</div>';
 }
 
 /* --- AGENDA --- */
@@ -438,7 +462,7 @@ function lightboxNav(dir) {
 /* --- SERVICE WORKER (PWA) --- */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/Site-du-Club/service-worker.js?v=20261125b')
+    navigator.serviceWorker.register('/Site-du-Club/service-worker.js?v=20261125c')
       .then(reg => {
         console.log('SW: Enregistrement réussi', reg);
         reg.addEventListener('updatefound', () => {

@@ -107,7 +107,7 @@
         <a class="home-preview-link" href="agenda.html">Voir tout l’agenda <span aria-hidden="true">→</span></a>
       </article>
       <article class="home-preview-card" aria-labelledby="homeActivityTitle">
-        <div class="home-preview-card-head"><span class="home-preview-icon" aria-hidden="true">🚴</span><div><p class="home-preview-eyebrow">Dernière publication</p><h3 id="homeActivityTitle">Activités du club</h3></div></div>
+        <div class="home-preview-card-head"><span class="home-preview-icon" aria-hidden="true">🚴</span><div><p class="home-preview-eyebrow">Toutes les publications</p><h3 id="homeActivityTitle">Activités du club</h3></div></div>
         <div id="homeActivityPreview"><p class="home-preview-empty">Chargement des activités…</p></div>
         <a class="home-preview-link" href="actualites.html">Voir toutes les activités <span aria-hidden="true">→</span></a>
       </article>
@@ -183,7 +183,7 @@
 </footer>
 
 <script src="donnees.js" defer></script>
-<script src="scripts.js?v=20261125c" defer></script>
+<script src="scripts.js?v=20261125d" defer></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const menuButton = document.getElementById("homeMenuButton");
@@ -221,12 +221,6 @@
         return '<article class="home-preview-entry"><p class="home-preview-date">' + escapeHTML(item.date) + '</p><h4>' + escapeHTML(item.titre) + '</h4>' + (routes ? '<div class="home-preview-pills">' + routes + '</div>' : '') + '</article>';
       }).join("");
     }
-
-    const latestActivity = (Array.isArray(data.actualites) ? [...data.actualites] : [])
-      .sort((a, b) => String(b.dateSort || "").localeCompare(String(a.dateSort || "")))[0];
-    activityContainer.innerHTML = latestActivity
-      ? '<article class="home-preview-entry"><p class="home-preview-date">' + escapeHTML(latestActivity.date) + '</p><h4>' + escapeHTML(latestActivity.titre) + '</h4><p>' + escapeHTML(latestActivity.texte) + '</p></article>'
-      : '<p class="home-preview-empty">Aucune activité n’est encore publiée.</p>';
 
     const galleryTrack = document.getElementById("homeGalleryTrack");
     const latestAlbum = (Array.isArray(data.galerie) ? data.galerie : []).find(album => !album.aVenir && Array.isArray(album.photos) && album.photos.length);
