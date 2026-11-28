@@ -305,6 +305,9 @@
     <button id="btn-undo" class="btn-saas danger" onclick="undo()" disabled>
         <i class="fa-solid fa-arrow-rotate-left"></i><span>Annuler dernier point</span>
     </button>
+    <button id="btn-reverse" class="btn-saas" onclick="reverseRoute()" title="Inverser le sens du parcours" disabled>
+        <i class="fa-solid fa-right-left"></i><span>Inverser le sens</span>
+    </button>
     <button id="btn-loop" class="btn-saas" onclick="closeLoop()" style="color:var(--green)" disabled>
         <i class="fa-solid fa-flag-checkered"></i><span>Boucler retour départ</span>
     </button>
@@ -609,6 +612,8 @@
     function setLoading(v) {
         isLoading = v;
         document.getElementById('loading-bar').classList.toggle('active', v);
+        const reverseButton = document.getElementById('btn-reverse');
+        if (reverseButton) reverseButton.disabled = waypoints.length < 2 || v;
     }
 
     // ================================================================
@@ -1258,6 +1263,7 @@
         const hasPoints = waypoints.length > 0;
         const hasTwo    = waypoints.length > 1;
         document.getElementById('btn-undo').disabled  = !hasPoints;
+        document.getElementById('btn-reverse').disabled = !hasTwo || isLoading;
         document.getElementById('btn-loop').disabled  = !hasTwo;
         document.getElementById('btn-reset').disabled = !hasPoints;
         document.getElementById('btn-elev').disabled  = !hasTwo;
@@ -1266,6 +1272,18 @@
     // ================================================================
     //  ANNULER DERNIER POINT (CORRIGÉ — sans reload)
     // ================================================================
+    window.reverseRoute = function () {
+        if (waypoints.length < 2 || isLoading) return;
+        waypoints.reverse();
+        segments = segments.slice().reverse().map(segment => segment.slice().reverse());
+        clearElevation();
+        refreshMarkers();
+        updateButtons();
+        updateDistanceUI();
+        document.getElementById('random-route-notice').classList.remove('active');
+        calcElevation();
+    };
+
     window.undo = function () {
         if (waypoints.length === 0) return;
         waypoints.pop();
