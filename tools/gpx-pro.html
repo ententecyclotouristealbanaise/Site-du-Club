@@ -425,6 +425,7 @@
     // ================================================================
     let waypoints = [];   // [{ lat, lng }]
     let segments  = [];   // un tableau de [[lat,lng],...] par segment OSRM
+    let routeMode = 'manual'; // sépare un résultat aléatoire du prochain tracé manuel
     let markers   = [];   // [{ marker: L.Marker, type: 'path'|'poi' }]
     let poiMode   = null; // { type, icon, color } ou null
     let isLoading = false;
@@ -772,7 +773,9 @@
         const start = { lat: center.lat, lng: center.lng ?? center.lon };
         const profile = document.getElementById('random-profile').value;
         const isLoop = document.getElementById('random-loop').checked;
-        const attempts = Array.from({ length: 12 }, (_, index) => 0.75 + index * (0.5 / 11));
+        // Des essais répartis autour de la distance cible donnent au moteur de quoi
+        // compenser les détours du réseau réel, sans se limiter à une seule forme de boucle.
+        const attempts = Array.from({ length: 24 }, () => 0.68 + Math.random() * 0.64);
         let best = null;
         button.disabled = true;
         setLoading(true);
@@ -787,7 +790,7 @@
                     Object.assign(candidate, measureRepeatedRoadKm(candidate.routeSegments));
                     if (isBetterRandomCandidate(candidate, best, targetKm)) best = candidate;
                     // Ignore short shared connectors at junctions; they are not a meaningfully reused road section.
-                    if (candidate.earlyRepeatedKm <= 0.2 && Math.abs(candidate.distance - targetKm) / targetKm <= 0.1) break;
+                    if (candidate.earlyRepeatedKm <= 0.2 && Math.abs(candidate.distance - targetKm) / targetKm <= 0.08) break;
                 } catch (error) {
                     if (i === attempts.length - 1 && !best) throw error;
                 }
@@ -795,11 +798,12 @@
             if (!best) throw new Error('Aucun parcours n’a pu être généré. Déplacez la carte vers une zone routable et réessayez.');
 
             if (best.earlyRepeatedKm > 0.2) {
-                throw new Error('Après 12 essais, le meilleur parcours reprend encore ' + best.earlyRepeatedKm.toFixed(2) + ' km avant les 6 derniers kilomètres. Déplacez le départ ou augmentez la distance pour trouver une boucle plus variée.');
+                throw new Error('Après 24 variantes, le meilleur parcours reprend encore ' + best.earlyRepeatedKm.toFixed(2) + ' km avant les 6 derniers kilomètres. Déplacez le départ ou augmentez la distance pour trouver une boucle plus variée.');
             }
 
             waypoints = best.locations;
             segments = best.routeSegments;
+            routeMode = 'random';
             document.getElementById('routeProfile').value = profile;
             clearElevation();
             refreshMarkers();
@@ -832,6 +836,14 @@
     });
 
     function addPoint(latlng) {
+        // Le clic qui suit une boucle générée démarre un tracé manuel indépendant.
+        // Sans cela, le nouveau point s'ajoute à tous les points de passage aléatoires.
+        if (routeMode === 'random') {
+            waypoints = [];
+            segments = [];
+            routeMode = 'manual';
+            clearElevation();
+        }
         const newWp = { lat: latlng.lat, lng: latlng.lng };
 
         // 1. Ajoute le point IMMÉDIATEMENT avec une ligne droite provisoire
@@ -1070,6 +1082,7 @@
         if (waypoints.length === 0) return;
         waypoints.pop();
         if (segments.length > 0) segments.pop();
+        routeMode = 'manual';
 
         clearElevation();
         refreshMarkers();
@@ -1085,6 +1098,7 @@
         if (!confirm('Effacer tout le tracé ?')) return;
 
         waypoints = []; segments = [];
+        routeMode = 'manual';
         markers.forEach(m => map.removeLayer(m.marker));
         markers = [];
         polyline.setLatLngs([]);
