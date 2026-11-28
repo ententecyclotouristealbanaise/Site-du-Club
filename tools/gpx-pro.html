@@ -657,50 +657,53 @@
 
     async function requestRandomRoute(locations, profile, avoidSegments = []) {
         const costing = randomRouteCosting(profile);
-        const routeSegments = [];
-        let distance = 0;
-        for (let legIndex = 1; legIndex < locations.length; legIndex++) {
-            const previousSegments = avoidSegments.concat(routeSegments);
-            const linearCostFactors = previousSegments
-                .filter(segment => segment.length >= 2)
-                .map(segment => ({
-                    type: 'Feature',
-                    geometry: {
-                        type: 'LineString',
-                        coordinates: segment.map(point => [Number(point[1]), Number(point[0])])
-                    },
-                    properties: { factor: 20 }
-                }));
-            const ctrl = new AbortController();
-            const timeout = setTimeout(() => ctrl.abort(), 25000);
-            try {
-                const response = await fetch('https://valhalla1.openstreetmap.de/route', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        locations: [locations[legIndex - 1], locations[legIndex]].map(point => ({ lon: point.lng, lat: point.lat })),
-                        costing: costing.costing,
-                        costing_options: costing.costing_options,
-                        ...(linearCostFactors.length ? { linear_cost_factors: linearCostFactors } : {}),
-                        units: 'km'
-                    }),
-                    signal: ctrl.signal
-                });
-                if (!response.ok) throw new Error('Le moteur de routage ne répond pas (HTTP ' + response.status + ').');
-                const data = await response.json();
-                if (!data.trip || !Array.isArray(data.trip.legs) || data.trip.legs.length !== 1) {
-                    throw new Error(data.error || 'Aucun itinéraire routable trouvé autour de ce départ.');
-                }
-                const segment = decodePolyline6(data.trip.legs[0].shape);
-                if (segment.length < 2) throw new Error('Le moteur a renvoyé un tracé incomplet.');
-                for (let i = 1; i < segment.length; i++) {
-                    distance += L.latLng(segment[i - 1]).distanceTo(L.latLng(segment[i])) / 1000;
-                }
-                routeSegments.push(segment);
-            } finally {
-                clearTimeout(timeout);
-            }
+        const linearCostFactors = avoidSegments
+            .filter(segment => segment.length >= 2)
+            .map(segment => ({
+                type: 'Feature',
+                geometry: {
+                    type: 'LineString',
+                    coordinates: segment.map(point => [Number(point[1]), Number(point[0])])
+                },
+                properties: { factor: 20 }
+            }));
+        const routeLocations = locations.map((point, index) => ({
+            lon: point.lng,
+            lat: point.lat,
+            type: index > 0 && index < locations.length - 1 ? 'through' : 'break'
+        }));
+        const ctrl = new AbortController();
+        const timeout = setTimeout(() => ctrl.abort(), 25000);
+        let data;
+        try {
+            const response = await fetch('https://valhalla1.openstreetmap.de/route', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    locations: routeLocations,
+                    costing: costing.costing,
+                    costing_options: costing.costing_options,
+                    ...(linearCostFactors.length ? { linear_cost_factors: linearCostFactors } : {}),
+                    units: 'km'
+                }),
+                signal: ctrl.signal
+            });
+            if (!response.ok) throw new Error('Le moteur de routage ne répond pas (HTTP ' + response.status + ').');
+            data = await response.json();
+        } finally {
+            clearTimeout(timeout);
         }
+        if (!data.trip || !Array.isArray(data.trip.legs) || !data.trip.legs.length) {
+            throw new Error(data.error || 'Aucun itinéraire routable trouvé autour de ce départ.');
+        }
+        const routeSegments = data.trip.legs.map(leg => decodePolyline6(leg.shape));
+        if (routeSegments.some(segment => segment.length < 2)) throw new Error('Le moteur a renvoyé un tracé incomplet.');
+        let distance = 0;
+        routeSegments.forEach(segment => {
+            for (let i = 1; i < segment.length; i++) {
+                distance += L.latLng(segment[i - 1]).distanceTo(L.latLng(segment[i])) / 1000;
+            }
+        });
         return { locations, routeSegments, distance };
     }
 
