@@ -153,6 +153,9 @@
         }
 
         #map { height: calc(100vh - var(--nav-h)); width: 100vw; margin-top: var(--nav-h); z-index: 1; }
+        /* Les panneaux fixes (profil, barre d'outils, sidebar) doivent rester sous les modales. */
+        .modal-backdrop { z-index: 4990 !important; }
+        .modal { z-index: 5000 !important; }
         .poi-auto-icon {
             font-size: 14px; background: white; border-radius: 50%; padding: 4px;
             border: 2px solid var(--primary); text-align: center;
