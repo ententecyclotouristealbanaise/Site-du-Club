@@ -692,9 +692,11 @@
         const MAX_PTS = 99; // sécurité : Open-Meteo limite à 100
         const n       = Math.min(fullPath.length, MAX_PTS);
         const sampled = [];
+        const sampleIndexes = [];
         for (let i = 0; i < n; i++) {
             const idx = Math.round(i * (fullPath.length - 1) / (n - 1));
             sampled.push(fullPath[idx]);
+            sampleIndexes.push(idx);
         }
 
         const lats = sampled.map(p => parseFloat(p[0]).toFixed(6)).join(',');
@@ -715,13 +717,27 @@
 
             const elevs   = Array.isArray(data.elevation) ? data.elevation : [data.elevation];
             const totalKm = parseFloat(document.getElementById('dist-val').innerText) || 0;
+            // Preserve the sampled altitude profile on every route point for GPX export.
+            if (elevs.length === sampleIndexes.length) {
+                let sampleIndex = 0;
+                for (let i = 0; i < fullPath.length; i++) {
+                    while (sampleIndex < sampleIndexes.length - 1 && sampleIndexes[sampleIndex] < i) sampleIndex++;
+                    const left = Math.max(0, sampleIndex - (sampleIndexes[sampleIndex] === i ? 0 : 1));
+                    const right = sampleIndex;
+                    const span = sampleIndexes[right] - sampleIndexes[left];
+                    const ratio = span > 0 ? (i - sampleIndexes[left]) / span : 0;
+                    fullPath[i][2] = elevs[left] + (elevs[right] - elevs[left]) * ratio;
+                }
+            }
             renderElevationChart(elevs, totalKm);
+            return elevs;
         } catch (err) {
             if (err.name === 'AbortError') return; // annulation volontaire, ne rien afficher
             if (myGen !== window._elevGeneration) return;
             console.error('Profil altimétrique :', err);
             placeholder.textContent = '⚠ Profil indisponible (' + err.message + ')';
             placeholder.style.display = '';
+            return null;
         } finally {
             if (window._elevAbortCtrl === ctrl) window._elevAbortCtrl = null;
             if (onDone) onDone();
@@ -866,13 +882,18 @@
     // ================================================================
     //  EXPORT GPX (RÉEL)
     // ================================================================
-    window.exportGPX = function () {
+    window.exportGPX = async function () {
         const fullPath = getFullPath();
         if (fullPath.length < 2) { alert("Tracez d'abord un itinéraire !"); return; }
 
+        // Fetch the profile during export so users do not need to calculate it first.
+        if (!await fetchElevations(fullPath)) {
+            if (!confirm('Le profil altimétrique est indisponible. Télécharger le GPX sans altitude ?')) return;
+        }
+
         const now  = new Date().toISOString();
         const trkpts = fullPath
-            .map(p => `      <trkpt lat="${p[0].toFixed(7)}" lon="${p[1].toFixed(7)}"></trkpt>`)
+            .map(p => `      <trkpt lat="${p[0].toFixed(7)}" lon="${p[1].toFixed(7)}">${Number.isFinite(p[2]) ? `<ele>${p[2].toFixed(1)}</ele>` : ''}</trkpt>`)
             .join('\n');
 
         const poiMarkers = markers.filter(m => m.type === 'poi');
