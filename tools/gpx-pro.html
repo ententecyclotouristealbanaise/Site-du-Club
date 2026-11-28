@@ -187,10 +187,13 @@
             color: #1c1c2e !important;
         }
         #routeProfile option,
-        #random-profile option {
+        #random-profile option,
+        #random-departure-hour option {
             background-color: #fff !important;
             color: #1c1c2e !important;
         }
+        #random-departure-date,
+        #random-departure-hour { color-scheme: light; }
         #random-route-status { font-weight: 700; }
         #random-route-notice {
             display: none; position: fixed; top: calc(var(--nav-h) + 12px); left: 50%;
@@ -362,8 +365,10 @@
                     <input id="random-distance" class="form-control" type="number" min="5" max="200" step="5" value="30" inputmode="numeric">
                     <span class="input-group-text">km</span>
                 </div>
-                <label for="random-departure" class="form-label fw-bold">Date et heure de départ</label>
-                <input id="random-departure" class="form-control mb-2" type="datetime-local" step="3600">
+                <label for="random-departure-date" class="form-label fw-bold">Date de départ</label>
+                <input id="random-departure-date" class="form-control mb-2" type="date">
+                <label for="random-departure-hour" class="form-label fw-bold">Heure de départ</label>
+                <select id="random-departure-hour" class="form-select mb-2"></select>
                 <label for="random-speed" class="form-label fw-bold">Vitesse moyenne estimée</label>
                 <div class="input-group mb-2">
                     <input id="random-speed" class="form-control" type="number" min="8" max="40" step="1" value="20" inputmode="numeric">
@@ -772,7 +777,8 @@
     }
 
     function setRandomDepartureLimits() {
-        const input = document.getElementById('random-departure');
+        const dateInput = document.getElementById('random-departure-date');
+        const hourSelect = document.getElementById('random-departure-hour');
         const now = new Date();
         const earliest = new Date(now);
         earliest.setMinutes(0, 0, 0);
@@ -780,14 +786,38 @@
         const latest = new Date(now);
         latest.setDate(latest.getDate() + 15);
         latest.setHours(23, 0, 0, 0);
-        input.min = formatParisDateTime(earliest).slice(0, 13) + ':00';
-        input.max = formatParisDateTime(latest).slice(0, 13) + ':00';
-        if (!input.value) {
+        const earliestValue = formatParisDateTime(earliest);
+        dateInput.min = earliestValue.slice(0, 10);
+        dateInput.max = formatParisDateTime(latest).slice(0, 10);
+        dateInput.dataset.minHour = earliestValue.slice(11, 13) + ':00';
+        if (!hourSelect.options.length) {
+            for (let hour = 0; hour < 24; hour++) {
+                const value = String(hour).padStart(2, '0') + ':00';
+                hourSelect.add(new Option(value, value));
+            }
+        }
+        if (!dateInput.value || dateInput.value < dateInput.min || dateInput.value > dateInput.max) {
             const suggested = new Date(now);
             suggested.setDate(suggested.getDate() + 1);
             suggested.setHours(9, 0, 0, 0);
-            input.value = formatParisDateTime(suggested).slice(0, 13) + ':00';
+            dateInput.value = formatParisDateTime(suggested).slice(0, 10);
+            hourSelect.value = '09:00';
         }
+        const refreshHours = () => {
+            const firstAllowedHour = dateInput.value === dateInput.min ? Number(earliestValue.slice(11, 13)) : 0;
+            Array.from(hourSelect.options).forEach(option => {
+                option.disabled = Number(option.value.slice(0, 2)) < firstAllowedHour;
+            });
+            if (hourSelect.selectedOptions[0]?.disabled) {
+                const firstAvailable = Array.from(hourSelect.options).find(option => !option.disabled);
+                if (firstAvailable) hourSelect.value = firstAvailable.value;
+            }
+        }
+        if (!dateInput.dataset.hourRefreshBound) {
+            dateInput.addEventListener('change', refreshHours);
+            dateInput.dataset.hourRefreshBound = 'true';
+        }
+        refreshHours();
     }
 
     async function fetchRandomWindForecast(start, departureAt) {
@@ -876,7 +906,8 @@
 
     window.generateRandomRoute = async function () {
         const distanceInput = document.getElementById('random-distance');
-        const departureInput = document.getElementById('random-departure');
+        const departureDateInput = document.getElementById('random-departure-date');
+        const departureHourInput = document.getElementById('random-departure-hour');
         const speedInput = document.getElementById('random-speed');
         const targetKm = Number(distanceInput.value);
         const averageSpeedKmh = Number(speedInput.value);
@@ -889,17 +920,18 @@
             return;
         }
 
-        const departureAt = new Date(departureInput.value);
-        if (!departureInput.value || !Number.isFinite(departureAt.getTime())) {
+        const departureAt = new Date(departureDateInput.value + 'T' + departureHourInput.value);
+        if (!departureDateInput.value || !departureHourInput.value || !Number.isFinite(departureAt.getTime())) {
             status.className = 'small text-danger';
             status.textContent = 'Indiquez une date et une heure de départ valides.';
-            departureInput.focus();
+            departureDateInput.focus();
             return;
         }
-        if (departureAt < new Date(departureInput.min)) {
+        const earliestDeparture = new Date(departureDateInput.min + 'T' + departureDateInput.dataset.minHour);
+        if (departureAt < earliestDeparture) {
             status.className = 'small text-danger';
             status.textContent = 'Choisissez une heure de départ à venir.';
-            departureInput.focus();
+            departureHourInput.focus();
             return;
         }
         if (!Number.isFinite(averageSpeedKmh) || averageSpeedKmh < 8 || averageSpeedKmh > 40) {
