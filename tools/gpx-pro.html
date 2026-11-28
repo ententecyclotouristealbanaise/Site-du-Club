@@ -710,8 +710,10 @@
                 const edgeKey = keyA < keyB ? keyA + '|' + keyB : keyB + '|' + keyA;
                 const lengthKm = L.latLng(a).distanceTo(L.latLng(b)) / 1000;
                 if (usedEdges.has(edgeKey)) {
-                    if (routeProgressKm >= totalKm - 1) finalRepeatedKm += lengthKm;
-                    else earlyRepeatedKm += lengthKm;
+                    const finalKmStart = totalKm - 1;
+                    const repeatedInFinalKm = Math.max(0, routeProgressKm + lengthKm - Math.max(routeProgressKm, finalKmStart));
+                    finalRepeatedKm += repeatedInFinalKm;
+                    earlyRepeatedKm += lengthKm - repeatedInFinalKm;
                 } else usedEdges.add(edgeKey);
                 routeProgressKm += lengthKm;
             }
@@ -753,7 +755,7 @@
         const start = { lat: center.lat, lng: center.lng ?? center.lon };
         const profile = document.getElementById('random-profile').value;
         const isLoop = document.getElementById('random-loop').checked;
-        const attempts = [0.8, 0.9, 1, 1.1, 1.2];
+        const attempts = Array.from({ length: 12 }, (_, index) => 0.75 + index * (0.5 / 11));
         let best = null;
         button.disabled = true;
         setLoading(true);
@@ -767,6 +769,7 @@
                     const candidate = await requestRandomRoute(locations, profile);
                     Object.assign(candidate, measureRepeatedRoadKm(candidate.routeSegments));
                     if (isBetterRandomCandidate(candidate, best, targetKm)) best = candidate;
+                    if (candidate.earlyRepeatedKm <= 0.05 && Math.abs(candidate.distance - targetKm) / targetKm <= 0.1) break;
                 } catch (error) {
                     if (i === attempts.length - 1 && !best) throw error;
                 }
@@ -774,7 +777,7 @@
             if (!best) throw new Error('Aucun parcours n’a pu être généré. Déplacez la carte vers une zone routable et réessayez.');
 
             if (best.earlyRepeatedKm > 0.05) {
-                throw new Error('Aucun parcours sans tronçon repris avant le dernier kilomètre n’a été trouvé. Essayez un autre départ ou une autre distance.');
+                throw new Error('Après 12 essais, le meilleur parcours reprend encore ' + best.earlyRepeatedKm.toFixed(2) + ' km avant le dernier kilomètre. Déplacez le départ ou augmentez la distance pour trouver une boucle plus variée.');
             }
 
             waypoints = best.locations;
