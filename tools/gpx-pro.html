@@ -389,6 +389,12 @@
                     <input class="form-check-input" type="checkbox" id="random-loop" checked>
                     <label class="form-check-label" for="random-loop">Créer une boucle qui revient au départ</label>
                 </div>
+                <div id="random-destination-controls" class="mb-3" style="display:none">
+                    <button type="button" id="btn-choose-random-destination" class="btn btn-outline-primary w-100" onclick="chooseRandomDestination()">
+                        <i class="fa-solid fa-flag-checkered me-2"></i>Choisir l’arrivée sur la carte
+                    </button>
+                    <div id="random-destination-label" class="small text-muted mt-2">Aucune arrivée choisie.</div>
+                </div>
                 <p class="small text-muted mb-2">Le tracé actuel sera remplacé. Les reprises de route sont autorisées uniquement dans les 6 derniers kilomètres.</p>
                 <div id="random-route-status" class="small" role="status" aria-live="polite"></div>
             </div>
@@ -464,6 +470,10 @@
     let markers   = [];   // [{ marker: L.Marker, type: 'path'|'poi' }]
     let poiMode   = null; // { type, icon, color } ou null
     let isLoading = false;
+    let randomDestination = null;
+    let randomDestinationMarker = null;
+    let selectingRandomDestination = false;
+    const poiBannerDefaultHtml = document.getElementById('poi-banner').innerHTML;
 
     const polyline = L.polyline([], { color: '#e8357a', weight: 5, opacity: 0.9 }).addTo(map);
 
@@ -658,7 +668,7 @@
         return { lat: lat2 * 180 / Math.PI, lng: ((lon2 * 180 / Math.PI + 540) % 360) - 180 };
     }
 
-    function makeRandomLocations(start, targetKm, isLoop, scale) {
+    function makeRandomLocations(start, targetKm, isLoop, scale, fixedDestination = null) {
         const bearing = Math.random() * 360;
         if (isLoop) {
             const radius = targetKm / 4.7 * scale;
@@ -671,6 +681,18 @@
                 randomPointAt(start, radiusB, bearing + separation),
                 start
             ];
+        }
+
+        if (fixedDestination) {
+            const directDistance = L.latLng(start.lat, start.lng).distanceTo(
+                L.latLng(fixedDestination.lat, fixedDestination.lng)
+            ) / 1000;
+            const routeBearing = bearingBetween([start.lat, start.lng], [fixedDestination.lat, fixedDestination.lng]);
+            const midpoint = randomPointAt(start, directDistance / 2, routeBearing);
+            const side = routeBearing + (Math.random() < 0.5 ? 90 : -90);
+            const detour = Math.sqrt(Math.max(0, targetKm * targetKm - directDistance * directDistance))
+                / 2 * scale * (0.85 + Math.random() * 0.3);
+            return [start, randomPointAt(midpoint, detour, side), fixedDestination];
         }
 
         const endpointDistance = targetKm / 1.3 * scale;
@@ -909,8 +931,73 @@
         document.getElementById('random-profile').value = document.getElementById('routeProfile').value;
         setRandomDepartureLimits();
         document.getElementById('random-route-status').textContent = '';
+        updateRandomDestinationControls();
         bootstrap.Modal.getOrCreateInstance(document.getElementById('randomRouteModal')).show();
     };
+
+    function updateRandomDestinationControls() {
+        const isLoop = document.getElementById('random-loop').checked;
+        const controls = document.getElementById('random-destination-controls');
+        controls.style.display = isLoop ? 'none' : '';
+        const button = document.getElementById('btn-choose-random-destination');
+        button.innerHTML = '<i class="fa-solid fa-flag-checkered me-2"></i>'
+            + (randomDestination ? 'Modifier l\'arriv\u00e9e sur la carte' : 'Choisir l\'arriv\u00e9e sur la carte');
+        document.getElementById('random-destination-label').textContent = randomDestination
+            ? 'Arriv\u00e9e : ' + randomDestination.lat.toFixed(4) + ', ' + randomDestination.lng.toFixed(4)
+            : 'Aucune arriv\u00e9e choisie.';
+    }
+
+    function clearRandomDestination() {
+        randomDestination = null;
+        if (randomDestinationMarker) map.removeLayer(randomDestinationMarker);
+        randomDestinationMarker = null;
+        updateRandomDestinationControls();
+    }
+
+    document.getElementById('random-loop').addEventListener('change', () => {
+        if (document.getElementById('random-loop').checked) clearRandomDestination();
+        else updateRandomDestinationControls();
+    });
+
+    window.chooseRandomDestination = function () {
+        if (document.getElementById('random-loop').checked) return;
+        bootstrap.Modal.getInstance(document.getElementById('randomRouteModal'))?.hide();
+        selectingRandomDestination = true;
+        document.body.classList.add('poi-active');
+        const banner = document.getElementById('poi-banner');
+        banner.innerHTML = '<i class="fa-solid fa-flag-checkered me-2"></i>Cliquez sur la carte pour placer l\'arriv\u00e9e';
+        banner.classList.add('active');
+    };
+
+    window.addEventListener('keydown', event => {
+        if (event.key !== 'Escape' || !selectingRandomDestination) return;
+        selectingRandomDestination = false;
+        document.body.classList.remove('poi-active');
+        const banner = document.getElementById('poi-banner');
+        banner.classList.remove('active');
+        banner.innerHTML = poiBannerDefaultHtml;
+        document.getElementById('random-route-status').textContent = 'S\u00e9lection annul\u00e9e.';
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('randomRouteModal')).show();
+    });
+
+    function setRandomDestination(latlng) {
+        randomDestination = { lat: latlng.lat, lng: latlng.lng };
+        if (randomDestinationMarker) map.removeLayer(randomDestinationMarker);
+        const icon = L.divIcon({
+            className: '',
+            html: '<div style="background:#e8357a;color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,.4)"><i class="fa-solid fa-flag-checkered" style="font-size:12px"></i></div>',
+            iconAnchor: [13, 13]
+        });
+        randomDestinationMarker = L.marker(latlng, { icon, interactive: false }).addTo(map);
+        selectingRandomDestination = false;
+        document.body.classList.remove('poi-active');
+        const banner = document.getElementById('poi-banner');
+        banner.classList.remove('active');
+        banner.innerHTML = poiBannerDefaultHtml;
+        updateRandomDestinationControls();
+        document.getElementById('random-route-status').textContent = 'Arriv\u00e9e enregistr\u00e9e. Vous pouvez lancer la g\u00e9n\u00e9ration.';
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('randomRouteModal')).show();
+    }
 
     window.generateRandomRoute = async function () {
         const distanceInput = document.getElementById('random-distance');
@@ -953,6 +1040,23 @@
         const start = { lat: center.lat, lng: center.lng ?? center.lon };
         const profile = document.getElementById('random-profile').value;
         const isLoop = document.getElementById('random-loop').checked;
+        if (!isLoop && !randomDestination) {
+            status.className = 'small text-danger';
+            status.textContent = 'Choisissez une arriv\u00e9e sur la carte pour un parcours en ligne.';
+            return;
+        }
+        if (!isLoop) {
+            const directKm = L.latLng(start.lat, start.lng).distanceTo(
+                L.latLng(randomDestination.lat, randomDestination.lng)
+            ) / 1000;
+            if (directKm < 1 || directKm >= targetKm) {
+                status.className = 'small text-danger';
+                status.textContent = directKm < 1
+                    ? 'Choisissez une arriv\u00e9e \u00e9loign\u00e9e du d\u00e9part.'
+                    : 'L’arriv\u00e9e est \u00e0 ' + directKm.toFixed(1) + ' km \u00e0 vol d’oiseau, au-del\u00e0 de la distance demand\u00e9e.';
+                return;
+            }
+        }
         // Des essais répartis autour de la distance cible donnent au moteur de quoi
         // compenser les détours du réseau réel, sans se limiter à une seule forme de boucle.
         const attempts = Array.from({ length: 24 }, () => 0.68 + Math.random() * 0.64);
@@ -970,7 +1074,7 @@
             }
             for (let i = 0; i < attempts.length; i++) {
                 status.textContent = 'Comparaison distance et vent… variante ' + (i + 1) + '/' + attempts.length;
-                const locations = makeRandomLocations(start, targetKm, isLoop, attempts[i]);
+                const locations = makeRandomLocations(start, targetKm, isLoop, attempts[i], isLoop ? null : randomDestination);
                 try {
                     const candidate = await requestRandomRoute(locations, profile, best?.routeSegments ?? []);
                     Object.assign(candidate, measureRepeatedRoadKm(candidate.routeSegments));
@@ -988,6 +1092,8 @@
 
             waypoints = best.locations;
             segments = best.routeSegments;
+            if (randomDestinationMarker) map.removeLayer(randomDestinationMarker);
+            randomDestinationMarker = null;
             routeMode = 'random';
             document.getElementById('routeProfile').value = profile;
             clearElevation();
@@ -1024,6 +1130,7 @@
     };
 
     map.on('click', (e) => {
+        if (selectingRandomDestination) { setRandomDestination(e.latlng); return; }
         if (poiMode) { placePOI(e.latlng); return; }
         addPoint(e.latlng);
     });
@@ -1037,6 +1144,7 @@
             routeMode = 'manual';
             clearElevation();
         }
+        clearRandomDestination();
         const newWp = { lat: latlng.lat, lng: latlng.lng };
 
         // 1. Ajoute le point IMMÉDIATEMENT avec une ligne droite provisoire
@@ -1276,6 +1384,7 @@
         if (waypoints.length < 2 || isLoading) return;
         waypoints.reverse();
         segments = segments.slice().reverse().map(segment => segment.slice().reverse());
+        clearRandomDestination();
         clearElevation();
         refreshMarkers();
         updateButtons();
@@ -1289,6 +1398,7 @@
         waypoints.pop();
         if (segments.length > 0) segments.pop();
         routeMode = 'manual';
+        clearRandomDestination();
 
         clearElevation();
         refreshMarkers();
@@ -1305,6 +1415,7 @@
 
         waypoints = []; segments = [];
         routeMode = 'manual';
+        clearRandomDestination();
         markers.forEach(m => map.removeLayer(m.marker));
         markers = [];
         polyline.setLatLngs([]);
