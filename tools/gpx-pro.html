@@ -780,14 +780,15 @@
                     const candidate = await requestRandomRoute(locations, profile, best?.routeSegments ?? []);
                     Object.assign(candidate, measureRepeatedRoadKm(candidate.routeSegments));
                     if (isBetterRandomCandidate(candidate, best, targetKm)) best = candidate;
-                    if (candidate.earlyRepeatedKm <= 0.05 && Math.abs(candidate.distance - targetKm) / targetKm <= 0.1) break;
+                    // Ignore short shared connectors at junctions; they are not a meaningfully reused road section.
+                    if (candidate.earlyRepeatedKm <= 0.2 && Math.abs(candidate.distance - targetKm) / targetKm <= 0.1) break;
                 } catch (error) {
                     if (i === attempts.length - 1 && !best) throw error;
                 }
             }
             if (!best) throw new Error('Aucun parcours n’a pu être généré. Déplacez la carte vers une zone routable et réessayez.');
 
-            if (best.earlyRepeatedKm > 0.05) {
+            if (best.earlyRepeatedKm > 0.2) {
                 throw new Error('Après 12 essais, le meilleur parcours reprend encore ' + best.earlyRepeatedKm.toFixed(2) + ' km avant les 6 derniers kilomètres. Déplacez le départ ou augmentez la distance pour trouver une boucle plus variée.');
             }
 
